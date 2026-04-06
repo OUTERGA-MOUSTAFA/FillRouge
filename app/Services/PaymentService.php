@@ -72,25 +72,25 @@ class PaymentService
     public function processStripePayment($amount, $paymentMethodId, $user)
     {
         try {
-            // $paymentIntent = \Stripe\PaymentIntent::create([
-            //     'amount' => $amount * 100,
-            //     'currency' => 'mad',
-            //     'payment_method' => $paymentMethodId,
-            //     'confirmation_method' => 'manual',
-            //     'confirm' => true,
-            //     'return_url' => config('services.stripe.return_url'),
-            //     'metadata' => [
-            //         'user_id' => $user->id,
-            //         'user_email' => $user->email,
-            //     ],
-            // ]);
+            $paymentIntent = \Stripe\PaymentIntent::create([
+                'amount' => $amount * 100,
+                'currency' => 'mad',
+                'payment_method' => $paymentMethodId,
+                'confirmation_method' => 'manual',
+                'confirm' => true,
+                'return_url' => config('services.stripe.return_url'),
+                'metadata' => [
+                    'user_id' => $user->id,
+                    'user_email' => $user->email,
+                ],
+            ]);
             
-            // return [
-            //     'success' => true,
-            //     'client_secret' => $paymentIntent->client_secret,
-            //     'status' => $paymentIntent->status,
-            //     'transaction_id' => $paymentIntent->id,
-            // ];
+            return [
+                'success' => true,
+                'client_secret' => $paymentIntent->client_secret,
+                'status' => $paymentIntent->status,
+                'transaction_id' => $paymentIntent->id,
+            ];
             
         } catch (\Exception $e) {
             Log::error('Stripe Payment Error: ' . $e->getMessage());

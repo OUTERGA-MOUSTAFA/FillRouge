@@ -1,7 +1,8 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthApi\AuthController;
+use App\Http\Controllers\IncomeVerificationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ListingController;
 use App\Http\Controllers\MessageController;
@@ -93,6 +94,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
     Route::put('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy']);
+
+    // Vérification des revenus
+    Route::post('/income-verification/submit', [IncomeVerificationController::class, 'submit']);
+    Route::get('/income-verification/status', [IncomeVerificationController::class, 'status']);
 });
 
 // ========== ROUTES ADMIN (MIDDLEWARE ADMIN) ==========
@@ -110,4 +115,9 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::put('/reports/{report}/resolve', [AdminController::class, 'resolveReport']);
     
     Route::get('/stats', [AdminController::class, 'statistics']);
+
+
+    Route::get('/income-verifications', [IncomeVerificationController::class, 'list']);
+    Route::post('/income-verifications/{id}/approve', [IncomeVerificationController::class, 'approve']);
+    Route::post('/income-verifications/{id}/reject', [IncomeVerificationController::class, 'reject']);
 });
