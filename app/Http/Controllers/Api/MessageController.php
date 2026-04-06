@@ -177,31 +177,31 @@ class MessageController extends Controller
     /**
      * Signaler un message
      */
-    // public function report(Request $request, Message $message)
-    // {
-    //     if (!Gate::allows('report', $message)) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Non autorisé'
-    //         ], 403);
-    //     }
+    public function report(Request $request, Message $message)
+    {
+        if (!Gate::allows('report', $message)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Non autorisé'
+            ], 403);
+        }
         
-    //     $validator = Validator::make($request->all(), [
-    //         'reason' => 'required|string|in:spam,harassment,inappropriate,other'
-    //     ]);
+        $validator = Validator::make($request->all(), [
+            'reason' => 'required|string|in:spam,harassment,inappropriate,other'
+        ]);
         
-    //     if ($validator->fails()) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'errors' => $validator->errors()
-    //         ], 422);
-    //     }
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
         
-    //     $message->report($request->reason);
+        $message->report($request->reason);
         
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Message signalé'
-    //     ]);
-    // }
+        return response()->json([
+            'success' => true,
+            'message' => 'Message signalé'
+        ]);
+    }
 }
