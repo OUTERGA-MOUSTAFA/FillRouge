@@ -163,6 +163,7 @@ class UserController extends Controller
 
     /**
      * Upload de document d'identité (CIN/Passport)
+     * le système de vérification d'identité (CIN)"
      */
     public function uploadIdDocument(Request $request)
     {
@@ -458,48 +459,48 @@ class UserController extends Controller
     /**
      * Supprimer le compte utilisateur
      */
-    public function deleteAccount(Request $request)
-    {
-        $user = $request->user();
+    // public function deleteAccount(Request $request)
+    // {
+    //     $user = $request->user();
         
-        $validator = Validator::make($request->all(), [
-            'password' => 'required|string'
-        ]);
+    //     $validator = Validator::make($request->all(), [
+    //         'password' => 'required|string'
+    //     ]);
         
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
-        }
+    //     if ($validator->fails()) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'errors' => $validator->errors()
+    //         ], 422);
+    //     }
         
-        if (!Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Mot de passe incorrect'
-            ], 401);
-        }
+    //     if (!Hash::check($request->password, $user->password)) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Mot de passe incorrect'
+    //         ], 401);
+    //     }
         
-        // Supprimer les fichiers associés
-        if ($user->avatar) {
-            $this->imageService->delete($user->avatar);
-        }
+    //     // Supprimer les fichiers associés
+    //     if ($user->avatar) {
+    //         $this->imageService->delete($user->avatar);
+    //     }
         
-        if ($user->profile && $user->profile->id_document_path) {
-            $this->imageService->delete($user->profile->id_document_path);
-        }
+    //     if ($user->profile && $user->profile->id_document_path) {
+    //         $this->imageService->delete($user->profile->id_document_path);
+    //     }
         
-        // Soft delete
-        $user->delete();
+    //     // Soft delete
+    //     $user->delete();
         
-        // Révoquer les tokens
-        $user->tokens()->delete();
+    //     // Révoquer les tokens
+    //     $user->tokens()->delete();
         
-        return response()->json([
-            'success' => true,
-            'message' => 'Compte supprimé avec succès'
-        ]);
-    }
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Compte supprimé avec succès'
+    //     ]);
+    // }
 
     /**
      * Signaler un utilisateur

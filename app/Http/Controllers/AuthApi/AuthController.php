@@ -252,8 +252,9 @@ class AuthController extends Controller
         ]);
     }
 /************************************************************ */
+
     /**
-     * Vérifier téléphone
+     ****************** Développer la vérification du numéro de téléphone**************************
      */
     public function verifyPhone(Request $request)
     {
@@ -289,6 +290,7 @@ class AuthController extends Controller
             'message' => 'Téléphone vérifié'
         ]);
     }
+/******************************************************** */
 
     /**
      * Activer 2FA
