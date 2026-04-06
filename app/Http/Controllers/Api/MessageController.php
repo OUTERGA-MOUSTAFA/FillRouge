@@ -106,7 +106,7 @@ class MessageController extends Controller
             ], 422);
         }
         
-        // Upload des pièces jointes
+        // Upload des pièces jointes git commit -m "SEM-40 Implémenter l'envoi et réception de fichiers/images"
         $attachments = [];
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
