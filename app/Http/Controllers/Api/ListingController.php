@@ -227,27 +227,27 @@ class ListingController extends Controller
     /**
      * Supprimer une annonce
      */
-    // public function destroy(Listing $listing)
-    // {
-    //     if (!Gate::allows('delete', $listing)) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Non autorisé'
-    //         ], 403);
-    //     }
+    public function destroy(Listing $listing)
+    {
+        if (!Gate::allows('delete', $listing)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Non autorisé'
+            ], 403);
+        }
 
-    //     // Supprimer les photos
-    //     foreach ($listing->photos as $photo) {
-    //         $this->imageService->delete($photo);
-    //     }
+        // Supprimer les photos
+        foreach ($listing->photos as $photo) {
+            $this->imageService->delete($photo);
+        }
 
-    //     $listing->delete();
+        $listing->delete();
 
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Annonce supprimée'
-    //     ]);
-    // }
+        return response()->json([
+            'success' => true,
+            'message' => 'Annonce supprimée'
+        ]);
+    }
 
     /**
      * Activer/Désactiver une annonce
@@ -296,36 +296,36 @@ class ListingController extends Controller
     /**
      * Mes annonces
      */
-    // public function myListings(Request $request)
-    // {
-    //     $listings = $request->user()
-    //         ->listings()
-    //         ->withCount('messages')
-    //         ->orderBy('created_at', 'desc')
-    //         ->paginate(20);
+    public function myListings(Request $request)
+    {
+        $listings = $request->user()
+            ->listings()
+            ->withCount('messages')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
 
-    //     return response()->json([
-    //         'success' => true,
-    //         'data' => $listings
-    //     ]);
-    // }
+        return response()->json([
+            'success' => true,
+            'data' => $listings
+        ]);
+    }
 
     /**
      * Recherche avancée
      */
-    // public function search(Request $request)
-    // {
-    //     $query = Listing::active()->with('user');
+    public function search(Request $request)
+    {
+        $query = Listing::active()->with('user');
 
-    //     // Recherche par texte
-    //     if ($request->q) {
-    //         $query->where(function($q) use ($request) {
-    //             $q->where('title', 'LIKE', "%{$request->q}%")
-    //               ->orWhere('description', 'LIKE', "%{$request->q}%")
-    //               ->orWhere('city', 'LIKE', "%{$request->q}%")
-    //               ->orWhere('neighborhood', 'LIKE', "%{$request->q}%");
-    //         });
-    //     }
+        // Recherche par texte
+        if ($request->q) {
+            $query->where(function($q) use ($request) {
+                $q->where('title', 'LIKE', "%{$request->q}%")
+                  ->orWhere('description', 'LIKE', "%{$request->q}%")
+                  ->orWhere('city', 'LIKE', "%{$request->q}%")
+                  ->orWhere('neighborhood', 'LIKE', "%{$request->q}%");
+            });
+        }
 
     //     // Filtres avancés
     //     if ($request->city) $query->byCity($request->city);
