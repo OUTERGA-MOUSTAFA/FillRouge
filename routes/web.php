@@ -2,14 +2,12 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\BackgroundCheckController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\IncomeVerificationController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\ListingController;
-use App\Http\Controllers\MessageController;
 use App\Http\Controllers\MatchController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
 // ========== ROUTES PUBLIQUES ==========
 Route::prefix('auth')->group(function () {

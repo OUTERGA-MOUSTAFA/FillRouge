@@ -327,33 +327,33 @@ class ListingController extends Controller
             });
         }
 
-    //     // Filtres avancés
-    //     if ($request->city) $query->byCity($request->city);
-    //     if ($request->min_price) $query->where('price', '>=', $request->min_price);
-    //     if ($request->max_price) $query->where('price', '<=', $request->max_price);
-    //     if ($request->type) $query->byType($request->type);
-    //     if ($request->furnished !== null) $query->where('furnished', $request->furnished);
-    //     if ($request->bedrooms) $query->where('bedrooms', '>=', $request->bedrooms);
+        // Filtres avancés
+        if ($request->city) $query->byCity($request->city);
+        if ($request->min_price) $query->where('price', '>=', $request->min_price);
+        if ($request->max_price) $query->where('price', '<=', $request->max_price);
+        if ($request->type) $query->byType($request->type);
+        if ($request->furnished !== null) $query->where('furnished', $request->furnished);
+        if ($request->bedrooms) $query->where('bedrooms', '>=', $request->bedrooms);
         
-    //     if ($request->amenities) {
-    //         $amenities = explode(',', $request->amenities);
-    //         $query->byAmenities($amenities);
-    //     }
+        if ($request->amenities) {
+            $amenities = explode(',', $request->amenities);
+            $query->byAmenities($amenities);
+        }
 
-    //     // Rayon de recherche (km)
-    //     if ($request->lat && $request->lng && $request->radius) {
-    //         $query->whereRaw("(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) <= ?", [
-    //             $request->lat, $request->lng, $request->lat, $request->radius
-    //         ]);
-    //     }
+        // Rayon de recherche (km)
+        if ($request->lat && $request->lng && $request->radius) {
+            $query->whereRaw("(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) <= ?", [
+                $request->lat, $request->lng, $request->lat, $request->radius
+            ]);
+        }
 
-    //     $perPage = $request->per_page ?? 20;
-    //     $listings = $query->paginate($perPage);
+        $perPage = $request->per_page ?? 20;
+        $listings = $query->paginate($perPage);
 
-    //     return response()->json([
-    //         'success' => true,
-    //         'data' => $listings,
-    //         'filters' => $request->all()
-    //     ]);
-    // }
+        return response()->json([
+            'success' => true,
+            'data' => $listings,
+            'filters' => $request->all()
+        ]);
+    }
 }
