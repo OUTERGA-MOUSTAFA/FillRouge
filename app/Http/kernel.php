@@ -1,7 +1,6 @@
 <?php
 
 protected $routeMiddleware = [
-    // ... autres middlewares
     'verified.email' => \App\Http\Middleware\VerifiedEmail::class,
     'verified.phone' => \App\Http\Middleware\VerifiedPhone::class,
     'verified.identity' => \App\Http\Middleware\VerifiedIdentity::class,
