@@ -54,11 +54,12 @@ class Review extends Model
         ]);
     }
 
+    /***********Délai modification 48h********************/
     public function canBeEdited()
     {
         return $this->created_at->diffInHours(now()) < 48;
     }
-
+    /********************************* */
     // ========== SCOPES ==========
     
     public function scopeVisible($query)
