@@ -215,7 +215,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Vérifier email
+     * ***********la vérification de l'email***********************
      */
     public function verifyEmail(Request $request)
     {
@@ -251,7 +251,7 @@ class AuthController extends Controller
             'message' => 'Email vérifié'
         ]);
     }
-
+/************************************************************ */
     /**
      * Vérifier téléphone
      */
