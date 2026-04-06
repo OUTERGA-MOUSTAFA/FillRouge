@@ -137,22 +137,22 @@ class MessageController extends Controller
     /**
      * Marquer un message comme lu
      */
-    // public function markAsRead(Message $message)
-    // {
-    //     if (!Gate::allows('view', $message)) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Non autorisé'
-    //         ], 403);
-    //     }
+    public function markAsRead(Message $message)
+    {
+        if (!Gate::allows('view', $message)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Non autorisé'
+            ], 403);
+        }
         
-    //     $message->markAsRead();
+        $message->markAsRead();
         
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Message marqué comme lu'
-    //     ]);
-    // }
+        return response()->json([
+            'success' => true,
+            'message' => 'Message marqué comme lu'
+        ]);
+    }
 
     /**
      * Supprimer un message
