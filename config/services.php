@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'background_check' => [
+        'provider' => env('BACKGROUND_CHECK_PROVIDER', 'checkr'),
+        'api_key' => env('BACKGROUND_CHECK_API_KEY'),
+        'api_secret' => env('BACKGROUND_CHECK_API_SECRET'),
+    ],
+
 ];

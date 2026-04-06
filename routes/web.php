@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\BackgroundCheckController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\IncomeVerificationController;
 use App\Http\Controllers\UserController;
@@ -98,7 +99,14 @@ Route::middleware('auth:sanctum')->group(function () {
     // Vérification des revenus
     Route::post('/income-verification/submit', [IncomeVerificationController::class, 'submit']);
     Route::get('/income-verification/status', [IncomeVerificationController::class, 'status']);
+
+    // Background check
+    Route::post('/background-check/initiate', [BackgroundCheckController::class, 'initiate']);
+    Route::get('/background-check/status', [BackgroundCheckController::class, 'status']);
+
 });
+// Webhook (public)
+Route::post('/webhooks/background-check', [BackgroundCheckController::class, 'webhook']);
 
 // ========== ROUTES ADMIN (MIDDLEWARE ADMIN) ==========
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
