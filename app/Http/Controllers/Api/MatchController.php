@@ -23,17 +23,17 @@ class MatchController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        
+
         $matches = Matching::where('user_id', $user->id)
             ->orWhere('matched_user_id', $user->id)
             ->with(['user', 'matchedUser'])
             ->orderBy('created_at', 'desc')
             ->get()
-            ->map(function($match) use ($user) {
-                $matchedUser = $match->user_id === $user->id 
-                    ? $match->matchedUser 
+            ->map(function ($match) use ($user) {
+                $matchedUser = $match->user_id === $user->id
+                    ? $match->matchedUser
                     : $match->user;
-                
+
                 return [
                     'user' => $matchedUser->only(['id', 'full_name', 'avatar', 'age']),
                     'score' => $match->compatibility_score,
@@ -43,7 +43,7 @@ class MatchController extends Controller
                     'can_message' => $match->status === 'accepted'
                 ];
             });
-        
+
         return response()->json([
             'success' => true,
             'data' => $matches
@@ -56,23 +56,22 @@ class MatchController extends Controller
     public function accept(User $user)
     {
         $currentUser = auth()->user();
-        
         // Chercher le match
-        $match = Matching::where(function($q) use ($currentUser, $user) {
-            $q->where('user_id', $currentUser->id)->where('inged_user_id', $user->id);
-        })->orWhere(function($q) use ($currentUser, $user) {
-            $q->where('user_id', $user->id)->where('inged_user_id', $currentUser->id);
+        $match = Matching::where(function ($q) use ($currentUser, $user) {
+            $q->where('user_id', $currentUser->id)->where('matched_user_id', $user->id);
+        })->orWhere(function ($q) use ($currentUser, $user) {
+            $q->where('user_id', $user->id)->where('matched_user_id', $currentUser->id);
         })->first();
-        
+
         if (!$match) {
             return response()->json([
                 'success' => false,
                 'message' => 'Match non trouvé'
             ], 404);
         }
-        
+
         $match->accept();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Match accepté'
@@ -85,20 +84,20 @@ class MatchController extends Controller
     public function decline(User $user)
     {
         $currentUser = auth()->user();
-        
-        $match = Matching::where(function($q) use ($currentUser, $user) {
+
+        $match = Matching::where(function ($q) use ($currentUser, $user) {
             $q->where('user_id', $currentUser->id)->where('matched_user_id', $user->id);
         })->first();
-        
+
         if (!$match) {
             return response()->json([
                 'success' => false,
                 'message' => 'Match non trouvé'
             ], 404);
         }
-        
+
         $match->decline();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Match refusé'
@@ -111,17 +110,17 @@ class MatchController extends Controller
     public function block(User $user)
     {
         $currentUser = auth()->user();
-        
-        $match = Matching::where(function($q) use ($currentUser, $user) {
+
+        $match = Matching::where(function ($q) use ($currentUser, $user) {
             $q->where('user_id', $currentUser->id)->where('matched_user_id', $user->id);
-        })->orWhere(function($q) use ($currentUser, $user) {
+        })->orWhere(function ($q) use ($currentUser, $user) {
             $q->where('user_id', $user->id)->where('matched_user_id', $currentUser->id);
         })->first();
-        
+
         if ($match) {
             $match->block();
         }
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Utilisateur bloqué'
