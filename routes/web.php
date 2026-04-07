@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BackgroundCheckController;
 use App\Http\Controllers\Api\IncomeVerificationController;
 use App\Http\Controllers\Api\ListingController;
 use App\Http\Controllers\Api\MatchController;
 use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\UserController;
@@ -13,6 +15,13 @@ use Illuminate\Support\Facades\Route;
 
 // ========== ROUTES PUBLIQUES ==========
 Route::prefix('auth')->group(function () {
+
+    // OAuth
+    Route::get('/auth/google/redirect', [SocialAuthController::class, 'redirectToGoogle']);
+    Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
+    Route::get('/auth/facebook/redirect', [SocialAuthController::class, 'redirectToFacebook']);
+    Route::get('/auth/facebook/callback', [SocialAuthController::class, 'handleFacebookCallback']);
+
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
@@ -32,7 +41,7 @@ Route::get('/users/{user}', [UserController::class, 'show']);
 
 // ========== ROUTES PROTÉGÉES (AUTHENTIFICATION REQUISE) ==========
 Route::middleware('auth:sanctum')->group(function () {
-    
+
     // Auth
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me', [UserController::class, 'me']);
@@ -43,17 +52,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/enable-2fa', [AuthController::class, 'enableTwoFactor']);
     Route::post('/auth/disable-2fa', [AuthController::class, 'disableTwoFactor']);
     Route::post('/auth/verify-2fa', [AuthController::class, 'verifyTwoFactor']);
-    
+
     // Users
     Route::get('/users/{user}/compatibility', [UserController::class, 'getCompatibilityWith']);
     Route::get('/recommendations', [UserController::class, 'getRecommendations']);
     Route::post('/users/{user}/report', [UserController::class, 'reportUser']);
     Route::delete('/account', [UserController::class, 'deleteAccount']);
-    
+
     // Recherche
     Route::get('/search/users', [UserController::class, 'search']);
     Route::get('/search/listings', [ListingController::class, 'search']);
-    
+
     // Annonces
     Route::get('/my-listings', [ListingController::class, 'myListings']);
     Route::post('/listings', [ListingController::class, 'store']);
@@ -61,7 +70,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/listings/{listing}', [ListingController::class, 'destroy']);
     Route::post('/listings/{listing}/toggle-status', [ListingController::class, 'toggleStatus']);
     Route::post('/listings/{listing}/feature', [ListingController::class, 'makeFeatured']);
-    
+
     // Messages
     Route::get('/messages', [MessageController::class, 'index']);
     Route::get('/messages/conversations', [MessageController::class, 'conversations']);
@@ -70,26 +79,26 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/messages/{message}/read', [MessageController::class, 'markAsRead']);
     Route::delete('/messages/{message}', [MessageController::class, 'destroy']);
     Route::post('/messages/{message}/report', [MessageController::class, 'report']);
-    
+
     // Matches
     Route::get('/matches', [MatchController::class, 'index']);
     Route::post('/matches/{user}/accept', [MatchController::class, 'accept']);
     Route::post('/matches/{user}/decline', [MatchController::class, 'decline']);
     Route::post('/matches/{user}/block', [MatchController::class, 'block']);
-    
+
     // Avis
     Route::get('/my-reviews', [ReviewController::class, 'myReviews']);
     Route::post('/reviews/{user}', [ReviewController::class, 'store']);
     Route::put('/reviews/{review}', [ReviewController::class, 'update']);
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy']);
-    
+
     // Paiements
     Route::post('/subscription/checkout', [PaymentController::class, 'checkout']);
     Route::get('/subscription/plans', [PaymentController::class, 'plans']);
     Route::get('/subscription/current', [PaymentController::class, 'current']);
     Route::post('/subscription/cancel', [PaymentController::class, 'cancel']);
     Route::post('/subscription/webhook', [PaymentController::class, 'webhook'])->withoutMiddleware('auth:sanctum');
-    
+
     // Notifications
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::put('/notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
@@ -103,7 +112,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Background check
     Route::post('/background-check/initiate', [BackgroundCheckController::class, 'initiate']);
     Route::get('/background-check/status', [BackgroundCheckController::class, 'status']);
-
 });
 // Webhook (public)
 Route::post('/webhooks/background-check', [BackgroundCheckController::class, 'webhook']);
@@ -115,13 +123,13 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::put('/users/{user}/suspend', [AdminController::class, 'suspendUser']);
     Route::put('/users/{user}/verify', [AdminController::class, 'verifyUser']);
     Route::delete('/users/{user}', [AdminController::class, 'deleteUser']);
-    
+
     Route::get('/listings', [AdminController::class, 'listings']);
     Route::delete('/listings/{listing}', [AdminController::class, 'deleteListing']);
-    
+
     Route::get('/reports', [AdminController::class, 'reports']);
     Route::put('/reports/{report}/resolve', [AdminController::class, 'resolveReport']);
-    
+
     Route::get('/stats', [AdminController::class, 'statistics']);
 
 
