@@ -20,19 +20,19 @@ return new class extends Migration
             $table->timestamp('phone_verified_at')->nullable();
             $table->string('password');
             $table->string('avatar')->nullable();
-            
+
             // Informations personnelles
             $table->enum('gender', ['male', 'female', 'other'])->nullable();
             $table->date('birth_date')->nullable();
             $table->string('profession')->nullable();
             $table->decimal('budget_min', 10, 2)->nullable();
             $table->decimal('budget_max', 10, 2)->nullable();
-            
+
             // Sécurité
             $table->boolean('two_factor_enabled')->default(false);
             $table->string('two_factor_secret')->nullable();
             $table->text('two_factor_recovery_codes')->nullable();
-            
+
             // Premium
             $table->enum('subscription_plan', ['free', 'standard', 'premium'])->default('free');
             $table->timestamp('subscription_ends_at')->nullable();
@@ -40,23 +40,22 @@ return new class extends Migration
             $table->date('last_message_reset_date')->nullable();
             $table->integer('remaining_ads')->default(2); // Pour le plan gratuit: 2 annonces max
             $table->boolean('is_featured')->default(false);
-            
+
             // Statistiques
             $table->integer('profile_views')->default(0);
             $table->timestamp('last_seen_at')->nullable();
-            
+
             // OAuth
             $table->string('provider')->nullable();
             $table->string('provider_id')->nullable();
             $table->text('provider_token')->nullable();
             $table->text('provider_refresh_token')->nullable();
-            
+
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes(); // Pour la modération
-            
-            $table->index(['email', 'phone', 'subscription_plan']);
 
+            $table->index(['email', 'phone', 'subscription_plan']);
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -64,7 +63,6 @@ return new class extends Migration
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
-
     }
 
     /**
@@ -74,5 +72,9 @@ return new class extends Migration
     {
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
+        Schema::table('users', function (Blueprint $table) {
+            $table->timestamp('suspended_until')->nullable();
+            $table->text('suspension_reason')->nullable();
+        });
     }
 };
