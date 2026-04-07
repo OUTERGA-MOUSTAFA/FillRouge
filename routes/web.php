@@ -1,12 +1,14 @@
 <?php
 
-use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\BackgroundCheckController;
-use App\Http\Controllers\IncomeVerificationController;
-use App\Http\Controllers\ListingController;
-use App\Http\Controllers\MatchController;
-use App\Http\Controllers\MessageController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BackgroundCheckController;
+use App\Http\Controllers\Api\IncomeVerificationController;
+use App\Http\Controllers\Api\ListingController;
+use App\Http\Controllers\Api\MatchController;
+use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
 // ========== ROUTES PUBLIQUES ==========

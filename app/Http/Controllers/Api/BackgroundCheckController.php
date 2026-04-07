@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\BackgroundCheck;
 use App\Services\BackgroundCheckService;
 use Illuminate\Http\Request;

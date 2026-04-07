@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\UserProfile;
 use App\Models\VerificationCode;
 use App\Services\SmsService;
 use App\Services\TwoFactorService;
