@@ -20,80 +20,80 @@ class PaymentController extends Controller
     /**
      * Plans d'abonnement disponibles
      */
-    // public function plans()
-    // {
-    //     $plans = [
-    //         'free' => [
-    //             'name' => 'Gratuit',
-    //             'price' => 0,
-    //             'price_mad' => '0 MAD',
-    //             'features' => [
-    //                 'Profil de base',
-    //                 '2 annonces maximum',
-    //                 '5 messages par jour',
-    //                 'Recherche basique',
-    //                 'Support par email',
-    //             ],
-    //             'limitations' => [
-    //                 'max_ads' => 2,
-    //                 'max_messages_per_day' => 5,
-    //                 'featured_profile' => false,
-    //                 'advanced_filters' => false,
-    //                 'priority_support' => false,
-    //             ]
-    //         ],
-    //         'standard' => [
-    //             'name' => 'Standard',
-    //             'price' => 100,
-    //             'price_mad' => '100 MAD/mois',
-    //             'features' => [
-    //                 'Tout ce qui est dans Gratuit',
-    //                 '10 annonces maximum',
-    //                 '50 messages par jour',
-    //                 'Filtres avancés',
-    //                 'Profil mis en avant',
-    //                 'Voir qui a consulté votre profil',
-    //                 'Support prioritaire',
-    //                 'Sans publicités',
-    //             ],
-    //             'limitations' => [
-    //                 'max_ads' => 10,
-    //                 'max_messages_per_day' => 50,
-    //                 'featured_profile' => true,
-    //                 'advanced_filters' => true,
-    //                 'priority_support' => true,
-    //             ]
-    //         ],
-    //         'premium' => [
-    //             'name' => 'Premium',
-    //             'price' => 200,
-    //             'price_mad' => '200 MAD/mois',
-    //             'features' => [
-    //                 'Tout ce qui est dans Standard',
-    //                 'Annonces illimitées',
-    //                 'Messages illimités',
-    //                 'Badge "Premium"',
-    //                 'Background check offert (1/an)',
-    //                 'Vérification de revenus incluse',
-    //                 'Support VIP 24/7',
-    //                 'Statistiques avancées',
-    //             ],
-    //             'limitations' => [
-    //                 'max_ads' => -1, // Illimité
-    //                 'max_messages_per_day' => -1, // Illimité
-    //                 'featured_profile' => true,
-    //                 'advanced_filters' => true,
-    //                 'priority_support' => true,
-    //                 'free_background_check' => 1,
-    //             ]
-    //         ]
-    //     ];
+    public function plans()
+    {
+        $plans = [
+            'free' => [
+                'name' => 'Gratuit',
+                'price' => 0,
+                'price_mad' => '0 MAD',
+                'features' => [
+                    'Profil de base',
+                    '2 annonces maximum',
+                    '5 messages par jour',
+                    'Recherche basique',
+                    'Support par email',
+                ],
+                'limitations' => [
+                    'max_ads' => 2,
+                    'max_messages_per_day' => 5,
+                    'featured_profile' => false,
+                    'advanced_filters' => false,
+                    'priority_support' => false,
+                ]
+            ],
+            'standard' => [
+                'name' => 'Standard',
+                'price' => 100,
+                'price_mad' => '100 MAD/mois',
+                'features' => [
+                    'Tout ce qui est dans Gratuit',
+                    '10 annonces maximum',
+                    '50 messages par jour',
+                    'Filtres avancés',
+                    'Profil mis en avant',
+                    'Voir qui a consulté votre profil',
+                    'Support prioritaire',
+                    'Sans publicités',
+                ],
+                'limitations' => [
+                    'max_ads' => 10,
+                    'max_messages_per_day' => 50,
+                    'featured_profile' => true,
+                    'advanced_filters' => true,
+                    'priority_support' => true,
+                ]
+            ],
+            'premium' => [
+                'name' => 'Premium',
+                'price' => 200,
+                'price_mad' => '200 MAD/mois',
+                'features' => [
+                    'Tout ce qui est dans Standard',
+                    'Annonces illimitées',
+                    'Messages illimités',
+                    'Badge "Premium"',
+                    'Background check offert (1/an)',
+                    'Vérification de revenus incluse',
+                    'Support VIP 24/7',
+                    'Statistiques avancées',
+                ],
+                'limitations' => [
+                    'max_ads' => -1, // Illimité
+                    'max_messages_per_day' => -1, // Illimité
+                    'featured_profile' => true,
+                    'advanced_filters' => true,
+                    'priority_support' => true,
+                    'free_background_check' => 1,
+                ]
+            ]
+        ];
         
-    //     return response()->json([
-    //         'success' => true,
-    //         'data' => $plans
-    //     ]);
-    // }
+        return response()->json([
+            'success' => true,
+            'data' => $plans
+        ]);
+    }
     
     /**
      * Abonnement actuel de l'utilisateur
