@@ -253,46 +253,46 @@ class ListingController extends Controller
     /**
      * Activer/Désactiver une annonce
      */
-    // public function toggleStatus(Listing $listing)
-    // {
-    //     if (!Gate::allows('update', $listing)) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Non autorisé'
-    //         ], 403);
-    //     }
+    public function toggleStatus(Listing $listing)
+    {
+        if (!Gate::allows('update', $listing)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Non autorisé'
+            ], 403);
+        }
 
-    //     $newStatus = $listing->status === 'active' ? 'inactive' : 'active';
-    //     $listing->update(['status' => $newStatus]);
+        $newStatus = $listing->status === 'active' ? 'inactive' : 'active';
+        $listing->update(['status' => $newStatus]);
 
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => $newStatus === 'active' ? 'Annonce activée' : 'Annonce désactivée',
-    //         'status' => $newStatus
-    //     ]);
-    // }
+        return response()->json([
+            'success' => true,
+            'message' => $newStatus === 'active' ? 'Annonce activée' : 'Annonce désactivée',
+            'status' => $newStatus
+        ]);
+    }
 
     /**
      * Mettre en avant une annonce (premium)
      */
-    // public function makeFeatured(Request $request, Listing $listing)
-    // {
-    //     if (!Gate::allows('feature', $listing)) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Fonctionnalité premium uniquement'
-    //         ], 403);
-    //     }
+    public function makeFeatured(Request $request, Listing $listing)
+    {
+        if (!Gate::allows('feature', $listing)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Fonctionnalité premium uniquement'
+            ], 403);
+        }
 
-    //     $days = $request->days ?? 7;
-    //     $listing->makeFeatured($days);
+        $days = $request->days ?? 7;
+        $listing->makeFeatured($days);
 
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Annonce mise en avant pour ' . $days . ' jours',
-    //         'featured_until' => $listing->featured_until
-    //     ]);
-    // }
+        return response()->json([
+            'success' => true,
+            'message' => 'Annonce mise en avant pour ' . $days . ' jours',
+            'featured_until' => $listing->featured_until
+        ]);
+    }
 
     /**
      * Mes annonces

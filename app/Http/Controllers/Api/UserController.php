@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\UserProfile;
 use App\Services\MatchingService;
 use App\Services\ImageService;
+use App\Models\Report;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -506,27 +507,8 @@ class UserController extends Controller
      */
     public function reportUser(Request $request, User $user)
     {
-        $validator = Validator::make($request->all(), [
-            'reason' => 'required|string|in:spam,inappropriate_behavior,fake_profile,harassment,other',
-            'description' => 'nullable|string|max:500'
-        ]);
-        
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
-        }
-        
         $reporter = $request->user();
-        
-        if ($reporter->id === $user->id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Vous ne pouvez pas vous signaler vous-même'
-            ], 400);
-        }
-        
+
         // Vérifier si déjà signalé
         $existingReport = Report::where('reporter_id', $reporter->id)
             ->where('reported_user_id', $user->id)
@@ -539,12 +521,30 @@ class UserController extends Controller
                 'message' => 'Vous avez déjà signalé cet utilisateur'
             ], 400);
         }
+
+        $validator = Validator::make($request->all(), [
+            'reason' => 'required|string|in:spam,inappropriate_behavior,fake_profile,harassment,other',
+        ]);
+        
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+        
+        
+        if ($reporter->id === $user->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vous ne pouvez pas vous signaler vous-même'
+            ], 400);
+        }
         
         $report = Report::create([
             'reporter_id' => $reporter->id,
             'reported_user_id' => $user->id,
             'reason' => $request->reason,
-            'description' => $request->description,
             'status' => 'pending'
         ]);
         

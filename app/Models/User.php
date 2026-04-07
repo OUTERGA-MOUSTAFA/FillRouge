@@ -71,7 +71,7 @@ class User extends Authenticatable
     ];
 
     // ========== RELATIONS ==========
-    
+
     public function profile()
     {
         return $this->hasOne(UserProfile::class);
@@ -150,7 +150,7 @@ class User extends Authenticatable
     }
 
     // ========== ACCESSORS ==========
-    
+
     public function getAgeAttribute()
     {
         if (!$this->birth_date) {
@@ -166,45 +166,45 @@ class User extends Authenticatable
 
     public function getIsPremiumAttribute()
     {
-        return $this->subscription_plan === 'premium' && 
-               ($this->subscription_ends_at === null || $this->subscription_ends_at->isFuture());
+        return $this->subscription_plan === 'premium' &&
+            ($this->subscription_ends_at === null || $this->subscription_ends_at->isFuture());
     }
 
     public function getIsStandardAttribute()
     {
-        return $this->subscription_plan === 'standard' && 
-               ($this->subscription_ends_at === null || $this->subscription_ends_at->isFuture());
+        return $this->subscription_plan === 'standard' &&
+            ($this->subscription_ends_at === null || $this->subscription_ends_at->isFuture());
     }
 
     public function getVerificationBadgesAttribute()
     {
         $badges = [];
-        
+
         if ($this->email_verified_at) {
             $badges[] = 'email_verified';
         }
-        
+
         if ($this->phone_verified_at) {
             $badges[] = 'phone_verified';
         }
-        
+
         if ($this->profile && $this->profile->is_identity_verified) {
             $badges[] = 'identity_verified';
         }
-        
+
         if ($this->profile && $this->profile->is_background_checked) {
             $badges[] = 'background_checked';
         }
-        
+
         if ($this->is_premium) {
             $badges[] = 'premium';
         }
-        
+
         return $badges;
     }
 
     // ========== MÉTHODES UTILITAIRES ==========
-    
+
     /**
      * Vérifier si l'utilisateur peut envoyer un message
      */
@@ -213,9 +213,9 @@ class User extends Authenticatable
         if ($this->is_premium) {
             return true;
         }
-        
+
         $dailyLimit = $this->subscription_plan === 'standard' ? 50 : 5;
-        
+
         // Reset le compteur quotidien si nécessaire
         if ($this->last_message_reset_date != now()->toDateString()) {
             $this->update([
@@ -223,7 +223,7 @@ class User extends Authenticatable
                 'last_message_reset_date' => now()
             ]);
         }
-        
+
         return $this->daily_messages_count < $dailyLimit;
     }
 
@@ -232,15 +232,15 @@ class User extends Authenticatable
      */
     public function canCreateListing()
     {
-        $maxAds = match($this->subscription_plan) {
+        $maxAds = match ($this->subscription_plan) {
             'free' => 2,
             'standard' => 10,
             'premium' => PHP_INT_MAX,
             default => 2,
         };
-        
+
         $activeAds = $this->listings()->where('status', 'active')->count();
-        
+
         return $activeAds < $maxAds;
     }
 
@@ -268,10 +268,10 @@ class User extends Authenticatable
         if ($this->is_premium) {
             return PHP_INT_MAX;
         }
-        
+
         $dailyLimit = $this->subscription_plan === 'standard' ? 50 : 5;
         $used = $this->daily_messages_count;
-        
+
         return max(0, $dailyLimit - $used);
     }
 
@@ -280,15 +280,15 @@ class User extends Authenticatable
      */
     public function getRemainingAds()
     {
-        $maxAds = match($this->subscription_plan) {
+        $maxAds = match ($this->subscription_plan) {
             'free' => 2,
             'standard' => 10,
             'premium' => PHP_INT_MAX,
             default => 2,
         };
-        
+
         $activeAds = $this->listings()->where('status', 'active')->count();
-        
+
         return max(0, $maxAds - $activeAds);
     }
 
@@ -318,6 +318,15 @@ class User extends Authenticatable
             ->exists();
     }
 
+    public function blocks()
+    {
+        return $this->hasMany(Block::class, 'user_id');
+    }
+    public function blockedBy()
+    {
+        return $this->hasMany(Block::class, 'blocked_user_id');
+    }
+
     /**
      * Vérifier si l'utilisateur est en ligne
      */
@@ -327,20 +336,20 @@ class User extends Authenticatable
     }
 
     // ========== SCOPES ==========
-    
+
     public function scopeVerified($query)
     {
         return $query->whereNotNull('email_verified_at')
-                     ->whereNotNull('phone_verified_at');
+            ->whereNotNull('phone_verified_at');
     }
 
     public function scopePremium($query)
     {
         return $query->where('subscription_plan', 'premium')
-                     ->where(function($q) {
-                         $q->whereNull('subscription_ends_at')
-                           ->orWhere('subscription_ends_at', '>', now());
-                     });
+            ->where(function ($q) {
+                $q->whereNull('subscription_ends_at')
+                    ->orWhere('subscription_ends_at', '>', now());
+            });
     }
 
     public function scopeActive($query)
@@ -350,7 +359,7 @@ class User extends Authenticatable
 
     public function scopeByCity($query, $city)
     {
-        return $query->whereHas('profile', function($q) use ($city) {
+        return $query->whereHas('profile', function ($q) use ($city) {
             $q->where('city', $city);
         });
     }
@@ -358,6 +367,6 @@ class User extends Authenticatable
     public function scopeWithBudget($query, $min, $max)
     {
         return $query->whereBetween('budget_min', [$min, $max])
-                     ->orWhereBetween('budget_max', [$min, $max]);
+            ->orWhereBetween('budget_max', [$min, $max]);
     }
 }
