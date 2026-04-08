@@ -248,6 +248,7 @@ class AdminController extends Controller
     
     /**
      * Lever la suspension
+     * unsuspendUser
      */
     public function unsuspendUser(User $user)
     {

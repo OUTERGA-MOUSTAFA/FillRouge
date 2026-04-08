@@ -227,6 +227,7 @@ class ListingController extends Controller
 
     /**
      * Supprimer une annonce
+     * Implémenter la modification et suppression des annonces
      */
     public function destroy(Listing $listing)
     {
@@ -252,6 +253,7 @@ class ListingController extends Controller
 
     /**
      * Activer/Désactiver une annonce
+     * toggleStatus()
      */
     public function toggleStatus(Listing $listing)
     {

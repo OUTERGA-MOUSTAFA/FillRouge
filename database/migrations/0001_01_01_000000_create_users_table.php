@@ -56,6 +56,8 @@ return new class extends Migration
             $table->softDeletes(); // Pour la modération
 
             $table->index(['email', 'phone', 'subscription_plan']);
+            $table->timestamp('suspended_until')->nullable();
+            $table->text('suspension_reason')->nullable();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -72,9 +74,5 @@ return new class extends Migration
     {
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
-        Schema::table('users', function (Blueprint $table) {
-            $table->timestamp('suspended_until')->nullable();
-            $table->text('suspension_reason')->nullable();
-        });
     }
 };
