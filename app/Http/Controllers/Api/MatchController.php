@@ -56,7 +56,7 @@ class MatchController extends Controller
     public function accept(User $user)
     {
         $currentUser = auth()->user();
-        // Chercher le match
+
         $match = Matching::where(function ($q) use ($currentUser, $user) {
             $q->where('user_id', $currentUser->id)->where('matched_user_id', $user->id);
         })->orWhere(function ($q) use ($currentUser, $user) {

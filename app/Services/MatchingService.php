@@ -224,7 +224,7 @@ class MatchingService
     }
 
     /**
-     * Obtenir les centres d'intérêt communs
+     * Obtenir les centres d'intérêt communs (PUBLIC)
      */
     public function getCommonInterests(User $user1, User $user2)
     {

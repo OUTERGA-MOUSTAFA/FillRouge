@@ -9,7 +9,7 @@ class Block extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
+   protected $fillable = [
         'user_id',
         'blocked_user_id',
         'reason',

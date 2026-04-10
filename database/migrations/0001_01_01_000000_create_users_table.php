@@ -21,6 +21,17 @@ return new class extends Migration
             $table->string('password');
             $table->string('avatar')->nullable();
 
+            $table->json('preferred_languages')->nullable(); // ['ar', 'fr', 'en', 'es']
+            $table->json('interests')->nullable(); // ['cooking', 'fitness', 'tech', ...]
+            $table->enum('sleep_schedule', ['early_bird', 'night_owl'])->nullable();
+            $table->boolean('has_pets')->default(false);
+            $table->boolean('is_smoker')->default(false);
+            $table->enum('cleanliness_level', ['relaxed', 'very_clean'])->nullable();
+            $table->enum('social_level', ['introvert', 'extrovert'])->nullable();
+            $table->text('about_me')->nullable(); // Champ "About You"
+            $table->string('city')->nullable();
+            $table->string('neighborhood')->nullable();
+
             // Informations personnelles
             $table->enum('gender', ['male', 'female', 'other'])->nullable();
             $table->date('birth_date')->nullable();
@@ -52,12 +63,13 @@ return new class extends Migration
             $table->text('provider_refresh_token')->nullable();
 
             $table->rememberToken();
-            $table->timestamps();
             $table->softDeletes(); // Pour la modération
 
             $table->index(['email', 'phone', 'subscription_plan']);
             $table->timestamp('suspended_until')->nullable();
             $table->text('suspension_reason')->nullable();
+            $table->json('notification_preferences')->nullable();
+            $table->timestamps();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

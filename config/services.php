@@ -41,4 +41,19 @@ return [
         'api_secret' => env('BACKGROUND_CHECK_API_SECRET'),
     ],
 
+    'twilio' => [
+        'account_sid' => env('TWILIO_ACCOUNT_SID'),
+        'auth_token' => env('TWILIO_AUTH_TOKEN'),
+        'verify_sid' => env('TWILIO_VERIFY_SID'),
+        'phone_number' => env('TWILIO_PHONE_NUMBER'),
+    ],
+
+    'stripe' => [
+        'key' => env('STRIPE_PUBLIC_KEY'),
+        'secret' => env('STRIPE_SECRET_KEY'),
+        'webhook' => [
+            'secret' => env('STRIPE_WEBHOOK_SECRET'),
+        ],
+    ],
+
 ];

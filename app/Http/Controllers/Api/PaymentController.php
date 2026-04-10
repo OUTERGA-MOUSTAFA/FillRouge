@@ -266,6 +266,7 @@ class PaymentController extends Controller
     
     /**
      * Webhook Stripe/CMI
+     * 
      */
     public function webhook(Request $request)
     {

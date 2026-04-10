@@ -60,7 +60,7 @@ class UserController extends Controller
             'profession' => 'nullable|string|max:255',
             'budget_min' => 'nullable|numeric|min:0',
             'budget_max' => 'nullable|numeric|min:0|gte:budget_min',
-            'phone' => 'sometimes|string|unique:users,phone,' . $user->id,
+            'phone' => 'sometimes|string|unique:users,phone|required|regex:/^(\+212|0)[5-7][0-9]{8}$/' . $user->id,
         ]);
         
         if ($validator->fails()) {

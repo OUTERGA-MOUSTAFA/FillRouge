@@ -104,11 +104,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::put('/notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
     Route::put('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
-    Route::delete('/notifications/{notification}', [NotificationControllerSchema::table('users', function (Blueprint $table) {
-        $table->timestamp('suspended_until')->nullable();
-        $table->text('suspension_reason')->nullable();
-    });
-::class, 'destroy']);
+    Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy']);
 
     // Vérification des revenus
     Route::post('/income-verification/submit', [IncomeVerificationController::class, 'submit']);
