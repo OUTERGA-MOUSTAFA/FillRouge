@@ -7,6 +7,11 @@ protected $routeMiddleware = [
     'premium' => \App\Http\Middleware\PremiumUser::class,
     'admin' => \App\Http\Middleware\AdminMiddleware::class,
     'rateLimit.messages' => \App\Http\Middleware\RateLimitMessages::class,
+    'api' => [
+        \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+        'throttle:api',
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+    ],
 ];
 
 return [

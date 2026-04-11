@@ -16,6 +16,10 @@ use Illuminate\Support\Facades\Route;
 
 // ========== ROUTES PUBLIQUES ==========
 Route::prefix('auth')->group(function () {
+    
+    Route::get('/csrf-token', function () {
+    return response()->json(['csrf_token' => csrf_token()]);
+});
 
     // OAuth
     Route::get('/auth/google/redirect', [SocialAuthController::class, 'redirectToGoogle']);
