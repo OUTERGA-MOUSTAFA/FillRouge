@@ -4,6 +4,7 @@ import { Bars3Icon, XMarkIcon, UserCircleIcon } from '@heroicons/react/24/outlin
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import toast from 'react-hot-toast';
+import NotificationBell from './NotificationBell';
 
 const navigation = [
   { name: 'Accueil', href: '/' },
@@ -63,6 +64,7 @@ export default function Navbar() {
                         </span>
                       )}
                     </Menu.Button>
+                    <NotificationBell />
                     <Transition
                       as={Fragment}
                       enter="transition ease-out duration-200"
