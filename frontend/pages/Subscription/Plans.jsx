@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 
 export default function SubscriptionPlans() {
   const [plans, setPlans] = useState(null);
+  
   const [currentSubscription, setCurrentSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuthStore();
