@@ -21,11 +21,17 @@ export default function SubscriptionCheckout() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
+  
+  try {
+    const paymentDetails = {
+      card_number: cardDetails.number,
+      card_expiry: cardDetails.expiry,
+      card_cvv: cardDetails.cvc,  // ← renommer cvc en card_cvv
+    };
     
-    try {
-      const response = await subscriptionService.checkout(plan, paymentMethod, cardDetails);
+    const response = await subscriptionService.checkout(plan, paymentMethod, paymentDetails);
       toast.success('Abonnement activé avec succès');
       navigate('/subscription/plans');
     } catch (error) {
