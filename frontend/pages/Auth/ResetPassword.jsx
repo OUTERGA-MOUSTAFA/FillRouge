@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { authService } from '../../services/auth';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'; // Link ajouté
+import { authService } from '../../src/services/auth';
 import toast from 'react-hot-toast';
 
 export default function ResetPassword() {
@@ -30,7 +30,8 @@ export default function ResetPassword() {
       toast.success('Mot de passe réinitialisé avec succès');
       navigate('/login');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Erreur lors de la réinitialisation');
+      const message = error.response?.data?.message || 'Erreur lors de la réinitialisation';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
