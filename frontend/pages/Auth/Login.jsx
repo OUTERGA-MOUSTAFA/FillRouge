@@ -1,74 +1,37 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../store/authStore';
+import { useAuthStore } from '../../src/store/authStore';
 import toast from 'react-hot-toast';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [twoFactorCode, setTwoFactorCode] = useState('');
-  const [show2FA, setShow2FA] = useState(false);
-  const { login, verify2FA, isLoading } = useAuthStore();
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuthStore();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    
     try {
-      await login(email, password);
+      const result = await login(email, password);
+      
+      // Vérifier si 2FA est requis
+      if (result?.requires2FA) {
+        navigate('/2fa', { state: { twoFactorToken: result.twoFactorToken } });
+        return;
+      }
+      
       toast.success('Connexion réussie');
       navigate('/');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Erreur de connexion');
+      const message = error.response?.data?.message || 'Email ou mot de passe incorrect';
+      toast.error(message);
+    } finally {
+      setLoading(false);
     }
   };
-
-  const handleVerify2FA = async (e) => {
-    e.preventDefault();
-    try {
-      await verify2FA(twoFactorCode);
-      toast.success('Connexion réussie');
-      navigate('/');
-    } catch (error) {
-      toast.error('Code 2FA invalide', error);
-    }
-  };
-
-  if (show2FA) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
-          <div>
-            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-              Authentification à deux facteurs
-            </h2>
-            <p className="mt-2 text-center text-sm text-gray-600">
-              Entrez le code généré par votre application d'authentification
-            </p>
-          </div>
-          <form className="mt-8 space-y-6" onSubmit={handleVerify2FA}>
-            <div>
-              <input
-                type="text"
-                required
-                value={twoFactorCode}
-                onChange={(e) => setTwoFactorCode(e.target.value)}
-                className="input text-center text-2xl tracking-widest"
-                placeholder="000000"
-                maxLength="6"
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="btn-primary w-full"
-            >
-              {isLoading ? 'Vérification...' : 'Vérifier'}
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -84,6 +47,7 @@ export default function Login() {
             </Link>
           </p>
         </div>
+        
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
@@ -137,10 +101,10 @@ export default function Login() {
 
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={loading}
             className="btn-primary w-full"
           >
-            {isLoading ? 'Connexion...' : 'Se connecter'}
+            {loading ? 'Connexion...' : 'Se connecter'}
           </button>
         </form>
       </div>

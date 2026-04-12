@@ -1,23 +1,26 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../store/authStore';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../src/store/authStore';
 import toast from 'react-hot-toast';
 
 export default function TwoFactor() {
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
-  const { verify2FA } = useAuthStore();
+  const location = useLocation();
   const navigate = useNavigate();
+  const { verify2FA } = useAuthStore();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    
     try {
       await verify2FA(code);
       toast.success('Connexion réussie');
       navigate('/');
     } catch (error) {
-      toast.error('Code 2FA invalide',error);
+      const message = error.response?.data?.message || 'Code 2FA invalide';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
