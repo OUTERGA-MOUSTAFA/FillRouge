@@ -21,7 +21,7 @@ export default function Listings() {
       const response = await listingsService.getAll(filters);
       setListings(response.data.data);
     } catch (error) {
-      toast.error('Erreur lors du chargement des annonces');
+      toast.error('Erreur lors du chargement des annonces', error);
     } finally {
       setLoading(false);
     }

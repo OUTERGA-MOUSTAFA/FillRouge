@@ -17,11 +17,12 @@ export const useAuthStore = create(
           
           if (response.requires_2fa) {
             set({ twoFactorToken: response.two_factor_token, isLoading: false });
-            return;
+            return { requires2FA: true, twoFactorToken: response.two_factor_token };
           }
           
           localStorage.setItem('token', response.token);
           set({ user: response.user, token: response.token, isLoading: false, twoFactorToken: null });
+          return { success: true };
         } catch (error) {
           set({ isLoading: false });
           throw error;
@@ -37,6 +38,7 @@ export const useAuthStore = create(
           const response = await authService.verify2FA(twoFactorToken, code);
           localStorage.setItem('token', response.token);
           set({ user: response.user, token: response.token, isLoading: false, twoFactorToken: null });
+          return { success: true };
         } catch (error) {
           set({ isLoading: false });
           throw error;
@@ -54,6 +56,7 @@ export const useAuthStore = create(
       },
       
       setUser: (user) => set({ user }),
+      setTwoFactorToken: (token) => set({ twoFactorToken: token }),
     }),
     {
       name: 'auth-storage',

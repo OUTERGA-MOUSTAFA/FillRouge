@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import {
-  UsersIcon, HomeIcon, FlagIcon, CurrencyDollarIcon,
-  TrendingUpIcon, UserGroupIcon, EyeIcon, ChatBubbleLeftRightIcon
+  UsersIcon,
+  HomeIcon,
+  FlagIcon,
+  CurrencyDollarIcon
 } from '@heroicons/react/24/outline';
 import { adminService } from '../../services/admin';
 import toast from 'react-hot-toast';
@@ -21,7 +23,7 @@ export default function AdminDashboard() {
       const response = await adminService.getStats(period);
       setStats(response.data);
     } catch (error) {
-      toast.error('Erreur chargement des statistiques');
+      toast.error('Erreur chargement des statistiques', error);
     } finally {
       setLoading(false);
     }
@@ -57,7 +59,6 @@ export default function AdminDashboard() {
         </select>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {statsCards.map((stat) => (
           <div key={stat.title} className="card p-6">
@@ -75,65 +76,47 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      {/* Charts Section */}
-      <div className="grid lg:grid-cols-2 gap-8 mb-8">
-        {/* User Evolution */}
-        <div className="card p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Évolution des inscriptions</h3>
-          <div className="space-y-3">
-            {stats.users.evolution.map((day) => (
-              <div key={day.date} className="flex items-center">
-                <span className="w-24 text-sm text-gray-600">{day.date}</span>
-                <div className="flex-1 ml-4">
-                  <div
-                    className="bg-primary-500 h-8 rounded-lg"
-                    style={{ width: `${(day.count / Math.max(...stats.users.evolution.map(d => d.count))) * 100}%` }}
-                  >
-                    <span className="text-white text-sm px-2 leading-8">{day.count}</span>
+      {stats && (
+        <div className="grid lg:grid-cols-2 gap-8">
+          <div className="card p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Évolution des inscriptions</h3>
+            <div className="space-y-3">
+              {stats.users.evolution.map((day) => (
+                <div key={day.date} className="flex items-center">
+                  <span className="w-24 text-sm text-gray-600">{day.date}</span>
+                  <div className="flex-1 ml-4">
+                    <div
+                      className="bg-primary-500 h-8 rounded-lg"
+                      style={{ width: `${(day.count / Math.max(...stats.users.evolution.map(d => d.count))) * 100}%` }}
+                    >
+                      <span className="text-white text-sm px-2 leading-8">{day.count}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Top Cities */}
-        <div className="card p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Top 5 villes</h3>
-          <div className="space-y-3">
-            {stats.top_cities.map((city) => (
-              <div key={city.city} className="flex items-center">
-                <span className="w-32 text-sm text-gray-600">{city.city}</span>
-                <div className="flex-1 ml-4">
-                  <div
-                    className="bg-secondary-500 h-8 rounded-lg"
-                    style={{ width: `${(city.count / stats.top_cities[0].count) * 100}%` }}
-                  >
-                    <span className="text-white text-sm px-2 leading-8">{city.count}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Revenue Section */}
-      <div className="card p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenus par plan</h3>
-        <div className="grid md:grid-cols-3 gap-6">
-          {stats.revenue.by_plan.map((plan) => (
-            <div key={plan.plan} className="text-center">
-              <p className="text-gray-500 capitalize">{plan.plan}</p>
-              <p className="text-2xl font-bold text-gray-900">{plan.total} MAD</p>
+              ))}
             </div>
-          ))}
-          <div className="text-center border-l pl-6">
-            <p className="text-gray-500">Moyenne par utilisateur</p>
-            <p className="text-2xl font-bold text-gray-900">{stats.revenue.average_per_user} MAD</p>
+          </div>
+
+          <div className="card p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Top 5 villes</h3>
+            <div className="space-y-3">
+              {stats.top_cities.map((city) => (
+                <div key={city.city} className="flex items-center">
+                  <span className="w-32 text-sm text-gray-600">{city.city}</span>
+                  <div className="flex-1 ml-4">
+                    <div
+                      className="bg-secondary-500 h-8 rounded-lg"
+                      style={{ width: `${(city.count / stats.top_cities[0].count) * 100}%` }}
+                    >
+                      <span className="text-white text-sm px-2 leading-8">{city.count}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
