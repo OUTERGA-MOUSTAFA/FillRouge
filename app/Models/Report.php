@@ -28,7 +28,6 @@ class Report extends Model
         'resolved_at' => 'datetime',
     ];
 
-    // Relations
     public function reporter()
     {
         return $this->belongsTo(User::class, 'reporter_id');
@@ -54,7 +53,6 @@ class Report extends Model
         return $this->belongsTo(User::class, 'resolved_by');
     }
 
-    // Méthodes
     public function resolve($adminId, $action, $note = null)
     {
         $this->update([
@@ -64,11 +62,12 @@ class Report extends Model
             'resolution_note' => $note,
         ]);
         
-        if ($action === 'suspend_user' && $this->reported_user_id) {
+        // ✅ Vérification null avant d'appeler update()
+        if ($action === 'suspend_user' && $this->reportedUser) {
             $this->reportedUser->update(['suspended_until' => now()->addDays(30)]);
-        } elseif ($action === 'delete_listing' && $this->listing_id) {
+        } elseif ($action === 'delete_listing' && $this->listing) {
             $this->listing->delete();
-        } elseif ($action === 'delete_message' && $this->message_id) {
+        } elseif ($action === 'delete_message' && $this->message) {
             $this->message->delete();
         }
     }
@@ -83,7 +82,6 @@ class Report extends Model
         ]);
     }
 
-    // Scopes
     public function scopePending($query)
     {
         return $query->where('status', 'pending');
