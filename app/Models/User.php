@@ -68,7 +68,21 @@ class User extends Authenticatable
         'daily_messages_count' => 'integer',
         'remaining_ads' => 'integer',
         'profile_views' => 'integer',
+        'is_admin' => 'boolean',
+
     ];
+
+    // Accesseur
+    public function getIsAdminAttribute()
+    {
+        return $this->role === 'admin' || $this->email === 'Semsar@darna.com';
+    }
+
+    // is admin
+    public function isAdmin()
+    {
+        return $this->is_admin;
+    }
 
     // ========== RELATIONS ==========
 

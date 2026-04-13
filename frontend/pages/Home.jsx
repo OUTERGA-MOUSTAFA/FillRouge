@@ -24,11 +24,18 @@ const features = [
   },
 ];
 
+const stats = [
+  { value: '5000+', label: 'Annonces actives' },
+  { value: '10000+', label: 'Utilisateurs' },
+  { value: '50+', label: 'Villes couvertes' },
+  { value: '95%', label: 'Taux de satisfaction' },
+];
+
 export default function Home() {
   return (
     <div>
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-primary-600 to-primary-800 text-white">
+      <div className="bg-gradient-to-r from-green-600 to-primary-800 text-white">
         <div className="container-custom py-20">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
@@ -39,10 +46,10 @@ export default function Home() {
               en toute sécurité et simplicité.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/listings" className="btn-white bg-white text-primary-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold">
+              <Link to="/listings" className="bg-white text-primary-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold">
                 Explorer les annonces
               </Link>
-              <Link to="/register" className="btn-outline-white border-2 border-white text-white hover:bg-white hover:text-primary-600 px-8 py-3 rounded-lg font-semibold">
+              <Link to="/register" className="border-2 border-white text-white hover:bg-white hover:text-primary-600 px-8 py-3 rounded-lg font-semibold">
                 Créer un compte
               </Link>
             </div>
@@ -54,22 +61,12 @@ export default function Home() {
       <div className="bg-white py-12 border-b">
         <div className="container-custom">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-3xl font-bold text-primary-600">5000+</div>
-              <div className="text-gray-600 mt-1">Annonces actives</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-primary-600">10000+</div>
-              <div className="text-gray-600 mt-1">Utilisateurs</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-primary-600">50+</div>
-              <div className="text-gray-600 mt-1">Villes couvertes</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-primary-600">95%</div>
-              <div className="text-gray-600 mt-1">Taux de satisfaction</div>
-            </div>
+            {stats.map((stat) => (
+              <div key={stat.label}>
+                <div className="text-3xl font-bold text-primary-600">{stat.value}</div>
+                <div className="text-gray-600 mt-1">{stat.label}</div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

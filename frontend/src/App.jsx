@@ -38,6 +38,7 @@ import AdminUserDetail from '../pages/Admin/UserDetail';
 import AdminListings from '../pages/Admin/Listings';
 import AdminReports from '../pages/Admin/Reports';
 import AdminIncomeVerifications from '../pages/Admin/IncomeVerifications';
+import Onboarding from '../pages/Onboarding';
 
 
 function App() {
@@ -69,6 +70,8 @@ function App() {
           <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
           <Route path="/profile/edit" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
           <Route path="/listings/create" element={<ProtectedRoute><CreateListing /></ProtectedRoute>} />
+          <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+
           {/* Subscription */}
           <Route path="/subscription/plans" element={<ProtectedRoute><SubscriptionPlans /></ProtectedRoute>} />
           <Route path="/subscription/checkout" element={<ProtectedRoute><SubscriptionCheckout /></ProtectedRoute>} />

@@ -1,6 +1,12 @@
 import api from './api';
 
 export const usersService = {
+
+  updateProfileDetails: async (data) => {
+    const response = await api.put('/auth/profile-details', data);
+    return response.data;
+  },
+
   search: async (params) => {
     const response = await api.get('/search/users', { params });
     return response.data;
@@ -8,11 +14,6 @@ export const usersService = {
   
   getProfile: async (userId) => {
     const response = await api.get(`/users/${userId}`);
-    return response.data;
-  },
-  
-   updateProfileDetails: async (data) => {
-    const response = await api.put('/auth/profile-details', data);
     return response.data;
   },
   
