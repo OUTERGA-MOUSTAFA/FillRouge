@@ -1,10 +1,9 @@
-import { useRef, useEffect } from 'react';
-import { PaperAirplaneIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import { useRef, useEffect, useState } from 'react'; // useState ajouté
+import { PaperAirplaneIcon, PhotoIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import MessageBubble from './MessageBubble';
 
-export default function ChatWindow({ messages, currentUserId, otherUser, onSendMessage, onSendAttachment }) {
+export default function ChatWindow({ messages, currentUserId, otherUser, onSendMessage, onSendAttachment, sending }) {
   const [newMessage, setNewMessage] = useState('');
-  const [sending, setSending] = useState(false);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -18,14 +17,8 @@ export default function ChatWindow({ messages, currentUserId, otherUser, onSendM
 
   const handleSend = async () => {
     if (!newMessage.trim()) return;
-    
-    setSending(true);
-    try {
-      await onSendMessage(newMessage);
-      setNewMessage('');
-    } finally {
-      setSending(false);
-    }
+    await onSendMessage(newMessage);
+    setNewMessage('');
   };
 
   const handleKeyPress = (e) => {
@@ -38,14 +31,8 @@ export default function ChatWindow({ messages, currentUserId, otherUser, onSendM
   const handleFileSelect = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    
-    setSending(true);
-    try {
-      await onSendAttachment(file);
-    } finally {
-      setSending(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
+    await onSendAttachment(file);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   return (
@@ -110,6 +97,7 @@ export default function ChatWindow({ messages, currentUserId, otherUser, onSendM
             placeholder="Écrivez votre message..."
             className="flex-1 input resize-none"
             rows="1"
+            disabled={sending}
           />
           <button
             onClick={handleSend}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { authService } from '../../services/auth';
+import { authService } from '../../src/services/auth';
 import toast from 'react-hot-toast';
 
 export default function ForgotPassword() {

@@ -3,7 +3,7 @@ import Navbar from './components/common/Navbar';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import AdminRoute from './components/common/AdminRoute';
 
-// Pages - chemins corrigés (vers frontend/pages/)
+// Pages
 import Home from '../pages/Home';
 import Listings from '../pages/Listings';
 import ListingDetail from '../pages/ListingDetail';
@@ -24,6 +24,8 @@ import Profile from '../pages/Profile';
 import Messages from '../pages/Messages';
 import Conversation from '../pages/Conversation';
 import Matches from '../pages/Matches';
+import EditProfile from '../pages/EditProfile';
+import CreateListing from '../pages/CreateListing';
 
 // Subscription Pages
 import SubscriptionPlans from '../pages/Subscription/Plans';
@@ -36,6 +38,7 @@ import AdminUserDetail from '../pages/Admin/UserDetail';
 import AdminListings from '../pages/Admin/Listings';
 import AdminReports from '../pages/Admin/Reports';
 import AdminIncomeVerifications from '../pages/Admin/IncomeVerifications';
+
 
 function App() {
   return (
@@ -64,7 +67,8 @@ function App() {
           <Route path="/messages/:userId" element={<ProtectedRoute><Conversation /></ProtectedRoute>} />
           <Route path="/matches" element={<ProtectedRoute><Matches /></ProtectedRoute>} />
           <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
-
+          <Route path="/profile/edit" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
+          <Route path="/listings/create" element={<ProtectedRoute><CreateListing /></ProtectedRoute>} />
           {/* Subscription */}
           <Route path="/subscription/plans" element={<ProtectedRoute><SubscriptionPlans /></ProtectedRoute>} />
           <Route path="/subscription/checkout" element={<ProtectedRoute><SubscriptionCheckout /></ProtectedRoute>} />

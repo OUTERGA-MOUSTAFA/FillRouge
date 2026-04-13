@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { adminService } from '../../services/admin';
+import { adminService } from '../../src/services/admin'; 
 import toast from 'react-hot-toast';
 
 export default function AdminUserDetail() {

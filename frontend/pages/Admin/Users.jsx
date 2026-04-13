@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MagnifyingGlassIcon, UserCircleIcon } from '@heroicons/react/24/outline';
-import { adminService } from '../../services/admin';
+import { adminService } from '../../src/services/admin';
 import toast from 'react-hot-toast';
 
 export default function AdminUsers() {

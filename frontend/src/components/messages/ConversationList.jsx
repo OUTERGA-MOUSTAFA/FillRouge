@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 import { UserCircleIcon } from '@heroicons/react/24/outline';
 
-export default function ConversationList({ conversations, currentUserId, onSelect }) {
+export default function ConversationList({ conversations, currentUserId, loading }) {
   const formatTime = (date) => {
+    if (!date) return '';
     const now = new Date();
     const msgDate = new Date(date);
     const diffHours = (now - msgDate) / (1000 * 60 * 60);
@@ -12,6 +13,19 @@ export default function ConversationList({ conversations, currentUserId, onSelec
     }
     return msgDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
   };
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="p-4 border-b bg-gray-50">
+          <h2 className="font-semibold text-gray-900">Conversations</h2>
+        </div>
+        <div className="p-8 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden">
@@ -34,7 +48,6 @@ export default function ConversationList({ conversations, currentUserId, onSelec
               }`}
             >
               <div className="flex items-center gap-3">
-                {/* Avatar */}
                 {conv.user.avatar ? (
                   <img
                     src={conv.user.avatar}

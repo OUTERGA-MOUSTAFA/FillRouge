@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { EyeIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { adminService } from '../../services/admin';
+import { adminService } from '../../src/services/admin';  // ← chemin corrigé
 import toast from 'react-hot-toast';
 
 export default function AdminIncomeVerifications() {
@@ -17,9 +17,10 @@ export default function AdminIncomeVerifications() {
     setLoading(true);
     try {
       const response = await adminService.getIncomeVerifications({ status: 'pending' });
-      setVerifications(response.data.data);
+      setVerifications(response.data.data || []);
     } catch (error) {
-      toast.error('Erreur chargement des demandes');
+      const message = error.response?.data?.message || 'Erreur chargement des demandes';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -31,11 +32,12 @@ export default function AdminIncomeVerifications() {
       toast.success('Demande approuvée');
       fetchVerifications();
     } catch (error) {
-      toast.error('Erreur');
+      const message = error.response?.data?.message || 'Erreur';
+      toast.error(message);
     }
   };
 
-  const handleReject = async (id, reason) => {
+  const handleReject = async (id) => {
     const reasonText = prompt('Raison du rejet :');
     if (!reasonText) return;
     try {
@@ -43,13 +45,22 @@ export default function AdminIncomeVerifications() {
       toast.success('Demande rejetée');
       fetchVerifications();
     } catch (error) {
-      toast.error('Erreur');
+      const message = error.response?.data?.message || 'Erreur';
+      toast.error(message);
     }
   };
 
   const formatIncome = (income) => {
     return new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD' }).format(income);
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="container-custom py-8">
@@ -59,11 +70,7 @@ export default function AdminIncomeVerifications() {
       </div>
 
       <div className="space-y-4">
-        {loading ? (
-          <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
-          </div>
-        ) : verifications.length === 0 ? (
+        {verifications.length === 0 ? (
           <div className="card p-12 text-center">
             <p className="text-gray-500">Aucune demande en attente</p>
           </div>
@@ -101,7 +108,7 @@ export default function AdminIncomeVerifications() {
                     )}
                   </div>
                   <p className="text-xs text-gray-400 mt-3">
-                    Soumis le {new Date(verif.created_at).toLocaleDateString()}
+                    Soumis le {new Date(verif.created_at).toLocaleDateString('fr-FR')}
                   </p>
                 </div>
                 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../src/store/authStore';
+import { useAuthStore } from '../../src/store/authStore';  // ← chemin corrigé
 import toast from 'react-hot-toast';
 
 export default function Login() {
@@ -17,7 +17,6 @@ export default function Login() {
     try {
       const result = await login(email, password);
       
-      // Vérifier si 2FA est requis
       if (result?.requires2FA) {
         navigate('/2fa', { state: { twoFactorToken: result.twoFactorToken } });
         return;
@@ -91,7 +90,6 @@ export default function Login() {
                 Se souvenir de moi
               </label>
             </div>
-
             <div className="text-sm">
               <Link to="/forgot-password" className="font-medium text-primary-600 hover:text-primary-500">
                 Mot de passe oublié ?

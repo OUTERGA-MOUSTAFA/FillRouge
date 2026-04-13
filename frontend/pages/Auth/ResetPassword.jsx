@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'; // Link ajouté
-import { authService } from '../../src/services/auth';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { authService } from '../../src/services/auth';  // ← chemin corrigé
 import toast from 'react-hot-toast';
 
 export default function ResetPassword() {

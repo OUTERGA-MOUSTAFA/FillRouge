@@ -1,27 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
-  MapPinIcon,
-  CalendarIcon,
-  HomeIcon,
-  UserIcon,
-  ChatBubbleLeftRightIcon,
-  HeartIcon,
-  ShareIcon,
-  FlagIcon,
-  CheckCircleIcon,
-  FireIcon,
-  ShieldCheckIcon
+  MapPinIcon, CalendarIcon, HomeIcon, UserIcon,
+  ChatBubbleLeftRightIcon, HeartIcon, ShareIcon,
+  FlagIcon, CheckCircleIcon, FireIcon, ShieldCheckIcon
 } from '@heroicons/react/24/outline';
 import { StarIcon } from '@heroicons/react/24/solid';
-import { listingsService } from '../services/listings';
-import { useAuthStore } from '../store/authStore';
+import { listingsService } from '../src/services/listings';  // ← chemin corrigé
+import { useAuthStore } from '../src/store/authStore';  // ← chemin corrigé
 import toast from 'react-hot-toast';
 
 // Icônes pour les commodités
 const amenityIcons = {
   'wifi': (props) => <svg {...props} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M8.288 15.038a5.25 5.25 0 0 1 7.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c6.98-6.98 18.172-6.98 25.152 0" /></svg>,
-  'ac': (props) => <svg {...props} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.22-1.113-.615-1.53a15.04 15.04 0 0 0-2.084-1.58 2.25 2.25 0 0 0-1.426-.48H5.25a2.25 2.25 0 0 0-2.25 2.25v7.5m0 0v3.75c0 .621.504 1.125 1.125 1.125H7.5m-4.5 0H7.5" /></svg>,
+  'air conditioning': (props) => <svg {...props} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.22-1.113-.615-1.53a15.04 15.04 0 0 0-2.084-1.58 2.25 2.25 0 0 0-1.426-.48H5.25a2.25 2.25 0 0 0-2.25 2.25v7.5m0 0v3.75c0 .621.504 1.125 1.125 1.125H7.5m-4.5 0H7.5" /></svg>,
   'parking': (props) => <svg {...props} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.22-1.113-.615-1.53a15.04 15.04 0 0 0-2.084-1.58 2.25 2.25 0 0 0-1.426-.48H5.25a2.25 2.25 0 0 0-2.25 2.25v7.5m0 0v3.75c0 .621.504 1.125 1.125 1.125H7.5m-4.5 0H7.5" /></svg>,
   'furnished': HomeIcon,
   'kitchen': (props) => <svg {...props} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 3.75H9m4.5 0h-9M9 3.75V12m-2.25 0h10.5M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" /></svg>,
@@ -50,7 +42,8 @@ export default function ListingDetail() {
       const response = await listingsService.getOne(id);
       setListing(response.data);
     } catch (error) {
-      toast.error('Erreur lors du chargement de l\'annonce', error);
+      const message = error.response?.data?.message || 'Erreur lors du chargement de l\'annonce';
+      toast.error(message);
       navigate('/listings');
     } finally {
       setLoading(false);
@@ -77,7 +70,8 @@ export default function ListingDetail() {
       setReportReason('');
       setReportDescription('');
     } catch (error) {
-      toast.error('Erreur lors du signalement', error);
+      const message = error.response?.data?.message || 'Erreur lors du signalement';
+      toast.error(message);
     }
   };
 
@@ -131,7 +125,6 @@ export default function ListingDetail() {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2">
-            {/* Title & Price */}
             <div className="bg-white rounded-xl p-6 mb-6">
               <div className="flex justify-between items-start">
                 <div>
@@ -169,40 +162,11 @@ export default function ListingDetail() {
               </div>
             </div>
 
-            {/* Description */}
             <div className="bg-white rounded-xl p-6 mb-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Description</h2>
               <p className="text-gray-600 whitespace-pre-line">{listing.description}</p>
             </div>
 
-            {/* Features */}
-            <div className="bg-white rounded-xl p-6 mb-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Caractéristiques</h2>
-              <div className="grid grid-cols-2 gap-4">
-                {listing.bedrooms && (
-                  <div className="flex items-center text-gray-600">
-                    <HomeIcon className="h-5 w-5 mr-2 text-gray-400" />
-                    <span>{listing.bedrooms} chambre(s)</span>
-                  </div>
-                )}
-                {listing.bathrooms && (
-                  <div className="flex items-center text-gray-600">
-                    <svg className="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.22-1.113-.615-1.53a15.04 15.04 0 0 0-2.084-1.58 2.25 2.25 0 0 0-1.426-.48H5.25a2.25 2.25 0 0 0-2.25 2.25v7.5m0 0v3.75c0 .621.504 1.125 1.125 1.125H7.5m-4.5 0H7.5" />
-                    </svg>
-                    <span>{listing.bathrooms} salle(s) de bain</span>
-                  </div>
-                )}
-                {listing.furnished && (
-                  <div className="flex items-center text-gray-600">
-                    <HomeIcon className="h-5 w-5 mr-2 text-gray-400" />
-                    <span>Meublé</span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Amenities */}
             {listing.amenities && listing.amenities.length > 0 && (
               <div className="bg-white rounded-xl p-6 mb-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Commodités</h2>

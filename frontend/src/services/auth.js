@@ -61,6 +61,21 @@ export const authService = {
         });
         return response.data;
     },
+    // Ajouter dans l'objet authService:
+
+    forgotPassword: async (email) => {
+        const response = await api.post('/auth/forgot-password', { email });
+        return response.data;
+    },
+
+    resetPassword: async (token, password, passwordConfirmation) => {
+        const response = await api.post('/auth/reset-password', {
+            token,
+            password,
+            password_confirmation: passwordConfirmation,
+        });
+        return response.data;
+    },
 
     verifyEmail: async (code) => {
         const response = await api.post('/auth/verify-email', { code });
@@ -74,21 +89,6 @@ export const authService = {
 
     resendVerification: async () => {
         const response = await api.post('/auth/resend-verification');
-        return response.data;
-    },
-    forgotPassword: async (email) => {
-
-        const response = await api.post('/auth/forgot-password', { email });
-        return response.data;
-
-    },
-
-    resetPassword: async (token, password, passwordConfirmation) => {
-        const response = await api.post('/auth/reset-password', {
-            token,
-            password,
-            password_confirmation: passwordConfirmation,
-        });
         return response.data;
     },
 

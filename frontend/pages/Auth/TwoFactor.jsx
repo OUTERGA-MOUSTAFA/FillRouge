@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../src/store/authStore';
+import { useAuthStore } from '../../src/store/authStore';  // ← chemin corrigé
 import toast from 'react-hot-toast';
 
 export default function TwoFactor() {

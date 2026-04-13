@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MagnifyingGlassIcon, TrashIcon } from '@heroicons/react/24/outline';
-import { adminService } from '../../services/admin';
+import { adminService } from '../../src/services/admin';  // ← chemin corrigé
 import toast from 'react-hot-toast';
 
 export default function AdminListings() {

@@ -5,7 +5,7 @@ import {
   FlagIcon,
   CurrencyDollarIcon
 } from '@heroicons/react/24/outline';
-import { adminService } from '../../services/admin';
+import { adminService } from '../../src/services/admin'; 
 import toast from 'react-hot-toast';
 
 export default function AdminDashboard() {

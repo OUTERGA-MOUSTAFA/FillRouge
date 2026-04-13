@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { FunnelIcon, MapIcon } from '@heroicons/react/24/outline';
-import ListingCard from '../components/listings/ListingCard';
-import ListingFilters from '../components/listings/ListingFilters';
-import { listingsService } from '../services/listings';
+import ListingCard from '../src/components/listings/ListingCard';
+import ListingFilters from '../src/components/listings/ListingFilters';
+import { listingsService } from '../src/services/listings';
 import toast from 'react-hot-toast';
 
 export default function Listings() {

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../store/authStore';
-import { authService } from '../../services/auth';
+// import { useAuthStore } from '../../src/store/authStore';
+import { authService } from '../../src/services/auth';
 import toast from 'react-hot-toast';
 
 export default function Register() {

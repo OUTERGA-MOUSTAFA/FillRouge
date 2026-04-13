@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { subscriptionService } from '../../services/subscription';
+import { subscriptionService } from '../../src/services/subscription';  // ← chemin corrigé
 import toast from 'react-hot-toast';
 
 export default function SubscriptionCheckout() {
@@ -21,35 +21,29 @@ export default function SubscriptionCheckout() {
   }
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  
-  try {
-    const paymentDetails = {
-      card_number: cardDetails.number,
-      card_expiry: cardDetails.expiry,
-      card_cvv: cardDetails.cvc,  // ← renommer cvc en card_cvv
-    };
+    e.preventDefault();
+    setLoading(true);
     
-    const response = await subscriptionService.checkout(plan, paymentMethod, paymentDetails);
+    try {
+      const paymentDetails = {
+        card_number: cardDetails.number.replace(/\s/g, ''),
+        card_expiry: cardDetails.expiry,
+        card_cvv: cardDetails.cvc,
+      };
+      
+      await subscriptionService.checkout(plan, paymentMethod, paymentDetails);
       toast.success('Abonnement activé avec succès');
       navigate('/subscription/plans');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Erreur lors du paiement');
+      const message = error.response?.data?.message || 'Erreur lors du paiement';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
   };
 
-  const planNames = {
-    standard: 'Standard',
-    premium: 'Premium',
-  };
-
-  const planPrices = {
-    standard: 100,
-    premium: 200,
-  };
+  const planNames = { standard: 'Standard', premium: 'Premium' };
+  const planPrices = { standard: 99, premium: 199 };
 
   return (
     <div className="container-custom py-12 max-w-2xl">
@@ -60,7 +54,6 @@ export default function SubscriptionCheckout() {
         </p>
         
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Payment Method */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Méthode de paiement
@@ -69,7 +62,7 @@ export default function SubscriptionCheckout() {
               <button
                 type="button"
                 onClick={() => setPaymentMethod('stripe')}
-                className={`flex-1 p-3 border rounded-lg text-center ${
+                className={`flex-1 p-3 border rounded-lg text-center transition-colors ${
                   paymentMethod === 'stripe'
                     ? 'border-primary-500 bg-primary-50'
                     : 'border-gray-300 hover:border-gray-400'
@@ -80,7 +73,7 @@ export default function SubscriptionCheckout() {
               <button
                 type="button"
                 onClick={() => setPaymentMethod('cmi')}
-                className={`flex-1 p-3 border rounded-lg text-center ${
+                className={`flex-1 p-3 border rounded-lg text-center transition-colors ${
                   paymentMethod === 'cmi'
                     ? 'border-primary-500 bg-primary-50'
                     : 'border-gray-300 hover:border-gray-400'
@@ -91,7 +84,6 @@ export default function SubscriptionCheckout() {
             </div>
           </div>
           
-          {/* Card Details */}
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">
@@ -139,8 +131,8 @@ export default function SubscriptionCheckout() {
           
           <div className="border-t pt-6">
             <div className="flex justify-between mb-4">
-              <span>Total</span>
-              <span className="text-xl font-bold">{planPrices[plan]} MAD</span>
+              <span className="text-gray-600">Total</span>
+              <span className="text-xl font-bold text-gray-900">{planPrices[plan]} MAD</span>
             </div>
             <button
               type="submit"

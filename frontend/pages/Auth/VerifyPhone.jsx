@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authService } from '../../services/auth';
+import { authService } from '../../src/services/auth';  // ← chemin corrigé
 import toast from 'react-hot-toast';
 
 export default function VerifyPhone() {
@@ -17,7 +17,8 @@ export default function VerifyPhone() {
       toast.success('Téléphone vérifié avec succès');
       navigate('/profile');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Code invalide');
+      const message = error.response?.data?.message || 'Code invalide ou expiré';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -29,7 +30,8 @@ export default function VerifyPhone() {
       await authService.resendVerification();
       toast.success('Nouveau code SMS envoyé');
     } catch (error) {
-      toast.error('Erreur lors de l\'envoi', error);
+      const message = error.response?.data?.message || 'Erreur lors de l\'envoi';
+      toast.error(message);
     } finally {
       setResendLoading(false);
     }

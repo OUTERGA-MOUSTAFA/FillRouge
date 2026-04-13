@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { MapPinIcon, BriefcaseIcon, HeartIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
-import { usersService } from '../services/users';
-import { useAuthStore } from '../store/authStore';
-import CompatibilityScore from '../components/profile/CompatibilityScore';
-import VerificationBadges from '../components/profile/VerificationBadges';
-import ReviewsList from '../components/profile/ReviewsList';
+import { usersService } from '../src/services/users';  // ← chemin corrigé
+import { useAuthStore } from '../src/store/authStore';  // ← chemin corrigé
+import CompatibilityScore from '../src/components/profile/CompatibilityScore';
+import VerificationBadges from '../src/components/profile/VerificationBadges';
+import ReviewsList from '../src/components/profile/ReviewsList';
 import toast from 'react-hot-toast';
 
 export default function UserProfile() {
@@ -29,7 +29,8 @@ export default function UserProfile() {
       const response = await usersService.getProfile(id);
       setProfile(response.data);
     } catch (error) {
-      toast.error('Erreur chargement du profil');
+      const message = error.response?.data?.message || 'Erreur chargement du profil';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -46,7 +47,7 @@ export default function UserProfile() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-12">
+      <div className="flex justify-center py-20">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
       </div>
     );
@@ -77,7 +78,7 @@ export default function UserProfile() {
               </p>
             )}
             
-            <VerificationBadges badges={profile.verification_badges} />
+            <VerificationBadges badges={profile.verification_badges || []} />
             
             {!isOwnProfile && user && (
               <div className="flex gap-3 mt-4">
@@ -143,7 +144,7 @@ export default function UserProfile() {
                 {profile.profile.social_level && (
                   <div className="flex justify-between">
                     <span className="text-gray-500">Social:</span>
-                    <span>{profile.profile.social_level === 'extrovert' ? 'Extraverti' : 'Introverti'}</span>
+                    <span>{profile.profile.social_level === 'extrovert' ? 'Extraverti' : profile.profile.social_level === 'introvert' ? 'Introverti' : 'Ambiverti'}</span>
                   </div>
                 )}
               </div>

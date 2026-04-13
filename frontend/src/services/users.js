@@ -11,6 +11,11 @@ export const usersService = {
     return response.data;
   },
   
+   updateProfileDetails: async (data) => {
+    const response = await api.put('/auth/profile-details', data);
+    return response.data;
+  },
+  
   getRecommendations: async () => {
     const response = await api.get('/recommendations');
     return response.data;

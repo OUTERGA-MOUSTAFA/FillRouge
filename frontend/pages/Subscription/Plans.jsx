@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckIcon } from '@heroicons/react/24/solid';
-import { subscriptionService } from '../../services/subscription';
-import { useAuthStore } from '../../store/authStore';
+import { subscriptionService } from '../../src/services/subscription';  // ← chemin corrigé
+import { useAuthStore } from '../../src/store/authStore';  // ← chemin corrigé
+import PlanCard from '../../src/components/subscription/PlanCard';  // ← chemin corrigé
+import PricingTable from '../../src/components/subscription/PricingTable';  // ← chemin corrigé
 import toast from 'react-hot-toast';
 
 export default function SubscriptionPlans() {
   const [plans, setPlans] = useState(null);
-  
   const [currentSubscription, setCurrentSubscription] = useState(null);
+  const [viewMode, setViewMode] = useState('cards');
   const [loading, setLoading] = useState(true);
   const { user } = useAuthStore();
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ export default function SubscriptionPlans() {
   }, []);
 
   const fetchData = async () => {
+    setLoading(true);
     try {
       const [plansRes, currentRes] = await Promise.all([
         subscriptionService.getPlans(),
@@ -26,19 +28,24 @@ export default function SubscriptionPlans() {
       setPlans(plansRes.data);
       setCurrentSubscription(currentRes.data);
     } catch (error) {
-      toast.error('Erreur chargement des plans', error);
+      const message = error.response?.data?.message || 'Erreur chargement des plans';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSubscribe = (plan) => {
+  const handleSelectPlan = (plan) => {
+    if (plan === 'free') {
+      toast.info('Le plan gratuit est déjà actif');
+      return;
+    }
     navigate('/subscription/checkout', { state: { plan } });
   };
 
   if (loading) {
     return (
-      <div className="flex justify-center py-12">
+      <div className="flex justify-center py-20">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
       </div>
     );
@@ -46,7 +53,6 @@ export default function SubscriptionPlans() {
 
   return (
     <div className="container-custom py-12">
-      {/* Header */}
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
           Choisissez le plan qui vous convient
@@ -54,9 +60,27 @@ export default function SubscriptionPlans() {
         <p className="text-xl text-gray-600">
           Passez à Darna Premium pour maximiser vos chances de trouver le colocataire idéal
         </p>
+        
+        <div className="inline-flex mt-6 bg-gray-100 rounded-lg p-1">
+          <button
+            onClick={() => setViewMode('cards')}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              viewMode === 'cards' ? 'bg-white text-primary-600 shadow-sm' : 'text-gray-500'
+            }`}
+          >
+            Cartes
+          </button>
+          <button
+            onClick={() => setViewMode('table')}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              viewMode === 'table' ? 'bg-white text-primary-600 shadow-sm' : 'text-gray-500'
+            }`}
+          >
+            Tableau comparatif
+          </button>
+        </div>
       </div>
 
-      {/* Current Subscription */}
       {currentSubscription?.current_plan !== 'free' && (
         <div className="mb-8 bg-primary-50 rounded-xl p-6">
           <div className="flex justify-between items-center">
@@ -72,10 +96,7 @@ export default function SubscriptionPlans() {
               </p>
             </div>
             {currentSubscription.current_plan !== 'premium' && (
-              <button
-                onClick={() => handleSubscribe('premium')}
-                className="btn-primary"
-              >
+              <button onClick={() => handleSelectPlan('premium')} className="btn-primary">
                 Passer à Premium
               </button>
             )}
@@ -83,56 +104,27 @@ export default function SubscriptionPlans() {
         </div>
       )}
 
-      {/* Plans Grid */}
-      <div className="grid md:grid-cols-3 gap-8">
-        {Object.entries(plans).map(([key, plan]) => (
-          <div
-            key={key}
-            className={`card p-6 ${key === 'premium' ? 'ring-2 ring-primary-500 relative' : ''}`}
-          >
-            {key === 'premium' && (
-              <div className="absolute top-0 right-0 bg-primary-500 text-white px-3 py-1 rounded-bl-lg rounded-tr-lg text-sm font-semibold">
-                POPULAIRE
-              </div>
-            )}
-            
-            <div className="text-center mb-6">
-              <h3 className="text-2xl font-bold text-gray-900">{plan.name}</h3>
-              <div className="mt-4">
-                <span className="text-4xl font-bold text-primary-600">{plan.price_mad}</span>
-                {plan.price > 0 && <span className="text-gray-500">/mois</span>}
-              </div>
-            </div>
-            
-            <ul className="space-y-3 mb-8">
-              {plan.features.map((feature, index) => (
-                <li key={index} className="flex items-start">
-                  <CheckIcon className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-600">{feature}</span>
-                </li>
-              ))}
-            </ul>
-            
-            <button
-              onClick={() => handleSubscribe(key)}
-              disabled={currentSubscription?.current_plan === key}
-              className={`w-full ${
-                currentSubscription?.current_plan === key
-                  ? 'bg-gray-300 cursor-not-allowed'
-                  : key === 'free'
-                  ? 'btn-secondary'
-                  : 'btn-primary'
-              }`}
-            >
-              {currentSubscription?.current_plan === key
-                ? 'Plan actuel'
-                : key === 'free'
-                ? 'Plan gratuit'
-                : 'S\'abonner'}
-            </button>
-          </div>
-        ))}
-      </div>
+      {viewMode === 'cards' && plans && (
+        <div className="grid md:grid-cols-3 gap-8">
+          {Object.entries(plans).map(([key, plan]) => (
+            <PlanCard
+              key={key}
+              plan={key}
+              isCurrent={currentSubscription?.current_plan === key}
+              onSelect={() => handleSelectPlan(key)}
+              featured={key === 'premium'}
+            />
+          ))}
+        </div>
+      )}
+
+      {viewMode === 'table' && plans && (
+        <PricingTable
+          plans={plans}
+          currentPlan={currentSubscription?.current_plan}
+          onSelect={handleSelectPlan}
+        />
+      )}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { adminService } from '../../services/admin';
+import { adminService } from '../../src/services/admin';
 import toast from 'react-hot-toast';
 
 export default function AdminReports() {
