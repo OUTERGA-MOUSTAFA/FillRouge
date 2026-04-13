@@ -57,6 +57,7 @@ class MatchController extends Controller
     {
         $currentUser = auth()->user();
 
+        // Correction
         $match = Matching::where(function ($q) use ($currentUser, $user) {
             $q->where('user_id', $currentUser->id)->where('matched_user_id', $user->id);
         })->orWhere(function ($q) use ($currentUser, $user) {
@@ -64,18 +65,12 @@ class MatchController extends Controller
         })->first();
 
         if (!$match) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Match non trouvé'
-            ], 404);
+            return response()->json(['success' => false, 'message' => 'Match non trouvé'], 404);
         }
 
         $match->accept();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Match accepté'
-        ]);
+        return response()->json(['success' => true, 'message' => 'Match accepté']);
     }
 
     /**
