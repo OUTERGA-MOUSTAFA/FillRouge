@@ -42,10 +42,15 @@ return [
     ],
 
     'twilio' => [
-        'account_sid' => env('TWILIO_ACCOUNT_SID'),
-        'auth_token' => env('TWILIO_AUTH_TOKEN'),
-        'verify_sid' => env('TWILIO_VERIFY_SID'),
-        'phone_number' => env('TWILIO_PHONE_NUMBER'),
+        'sid' => env('TWILIO_SID'),
+        'token' => env('TWILIO_TOKEN'),
+        'from' => env('TWILIO_FROM'),
+    ],
+
+    'sms' => [
+        'provider' => env('SMS_PROVIDER', 'log'), // twilio, maroc, log
+        'maroc_api_key' => env('MAROC_SMS_API_KEY'),
+        'maroc_api_url' => env('MAROC_SMS_API_URL'),
     ],
 
     'stripe' => [

@@ -37,6 +37,13 @@ Route::prefix('auth')->group(function () {
 // $user->role = 'admin';
 // $user->save();
 
+// Route de développement - À supprimer en production
+if (app()->environment('local')) {
+    Route::get('/dev/last-verification-code', function () {
+        return response()->json(['code' => session()->get('last_verification_code')]);
+    });
+}
+
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);

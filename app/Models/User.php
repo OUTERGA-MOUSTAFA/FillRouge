@@ -23,6 +23,7 @@ class User extends Authenticatable
         'avatar',
         'gender',
         'birth_date',
+        'role',
         'profession',
         'budget_min',
         'budget_max',

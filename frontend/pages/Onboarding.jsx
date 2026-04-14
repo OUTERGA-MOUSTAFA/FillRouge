@@ -3,12 +3,23 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../src/store/authStore';
 import { authService } from '../src/services/auth';
 import { usersService } from '../src/services/users';
-import { PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { PhotoIcon, XMarkIcon, UserIcon, PhoneIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
 const interestsList = [
-  'cooking', 'fitness', 'tech', 'travel', 'study', 'remote_work',
-  'music', 'sports', 'reading', 'art', 'gaming', 'outdoors'
+  'Cooking', 'Fitness', 'Tech', 'Travel', 'Study', 'Remote Work',
+  'Music', 'Sports', 'Reading', 'Art', 'Gaming', 'Outdoors'
+];
+
+const languagesList = [
+  { code: 'ar', name: 'العربية', flag: '🇲🇦' },
+  { code: 'fr', name: 'Français', flag: '🇫🇷' },
+  { code: 'en', name: 'English', flag: '🇬🇧' },
+  { code: 'es', name: 'Español', flag: '🇪🇸' },
+];
+
+const ageRanges = [
+  '18-22', '23-27', '28-32', '33-37', '38-42', '43-47', '48+'
 ];
 
 export default function Onboarding() {
@@ -18,11 +29,16 @@ export default function Onboarding() {
   const [completion, setCompletion] = useState(0);
   const [avatar, setAvatar] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
+  const [idDocument, setIdDocument] = useState(null);
+  const [idDocumentPreview, setIdDocumentPreview] = useState(null);
   
   const [formData, setFormData] = useState({
     full_name: '',
     gender: '',
+    age_range: '',
     phone: '',
+    email: '',
+    preferred_languages: [],
     bio: '',
     interests: [],
     smoking: '',
@@ -37,7 +53,10 @@ export default function Onboarding() {
       setFormData({
         full_name: user.full_name || '',
         gender: user.gender || '',
+        age_range: user.age_range || '',
         phone: user.phone || '',
+        email: user.email || '',
+        preferred_languages: user.preferred_languages || [],
         bio: user.profile?.bio || '',
         interests: user.profile?.interests || [],
         smoking: user.profile?.smoking || '',
@@ -57,6 +76,15 @@ export default function Onboarding() {
     });
   };
 
+  const handleLanguageToggle = (langCode) => {
+    setFormData(prev => ({
+      ...prev,
+      preferred_languages: prev.preferred_languages.includes(langCode)
+        ? prev.preferred_languages.filter(l => l !== langCode)
+        : [...prev.preferred_languages, langCode]
+    }));
+  };
+
   const handleInterestToggle = (interest) => {
     setFormData(prev => ({
       ...prev,
@@ -66,11 +94,19 @@ export default function Onboarding() {
     }));
   };
 
-  const handleAvatarUpload = async (e) => {
+  const handleAvatarUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       setAvatar(file);
       setAvatarPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleIdDocumentUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setIdDocument(file);
+      setIdDocumentPreview(URL.createObjectURL(file));
     }
   };
 
@@ -79,19 +115,25 @@ export default function Onboarding() {
     setLoading(true);
     
     try {
-      // 1. Mettre à jour le profil de base (endpoint updateProfile)
+      // 1. Mettre à jour le profil de base
       await authService.updateProfile({
         full_name: formData.full_name,
         gender: formData.gender,
         phone: formData.phone,
       });
       
-      // 2. Upload de l'avatar si présent (endpoint uploadAvatar)
+      // 2. Upload de l'avatar si présent
       if (avatar) {
         await authService.uploadAvatar(avatar);
       }
       
-      // 3. Mettre à jour les détails du profil (endpoint updateProfileDetails)
+      // 3. Upload du document d'identité si présent
+      if (idDocument) {
+        await authService.uploadIdDocument(idDocument, 'cin');
+        toast.success('Document d\'identité soumis pour vérification');
+      }
+      
+      // 4. Mettre à jour les détails du profil
       await usersService.updateProfileDetails({
         bio: formData.bio,
         interests: formData.interests,
@@ -114,22 +156,26 @@ export default function Onboarding() {
 
   const calculateCompletion = () => {
     let score = 0;
-    if (formData.full_name) score += 10;
-    if (formData.gender) score += 10;
-    if (formData.phone) score += 10;
-    if (formData.bio && formData.bio.length > 20) score += 15;
-    if (formData.interests.length >= 3) score += 15;
-    if (formData.smoking) score += 8;
-    if (formData.pets) score += 8;
+    if (formData.full_name) score += 8;
+    if (formData.gender) score += 5;
+    if (formData.age_range) score += 5;
+    if (formData.phone) score += 5;
+    if (formData.preferred_languages.length > 0) score += 5;
+    if (avatar) score += 8;
+    if (formData.bio && formData.bio.length > 20) score += 10;
+    if (formData.interests.length >= 3) score += 10;
+    if (formData.smoking) score += 6;
+    if (formData.pets) score += 6;
     if (formData.sleep_schedule) score += 8;
     if (formData.cleanliness) score += 8;
     if (formData.social_level) score += 8;
+    if (idDocument) score += 8;
     return Math.min(100, score);
   };
 
   useEffect(() => {
     setCompletion(calculateCompletion());
-  }, [formData]);
+  }, [formData, avatar, idDocument]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white py-12">
@@ -180,9 +226,7 @@ export default function Onboarding() {
                     </div>
                   ) : (
                     <div className="h-24 w-24 rounded-full bg-gray-100 flex items-center justify-center border-2 border-dashed border-gray-300">
-                      <svg className="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
+                      <UserIcon className="h-10 w-10 text-gray-400" />
                     </div>
                   )}
                 </div>
@@ -236,17 +280,78 @@ export default function Onboarding() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number
+                    Age Range *
                   </label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
+                  <select
+                    name="age_range"
+                    required
+                    value={formData.age_range}
                     onChange={handleChange}
                     className="input"
-                    placeholder="+212 6XX XXX XXX"
-                  />
+                  >
+                    <option value="">Select age range</option>
+                    {ageRanges.map(range => (
+                      <option key={range} value={range}>{range}</option>
+                    ))}
+                  </select>
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Phone Number
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <PhoneIcon className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className="input pl-10"
+                      placeholder="+212 6XX XXX XXX"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email Address
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <EnvelopeIcon className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      disabled
+                      className="input pl-10 bg-gray-50"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Preferred Languages */}
+            <div className="mb-8">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">Preferred Languages</h2>
+              <div className="flex flex-wrap gap-3">
+                {languagesList.map((lang) => (
+                  <button
+                    key={lang.code}
+                    type="button"
+                    onClick={() => handleLanguageToggle(lang.code)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+                      formData.preferred_languages.includes(lang.code)
+                        ? 'bg-primary-500 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    <span>{lang.flag}</span>
+                    <span>{lang.name}</span>
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -272,13 +377,13 @@ export default function Onboarding() {
                     key={interest}
                     type="button"
                     onClick={() => handleInterestToggle(interest)}
-                    className={`px-3 py-1.5 rounded-full text-sm capitalize transition-colors ${
+                    className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
                       formData.interests.includes(interest)
                         ? 'bg-primary-500 text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
-                    {interest.replace('_', ' ')}
+                    {interest}
                   </button>
                 ))}
               </div>
@@ -288,6 +393,7 @@ export default function Onboarding() {
             <div className="mb-8">
               <h2 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">Lifestyle Preferences</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Sleep Schedule */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Sleep Schedule
@@ -310,6 +416,7 @@ export default function Onboarding() {
                   </div>
                 </div>
 
+                {/* Pets */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Do you have pets?
@@ -332,6 +439,7 @@ export default function Onboarding() {
                   </div>
                 </div>
 
+                {/* Smoking */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Are you a smoker?
@@ -354,12 +462,13 @@ export default function Onboarding() {
                   </div>
                 </div>
 
+                {/* Cleanliness */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Cleanliness Level
                   </label>
-                  <div className="flex gap-3">
-                    {['relaxed', 'very_clean'].map(level => (
+                  <div className="flex gap-2">
+                    {['relaxed', 'moderate', 'very_clean'].map(level => (
                       <button
                         key={level}
                         type="button"
@@ -370,18 +479,19 @@ export default function Onboarding() {
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
-                        {level === 'relaxed' ? 'Relaxed' : 'Very Clean'}
+                        {level === 'relaxed' ? 'Relaxed' : level === 'moderate' ? 'Moderate' : 'Very Clean'}
                       </button>
                     ))}
                   </div>
                 </div>
 
-                <div>
+                {/* Social Level */}
+                <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Social Level
                   </label>
                   <div className="flex gap-3">
-                    {['introvert', 'extrovert'].map(level => (
+                    {['introvert', 'ambivert', 'extrovert'].map(level => (
                       <button
                         key={level}
                         type="button"
@@ -392,7 +502,7 @@ export default function Onboarding() {
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
-                        {level === 'introvert' ? 'Introvert' : 'Extrovert'}
+                        {level === 'introvert' ? 'Introvert' : level === 'ambivert' ? 'Balanced' : 'Extrovert'}
                       </button>
                     ))}
                   </div>
@@ -412,17 +522,7 @@ export default function Onboarding() {
                   accept="image/*,application/pdf"
                   className="hidden"
                   id="id-document"
-                  onChange={async (e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      try {
-                        await authService.uploadIdDocument(file, 'cin');
-                        toast.success('Document soumis pour vérification');
-                      } catch (error) {
-                        toast.error('Erreur lors de l\'upload');
-                      }
-                    }
-                  }}
+                  onChange={handleIdDocumentUpload}
                 />
                 <label
                   htmlFor="id-document"
@@ -433,10 +533,34 @@ export default function Onboarding() {
                   <span className="text-xs text-gray-400 mt-1">Drag and drop your ID or browse</span>
                 </label>
               </div>
-              <div className="mt-2 flex items-center gap-2 text-sm text-red-600">
-                <XMarkIcon className="h-4 w-4" />
-                <span>Not Verified</span>
+              <div className="mt-2 flex items-center gap-2 text-sm">
+                {idDocumentPreview ? (
+                  <>
+                    <img src={idDocumentPreview} alt="ID Preview" className="h-10 w-10 rounded object-cover" />
+                    <span className="text-green-600">Document uploaded</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIdDocument(null);
+                        setIdDocumentPreview(null);
+                      }}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      Remove
+                    </button>
+                  </>
+                ) : (
+                  <div className="flex items-center gap-2 text-red-600">
+                    <XMarkIcon className="h-4 w-4" />
+                    <span>Not Verified</span>
+                  </div>
+                )}
               </div>
+            </div>
+
+            {/* Note */}
+            <div className="mb-6 text-sm text-gray-500">
+              You can change this information anytime in your profile settings.
             </div>
 
             {/* Submit Button */}

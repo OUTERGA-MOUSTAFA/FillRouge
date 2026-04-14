@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -36,6 +37,7 @@ class AuthController extends Controller
             'phone' => 'required|string|unique:users',
             'gender' => 'nullable|in:male,female,other',
             'birth_date' => 'nullable|date|before:today',
+            'role' => 'required|string|in:chercheur,semsar',
         ]);
 
         if ($validator->fails()) {
@@ -51,14 +53,20 @@ class AuthController extends Controller
             'birth_date' => $request->birth_date,
             'subscription_plan' => 'free',
             'remaining_ads' => 2,
+            'role' => $request->role,
         ]);
 
         // Créer le profil
         $user->profile()->create();
 
         // Envoyer codes de vérification
-        $this->sendEmailVerification($user);
-        $this->sendPhoneVerification($user);
+        // Auto-vérifier l'email en développement
+        if (app()->environment('local')) {
+            $user->update(['email_verified_at' => now()]);
+        } else {
+            $this->sendEmailVerification($user);
+            $this->sendPhoneVerification($user);
+        }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -96,9 +104,9 @@ class AuthController extends Controller
         // Vérifier 2FA
         if ($user->two_factor_enabled) {
             $twoFactorToken = Str::random(64);
-            
+
             cache()->put("2fa:{$twoFactorToken}", $user->id, 300);
-            
+
             return response()->json([
                 'success' => true,
                 'requires_2fa' => true,
@@ -132,7 +140,7 @@ class AuthController extends Controller
         }
 
         $userId = cache()->get("2fa:{$request->two_factor_token}");
-        
+
         if (!$userId) {
             return response()->json([
                 'success' => false,
@@ -141,7 +149,7 @@ class AuthController extends Controller
         }
 
         $user = User::find($userId);
-        
+
         if (!$this->twoFactorService->verifyCode($user->two_factor_secret, $request->code)) {
             return response()->json([
                 'success' => false,
@@ -150,7 +158,7 @@ class AuthController extends Controller
         }
 
         cache()->forget("2fa:{$request->two_factor_token}");
-        
+
         $token = $user->createToken('auth_token')->plainTextToken;
         $user->update(['last_seen_at' => now()]);
 
@@ -167,7 +175,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Déconnecté'
@@ -180,7 +188,7 @@ class AuthController extends Controller
     private function sendEmailVerification(User $user)
     {
         $code = $this->smsService->generateOtp();
-        
+
         VerificationCode::create([
             'user_id' => $user->id,
             'type' => 'email',
@@ -189,19 +197,23 @@ class AuthController extends Controller
             'expires_at' => now()->addMinutes(10),
         ]);
 
-        Mail::send('emails.verification', ['code' => $code], function ($message) use ($user) {
-            $message->to($user->email);
-            $message->subject('Vérification email - Darna');
+        Mail::send('emails.verification', [
+            'user' => $user,
+            'code' => $code
+        ], function ($message) use ($user) {
+            $message->to($user->email)
+                ->subject('Vérification de votre email - Darna');
         });
     }
 
     /**
      * Envoyer vérification SMS
      */
+
     private function sendPhoneVerification(User $user)
     {
         $code = $this->smsService->generateOtp();
-        
+
         VerificationCode::create([
             'user_id' => $user->id,
             'type' => 'phone',
@@ -210,8 +222,11 @@ class AuthController extends Controller
             'expires_at' => now()->addMinutes(10),
         ]);
 
+        // Intégration SMS avec Twilio ou API locale marocaine
         $this->smsService->send($user->phone, "Votre code Darna: {$code}");
     }
+
+
 
     /**
      * ***********la vérification de l'email***********************
@@ -227,7 +242,7 @@ class AuthController extends Controller
         }
 
         $user = $request->user();
-        
+
         $verification = VerificationCode::where('user_id', $user->id)
             ->where('type', 'email')
             ->where('code', $request->code)
@@ -250,7 +265,7 @@ class AuthController extends Controller
             'message' => 'Email vérifié'
         ]);
     }
-/************************************************************ */
+    /************************************************************ */
 
     /**
      ****************** Développer la vérification du numéro de téléphone**************************
@@ -266,7 +281,7 @@ class AuthController extends Controller
         }
 
         $user = $request->user();
-        
+
         $verification = VerificationCode::where('user_id', $user->id)
             ->where('type', 'phone')
             ->where('code', $request->code)
@@ -289,7 +304,7 @@ class AuthController extends Controller
             'message' => 'Téléphone vérifié'
         ]);
     }
-/******************************************************** */
+    /******************************************************** */
 
     /**
      * Activer 2FA
@@ -297,16 +312,16 @@ class AuthController extends Controller
     public function enableTwoFactor(Request $request)
     {
         $user = $request->user();
-        
+
         $secret = $this->twoFactorService->generateSecret();
         $qrCode = $this->twoFactorService->generateQRCode($user->email, $secret);
-        
+
         $user->update([
             'two_factor_enabled' => true,
             'two_factor_secret' => $secret,
             'two_factor_recovery_codes' => json_encode($this->twoFactorService->generateRecoveryCodes())
         ]);
-        
+
         return response()->json([
             'success' => true,
             'message' => '2FA activé',
@@ -328,7 +343,7 @@ class AuthController extends Controller
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
         ]);
-        
+
         return response()->json([
             'success' => true,
             'message' => '2FA désactivé'
@@ -350,15 +365,15 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
         $token = Str::random(64);
-        
+
         cache()->put("password_reset:{$token}", $user->id, 3600);
-        
+
         // Envoyer email de réinitialisation
         Mail::send('emails.password-reset', ['token' => $token, 'user' => $user], function ($message) use ($user) {
             $message->to($user->email);
             $message->subject('Réinitialisation mot de passe - Darna');
         });
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Email de réinitialisation envoyé'
@@ -380,7 +395,7 @@ class AuthController extends Controller
         }
 
         $userId = cache()->get("password_reset:{$request->token}");
-        
+
         if (!$userId) {
             return response()->json([
                 'success' => false,
@@ -390,9 +405,9 @@ class AuthController extends Controller
 
         $user = User::find($userId);
         $user->update(['password' => Hash::make($request->password)]);
-        
+
         cache()->forget("password_reset:{$request->token}");
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Mot de passe réinitialisé'
@@ -405,15 +420,15 @@ class AuthController extends Controller
     public function resendVerification(Request $request)
     {
         $user = $request->user();
-        
+
         if (!$user->email_verified_at) {
             $this->sendEmailVerification($user);
         }
-        
+
         if (!$user->phone_verified_at) {
             $this->sendPhoneVerification($user);
         }
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Codes de vérification renvoyés'

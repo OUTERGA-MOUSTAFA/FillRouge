@@ -102,6 +102,13 @@ class ListingController extends Controller
             ], 403);
         }
 
+        $userEmail = user()->email();
+        if (!$userEmail->email_verified_at) {
+            return response()->json([
+                'message' => 'Verify email first'
+            ], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'type' => 'required|in:room,apartment,looking_for_roommate',
             'title' => 'required|string|max:255',
@@ -140,7 +147,7 @@ class ListingController extends Controller
         foreach ($request->file('photos') as $index => $photo) {
             $path = $this->imageService->upload($photo, 'listings');
             $photos[] = $path;
-            
+
             if ($index === 0) {
                 $mainPhoto = $path;
             }
@@ -322,11 +329,11 @@ class ListingController extends Controller
 
         // Recherche par texte
         if ($request->q) {
-            $query->where(function($q) use ($request) {
+            $query->where(function ($q) use ($request) {
                 $q->where('title', 'LIKE', "%{$request->q}%")
-                  ->orWhere('description', 'LIKE', "%{$request->q}%")
-                  ->orWhere('city', 'LIKE', "%{$request->q}%")
-                  ->orWhere('neighborhood', 'LIKE', "%{$request->q}%");
+                    ->orWhere('description', 'LIKE', "%{$request->q}%")
+                    ->orWhere('city', 'LIKE', "%{$request->q}%")
+                    ->orWhere('neighborhood', 'LIKE', "%{$request->q}%");
             });
         }
 
@@ -337,7 +344,7 @@ class ListingController extends Controller
         if ($request->type) $query->byType($request->type);
         if ($request->furnished !== null) $query->where('furnished', $request->furnished);
         if ($request->bedrooms) $query->where('bedrooms', '>=', $request->bedrooms);
-        
+
         if ($request->amenities) {
             $amenities = explode(',', $request->amenities);
             $query->byAmenities($amenities);
@@ -346,7 +353,10 @@ class ListingController extends Controller
         // Rayon de recherche (km)
         if ($request->lat && $request->lng && $request->radius) {
             $query->whereRaw("(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) <= ?", [
-                $request->lat, $request->lng, $request->lat, $request->radius
+                $request->lat,
+                $request->lng,
+                $request->lat,
+                $request->radius
             ]);
         }
 
