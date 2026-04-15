@@ -29,12 +29,12 @@ class UserController extends Controller
     {
         $user = $request->user()->load([
             'profile',
-            'reviews' => function($q) {
+            'reviews' => function ($q) {
                 $q->where('is_visible', true)->latest();
             },
             'subscription'
         ]);
-       
+
         // Ajouter des métadonnées
         $user->remaining_messages = $user->getRemainingMessagesToday();
         $user->remaining_ads = $user->getRemainingAds();
@@ -55,7 +55,6 @@ class UserController extends Controller
             'success' => true,
             'data' => $user
         ]);
-
     }
 
     /**
@@ -72,7 +71,7 @@ class UserController extends Controller
             'profession' => 'nullable|string|max:255',
             'budget_min' => 'nullable|numeric|min:0',
             'budget_max' => 'nullable|numeric|min:0|gte:budget_min',
-            'phone' => 'sometimes|string|unique:users,phone|required|regex:/^(\+212|0)[5-7][0-9]{8}$/' . $user->id,
+            'phone' => 'nullable|string|unique:users,phone,' . $user->id . '|regex:/^(\+212|0)[5-6-7][0-9]{8}$/',
         ]);
 
         if ($validator->fails()) {

@@ -95,17 +95,21 @@ class ListingController extends Controller
      */
     public function store(Request $request)
     {
+        // Vérifier la permission via Policy
         if (!Gate::allows('create', Listing::class)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Vous avez atteint la limite d\'annonces autorisée.'
+                'message' => 'Vous avez atteint la limite d\'annonces autorisée ou vous n\'avez pas les droits.'
             ], 403);
         }
 
-        $userEmail = user()->email();
-        if (!$userEmail->email_verified_at) {
+        $user = $request->user();
+        
+        // ✅ Correction: Vérifier si l'email est vérifié
+        if (!$user->email_verified_at) {
             return response()->json([
-                'message' => 'Verify email first'
+                'success' => false,
+                'message' => 'Veuillez vérifier votre email avant de publier une annonce.'
             ], 403);
         }
 
@@ -138,18 +142,18 @@ class ListingController extends Controller
             ], 422);
         }
 
-        $user = $request->user();
-
         // Upload des photos
         $photos = [];
         $mainPhoto = null;
 
-        foreach ($request->file('photos') as $index => $photo) {
-            $path = $this->imageService->upload($photo, 'listings');
-            $photos[] = $path;
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $index => $photo) {
+                $path = $this->imageService->upload($photo, 'listings');
+                $photos[] = $path;
 
-            if ($index === 0) {
-                $mainPhoto = $path;
+                if ($index === 0) {
+                    $mainPhoto = $path;
+                }
             }
         }
 
@@ -187,15 +191,16 @@ class ListingController extends Controller
         ], 201);
     }
 
+
     /**
      * Mettre à jour une annonce
      */
     public function update(Request $request, Listing $listing)
     {
-        if (!Gate::allows('update', $listing)) {
+       if (!Gate::allows('update', $listing)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Vous n\'êtes pas autorisé à modifier cette annonce'
+                'message' => 'Vous n\'êtes pas autorisé à modifier cette annonce.'
             ], 403);
         }
 
@@ -203,9 +208,6 @@ class ListingController extends Controller
             'title' => 'sometimes|string|max:255',
             'description' => 'sometimes|string',
             'price' => 'sometimes|numeric|min:0',
-            'price_is_negotiable' => 'boolean',
-            'available_from' => 'sometimes|date',
-            'available_until' => 'nullable|date|after:available_from',
             'city' => 'sometimes|string|max:255',
             'neighborhood' => 'nullable|string',
             'address' => 'nullable|string',
@@ -236,7 +238,7 @@ class ListingController extends Controller
      * Supprimer une annonce
      * Implémenter la modification et suppression des annonces
      */
-    public function destroy(Listing $listing)
+     public function destroy(Listing $listing)
     {
         if (!Gate::allows('delete', $listing)) {
             return response()->json([
@@ -245,7 +247,6 @@ class ListingController extends Controller
             ], 403);
         }
 
-        // Supprimer les photos
         foreach ($listing->photos as $photo) {
             $this->imageService->delete($photo);
         }
@@ -258,11 +259,12 @@ class ListingController extends Controller
         ]);
     }
 
+
     /**
      * Activer/Désactiver une annonce
      * toggleStatus()
      */
-    public function toggleStatus(Listing $listing)
+   public function toggleStatus(Listing $listing)
     {
         if (!Gate::allows('update', $listing)) {
             return response()->json([
@@ -276,8 +278,7 @@ class ListingController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => $newStatus === 'active' ? 'Annonce activée' : 'Annonce désactivée',
-            'status' => $newStatus
+            'message' => $newStatus === 'active' ? 'Annonce activée' : 'Annonce désactivée'
         ]);
     }
 
@@ -308,12 +309,12 @@ class ListingController extends Controller
      */
     public function myListings(Request $request)
     {
-        $listings = $request->user()
-            ->listings()
-            ->withCount('messages')
+        $user = $request->user();
+        
+        $listings = Listing::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->paginate(20);
-
+        
         return response()->json([
             'success' => true,
             'data' => $listings
