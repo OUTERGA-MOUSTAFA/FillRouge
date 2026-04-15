@@ -7,7 +7,7 @@ export default function PlanCard({ plan, isCurrent, onSelect, featured = false }
   };
 
   const getPlanPrice = (key) => {
-    const prices = { free: '0 MAD', standard: '99 MAD/mois', premium: '199 MAD/mois' };
+    const prices = { free: '0 MAD', standard: '100 MAD/mois', premium: '200 MAD/mois' };
     return prices[key] || '0 MAD';
   };
 

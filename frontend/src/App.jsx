@@ -1,88 +1,101 @@
+import { lazy, Suspense , useEffect} from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/common/Navbar';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import AdminRoute from './components/common/AdminRoute';
+import LoadingSpinner from './components/common/LoadingSpinner';
+import { useAuthStore } from './store/authStore';
 
-// Pages (chemins corrigés vers ../pages/)
-import Home from '../pages/Home';
-import Listings from '../pages/Listings';
-import ListingDetail from '../pages/ListingDetail';
-import UserProfile from '../pages/UserProfile';
-import Notifications from '../pages/Notifications';
-import Profile from '../pages/Profile';
-import EditProfile from '../pages/EditProfile';
-import Messages from '../pages/Messages';
-import Conversation from '../pages/Conversation';
-import Matches from '../pages/Matches';
-import MyListings from '../pages/MyListings';
-import CreateListing from '../pages/CreateListing';
-import Onboarding from '../pages/Onboarding';
+// Lazy loading des pages - réduction de la taille du bundle initial
+const Home = lazy(() => import('../pages/Home'));
+const Listings = lazy(() => import('../pages/Listings'));
+const ListingDetail = lazy(() => import('../pages/ListingDetail'));
+const UserProfile = lazy(() => import('../pages/UserProfile'));
+const Notifications = lazy(() => import('../pages/Notifications'));
+const Profile = lazy(() => import('../pages/Profile'));
+const EditProfile = lazy(() => import('../pages/EditProfile'));
+const Messages = lazy(() => import('../pages/Messages'));
+const Conversation = lazy(() => import('../pages/Conversation'));
+const Matches = lazy(() => import('../pages/Matches'));
+const MyListings = lazy(() => import('../pages/MyListings'));
+const CreateListing = lazy(() => import('../pages/CreateListing'));
+const Onboarding = lazy(() => import('../pages/Onboarding'));
 
 // Auth Pages
-import Login from '../pages/Auth/Login';
-import Register from '../pages/Auth/Register';
-import VerifyEmail from '../pages/Auth/VerifyEmail';
-import VerifyPhone from '../pages/Auth/VerifyPhone';
-import TwoFactor from '../pages/Auth/TwoFactor';
-import ForgotPassword from '../pages/Auth/ForgotPassword';
-import ResetPassword from '../pages/Auth/ResetPassword';
+const Login = lazy(() => import('../pages/Auth/Login'));
+const Register = lazy(() => import('../pages/Auth/Register'));
+const VerifyEmail = lazy(() => import('../pages/Auth/VerifyEmail'));
+const VerifyPhone = lazy(() => import('../pages/Auth/VerifyPhone'));
+const TwoFactor = lazy(() => import('../pages/Auth/TwoFactor'));
+const ForgotPassword = lazy(() => import('../pages/Auth/ForgotPassword'));
+const ResetPassword = lazy(() => import('../pages/Auth/ResetPassword'));
 
 // Subscription Pages
-import SubscriptionPlans from '../pages/Subscription/Plans';
-import SubscriptionCheckout from '../pages/Subscription/Checkout';
+const SubscriptionPlans = lazy(() => import('../pages/Subscription/Plans'));
+const SubscriptionCheckout = lazy(() => import('../pages/Subscription/Checkout'));
 
 // Admin Pages
-import AdminDashboard from '../pages/Admin/Dashboard';
-import AdminUsers from '../pages/Admin/Users';
-import AdminUserDetail from '../pages/Admin/UserDetail';
-import AdminListings from '../pages/Admin/Listings';
-import AdminReports from '../pages/Admin/Reports';
-import AdminIncomeVerifications from '../pages/Admin/IncomeVerifications';
+const AdminDashboard = lazy(() => import('../pages/Admin/Dashboard'));
+const AdminUsers = lazy(() => import('../pages/Admin/Users'));
+const AdminUserDetail = lazy(() => import('../pages/Admin/UserDetail'));
+const AdminListings = lazy(() => import('../pages/Admin/Listings'));
+const AdminReports = lazy(() => import('../pages/Admin/Reports'));
+const AdminIncomeVerifications = lazy(() => import('../pages/Admin/IncomeVerifications'));
 
 function App() {
+  const { token, fetchUser } = useAuthStore();
+
+  useEffect(() => {
+    if (token) {
+      fetchUser();
+    }
+  }, [token, fetchUser]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <main>
-        <Routes>
-          {/* Public */}
-          <Route path="/" element={<Home />} />
-          <Route path="/listings" element={<Listings />} />
-          <Route path="/listings/:id" element={<ListingDetail />} />
-          <Route path="/users/:id" element={<UserProfile />} />
+        <Suspense fallback={<LoadingSpinner />}>
+          <Routes>
+            {/* Public */}
+            <Route path="/" element={<Home />} />
+            <Route path="/listings" element={<Listings />} />
+            <Route path="/listings/:id" element={<ListingDetail />} />
+            <Route path="/users/:id" element={<UserProfile />} />
 
-          {/* Auth */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/verify-email" element={<VerifyEmail />} />
-          <Route path="/verify-phone" element={<VerifyPhone />} />
-          <Route path="/2fa" element={<TwoFactor />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
+            {/* Auth */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/verify-phone" element={<VerifyPhone />} />
+            <Route path="/2fa" element={<TwoFactor />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
-          {/* Protected */}
-          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-          <Route path="/profile/edit" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
-          <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
-          <Route path="/messages/:userId" element={<ProtectedRoute><Conversation /></ProtectedRoute>} />
-          <Route path="/matches" element={<ProtectedRoute><Matches /></ProtectedRoute>} />
-          <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
-          <Route path="/my-listings" element={<ProtectedRoute><MyListings /></ProtectedRoute>} />
-          <Route path="/listings/create" element={<ProtectedRoute><CreateListing /></ProtectedRoute>} />
-          <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+            {/* Protected */}
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/profile/edit" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
+            <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+            <Route path="/messages/:userId" element={<ProtectedRoute><Conversation /></ProtectedRoute>} />
+            <Route path="/matches" element={<ProtectedRoute><Matches /></ProtectedRoute>} />
+            <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+            <Route path="/my-listings" element={<ProtectedRoute><MyListings /></ProtectedRoute>} />
+            <Route path="/listings/create" element={<ProtectedRoute><CreateListing /></ProtectedRoute>} />
+            <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
 
-          {/* Subscription */}
-          <Route path="/subscription/plans" element={<ProtectedRoute><SubscriptionPlans /></ProtectedRoute>} />
-          <Route path="/subscription/checkout" element={<ProtectedRoute><SubscriptionCheckout /></ProtectedRoute>} />
+            {/* Subscription */}
+            <Route path="/subscription/plans" element={<ProtectedRoute><SubscriptionPlans /></ProtectedRoute>} />
+            <Route path="/subscription/checkout" element={<ProtectedRoute><SubscriptionCheckout /></ProtectedRoute>} />
 
-          {/* Admin */}
-          <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-          <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
-          <Route path="/admin/users/:id" element={<AdminRoute><AdminUserDetail /></AdminRoute>} />
-          <Route path="/admin/listings" element={<AdminRoute><AdminListings /></AdminRoute>} />
-          <Route path="/admin/reports" element={<AdminRoute><AdminReports /></AdminRoute>} />
-          <Route path="/admin/income-verifications" element={<AdminRoute><AdminIncomeVerifications /></AdminRoute>} />
-        </Routes>
+            {/* Admin */}
+            <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+            <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
+            <Route path="/admin/users/:id" element={<AdminRoute><AdminUserDetail /></AdminRoute>} />
+            <Route path="/admin/listings" element={<AdminRoute><AdminListings /></AdminRoute>} />
+            <Route path="/admin/reports" element={<AdminRoute><AdminReports /></AdminRoute>} />
+            <Route path="/admin/income-verifications" element={<AdminRoute><AdminIncomeVerifications /></AdminRoute>} />
+          </Routes>
+        </Suspense>
       </main>
     </div>
   );

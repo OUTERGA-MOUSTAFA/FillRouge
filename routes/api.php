@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\SliderController;
 use App\Http\Controllers\Api\SocialAuthController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +22,9 @@ Route::prefix('auth')->group(function () {
     return response()->json(['csrf_token' => csrf_token()]);
 });
 
+// Route publique pour le frontend
+Route::get('/sliders', [SliderController::class, 'index']);
+
     // OAuth
     Route::get('/auth/google/redirect', [SocialAuthController::class, 'redirectToGoogle']);
     Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
@@ -31,7 +35,7 @@ Route::prefix('auth')->group(function () {
 //    admin role in termenal
 // php artisan tinker
 // $user = new App\Models\User();
-// $user->name = "Admin Name";
+// $user->full_name = "Admin Name";
 // $user->email = "admin@example.com";
 // $user->password = Hash::make('password123');
 // $user->role = 'admin';
@@ -159,4 +163,11 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::post('/income-verifications/{id}/reject', [IncomeVerificationController::class, 'reject']);
 
     Route::put('/users/{user}/unsuspend', [AdminController::class, 'unsuspendUser']);
+
+
+    // Admin only can add image slider
+    Route::post('/sliders', [SliderController::class, 'store']);
+    Route::put('/sliders/{id}', [SliderController::class, 'update']);
+    Route::delete('/sliders/{id}', [SliderController::class, 'destroy']);
+
 });

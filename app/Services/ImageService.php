@@ -4,13 +4,11 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Intervention\Image\ImageManager;
 use Illuminate\Http\UploadedFile;
-use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Facades\Image;
 
 class ImageService
 {
-    protected $manager;
     protected $disk;
     protected $quality;
     protected $maxWidth;
@@ -18,7 +16,6 @@ class ImageService
 
     public function __construct()
     {
-        $this->manager = new ImageManager(new Driver());
         $this->disk = config('filesystems.default', 'public');
         $this->quality = 85;
         $this->maxWidth = 1200;
@@ -26,340 +23,147 @@ class ImageService
     }
 
     /**
-     * Uploader une image (méthode principale)
+     * Upload image (MAIN)
      */
     public function upload(UploadedFile $file, $folder = 'uploads', $resize = true)
     {
         try {
-            // Générer un nom unique
             $filename = $this->generateFileName($file);
             $path = $folder . '/' . $filename;
 
-            // Lire l'image
-            $image = $this->manager->read($file->getPathname());
+            $image = Image::make($file->getPathname());
 
-            // Redimensionner si nécessaire
             if ($resize && ($image->width() > $this->maxWidth || $image->height() > $this->maxHeight)) {
-                $image->scale(width: $this->maxWidth, height: $this->maxHeight);
+                $image->resize($this->maxWidth, $this->maxHeight, function ($constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize();
+                });
             }
 
-            // Encoder et sauvegarder
-            $encoded = $image->toJpg(quality: $this->quality);
-            Storage::disk($this->disk)->put($path, (string) $encoded);
+            $image->encode('jpg', $this->quality);
+
+            Storage::disk($this->disk)->put($path, (string) $image);
 
             return Storage::disk($this->disk)->url($path);
-            
+
         } catch (\Exception $e) {
-            \Log::error('Image upload failed: ' . $e->getMessage());
-            throw new \Exception('Failed to upload image: ' . $e->getMessage());
+            throw new \Exception('Upload failed: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Uploader plusieurs images
-     */
     public function uploadMultiple(array $files, $folder = 'uploads', $resize = true)
     {
-        $uploaded = [];
-        
-        foreach ($files as $file) {
-            if ($file instanceof UploadedFile) {
-                $uploaded[] = $this->upload($file, $folder, $resize);
-            }
-        }
-        
-        return $uploaded;
+        return collect($files)
+            ->filter(fn($file) => $file instanceof UploadedFile)
+            ->map(fn($file) => $this->upload($file, $folder, $resize))
+            ->toArray();
     }
 
-    /**
-     * Uploader un avatar (carré)
-     */
     public function uploadAvatar(UploadedFile $file, $folder = 'avatars')
     {
         try {
             $filename = $this->generateFileName($file);
             $path = $folder . '/' . $filename;
-            
-            $image = $this->manager->read($file->getPathname());
-            
-            // Redimensionner en carré (400x400)
-            $size = min($image->width(), $image->height(), 400);
-            $image->cover(width: $size, height: $size);
-            
-            $encoded = $image->toJpg(quality: 90);
-            Storage::disk($this->disk)->put($path, (string) $encoded);
-            
+
+            $image = Image::make($file->getPathname());
+
+            // square crop (400x400)
+            $image->fit(400, 400);
+
+            $image->encode('jpg', 90);
+
+            Storage::disk($this->disk)->put($path, (string) $image);
+
             return Storage::disk($this->disk)->url($path);
-            
+
         } catch (\Exception $e) {
-            \Log::error('Avatar upload failed: ' . $e->getMessage());
-            throw new \Exception('Failed to upload avatar: ' . $e->getMessage());
+            throw new \Exception('Avatar upload failed: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Uploader une image de couverture (bannière)
-     */
     public function uploadCover(UploadedFile $file, $folder = 'covers')
     {
         try {
             $filename = $this->generateFileName($file);
             $path = $folder . '/' . $filename;
-            
-            $image = $this->manager->read($file->getPathname());
-            
-            // Redimensionner pour bannière (1200x400)
-            $image->scale(width: 1200, height: 400);
-            
-            // Rogner si nécessaire
-            if ($image->height() > 400) {
-                $image->crop(width: 1200, height: 400);
-            }
-            
-            $encoded = $image->toJpg(quality: 85);
-            Storage::disk($this->disk)->put($path, (string) $encoded);
-            
+
+            $image = Image::make($file->getPathname());
+
+            $image->fit(1200, 400);
+
+            $image->encode('jpg', 85);
+
+            Storage::disk($this->disk)->put($path, (string) $image);
+
             return Storage::disk($this->disk)->url($path);
-            
+
         } catch (\Exception $e) {
-            \Log::error('Cover upload failed: ' . $e->getMessage());
-            throw new \Exception('Failed to upload cover: ' . $e->getMessage());
+            throw new \Exception('Cover upload failed: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Uploader une photo de listing (annonce)
-     */
     public function uploadListingPhoto(UploadedFile $file, $folder = 'listings')
     {
         try {
             $filename = $this->generateFileName($file);
             $path = $folder . '/' . $filename;
-            
-            $image = $this->manager->read($file->getPathname());
-            
-            // Redimensionner pour listing (800x600)
-            $image->scale(width: 800, height: 600);
-            
-            $encoded = $image->toJpg(quality: 80);
-            Storage::disk($this->disk)->put($path, (string) $encoded);
-            
-            // Créer une miniature
-            $thumbnailPath = $this->createThumbnail($file, $folder, $filename);
-            
+
+            $image = Image::make($file->getPathname());
+
+            $image->fit(800, 600);
+
+            $image->encode('jpg', 80);
+
+            Storage::disk($this->disk)->put($path, (string) $image);
+
+            $thumbPath = $this->createThumbnail($file, $folder, $filename);
+
             return [
                 'original' => Storage::disk($this->disk)->url($path),
-                'thumbnail' => Storage::disk($this->disk)->url($thumbnailPath),
+                'thumbnail' => Storage::disk($this->disk)->url($thumbPath),
             ];
-            
+
         } catch (\Exception $e) {
-            \Log::error('Listing photo upload failed: ' . $e->getMessage());
-            throw new \Exception('Failed to upload listing photo: ' . $e->getMessage());
+            throw new \Exception('Listing upload failed: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Créer une miniature
-     */
     protected function createThumbnail(UploadedFile $file, $folder, $filename)
     {
-        try {
-            $thumbPath = $folder . '/thumb_' . $filename;
-            
-            // Lire l'image originale
-            $image = $this->manager->read($file->getPathname());
-            
-            // Redimensionner pour thumbnail
-            $image->scale(width: 300, height: 200);
-            
-            $encoded = $image->toJpg(quality: 70);
-            Storage::disk($this->disk)->put($thumbPath, (string) $encoded);
-            
-            return $thumbPath;
-            
-        } catch (\Exception $e) {
-            \Log::error('Thumbnail creation failed: ' . $e->getMessage());
-            return null;
-        }
+        $thumbPath = $folder . '/thumb_' . $filename;
+
+        $image = Image::make($file->getPathname());
+
+        $image->fit(300, 200);
+
+        $image->encode('jpg', 70);
+
+        Storage::disk($this->disk)->put($thumbPath, (string) $image);
+
+        return $thumbPath;
     }
 
-    /**
-     * Uploader un document (CIN, Passport, etc.)
-     */
     public function uploadDocument(UploadedFile $file, $folder = 'documents')
     {
-        try {
-            $extension = strtolower($file->getClientOriginalExtension());
-            $filename = $this->generateFileName($file);
-            $path = $folder . '/' . $filename;
-            
-            // Pour les PDF, garder le fichier original
-            if ($extension === 'pdf') {
-                Storage::disk($this->disk)->putFileAs($folder, $file, $filename);
-                return Storage::disk($this->disk)->url($path);
-            }
-            
-            // Pour les images, utiliser la méthode upload
-            if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
-                return $this->upload($file, $folder, false);
-            }
-            
-            throw new \Exception('Unsupported file type: ' . $extension);
-            
-        } catch (\Exception $e) {
-            \Log::error('Document upload failed: ' . $e->getMessage());
-            throw new \Exception('Failed to upload document: ' . $e->getMessage());
+        $extension = strtolower($file->getClientOriginalExtension());
+        $filename = $this->generateFileName($file);
+        $path = $folder . '/' . $filename;
+
+        if ($extension === 'pdf') {
+            Storage::disk($this->disk)->putFileAs($folder, $file, $filename);
+            return Storage::disk($this->disk)->url($path);
         }
+
+        if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+            return $this->upload($file, $folder, false);
+        }
+
+        throw new \Exception('Unsupported file type');
     }
 
-    /**
-     * Supprimer une image
-     */
-    public function delete($path)
-    {
-        if (empty($path)) {
-            return false;
-        }
-        
-        try {
-            $relativePath = str_replace(Storage::disk($this->disk)->url(''), '', $path);
-            
-            if (Storage::disk($this->disk)->exists($relativePath)) {
-                Storage::disk($this->disk)->delete($relativePath);
-                
-                // Supprimer la miniature si elle existe
-                $pathInfo = pathinfo($relativePath);
-                $thumbPath = $pathInfo['dirname'] . '/thumb_' . $pathInfo['basename'];
-                
-                if (Storage::disk($this->disk)->exists($thumbPath)) {
-                    Storage::disk($this->disk)->delete($thumbPath);
-                }
-                
-                return true;
-            }
-            
-            return false;
-            
-        } catch (\Exception $e) {
-            \Log::error('Image deletion failed: ' . $e->getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Supprimer plusieurs images
-     */
-    public function deleteMultiple(array $paths)
-    {
-        $deleted = [];
-        
-        foreach ($paths as $path) {
-            if ($this->delete($path)) {
-                $deleted[] = $path;
-            }
-        }
-        
-        return $deleted;
-    }
-
-    /**
-     * Optimiser une image existante
-     */
-    public function optimize($path, $quality = 80)
-    {
-        try {
-            $relativePath = str_replace(Storage::disk($this->disk)->url(''), '', $path);
-
-            if (!Storage::disk($this->disk)->exists($relativePath)) {
-                return false;
-            }
-
-            $imageContent = Storage::disk($this->disk)->get($relativePath);
-            $image = $this->manager->read($imageContent);
-            
-            $extension = pathinfo($relativePath, PATHINFO_EXTENSION);
-            
-            // Encoder avec la nouvelle qualité
-            $encoded = $image->encodeByExtension($extension, $quality);
-            Storage::disk($this->disk)->put($relativePath, (string) $encoded);
-            
-            return true;
-            
-        } catch (\Exception $e) {
-            \Log::error('Image optimization failed: ' . $e->getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Obtenir les informations d'une image
-     */
-    public function getInfo($path)
-    {
-        try {
-            $relativePath = str_replace(Storage::disk($this->disk)->url(''), '', $path);
-            
-            if (!Storage::disk($this->disk)->exists($relativePath)) {
-                return null;
-            }
-            
-            $imageContent = Storage::disk($this->disk)->get($relativePath);
-            $image = $this->manager->read($imageContent);
-            
-            return [
-                'width' => $image->width(),
-                'height' => $image->height(),
-                'mime' => $image->mimetype(),
-                'size' => Storage::disk($this->disk)->size($relativePath),
-                'extension' => pathinfo($relativePath, PATHINFO_EXTENSION),
-            ];
-            
-        } catch (\Exception $e) {
-            \Log::error('Get image info failed: ' . $e->getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * Générer un nom de fichier unique
-     */
     protected function generateFileName(UploadedFile $file)
     {
-        $extension = $file->getClientOriginalExtension();
-        
-        // Si pas d'extension ou extension invalide, utiliser jpg par défaut
-        if (empty($extension)) {
-            $extension = 'jpg';
-        }
-        
+        $extension = $file->getClientOriginalExtension() ?: 'jpg';
         return Str::uuid() . '_' . time() . '.' . $extension;
-    }
-
-    /**
-     * Changer le disque de stockage
-     */
-    public function setDisk($disk)
-    {
-        $this->disk = $disk;
-        return $this;
-    }
-
-    /**
-     * Changer la qualité de compression
-     */
-    public function setQuality($quality)
-    {
-        $this->quality = $quality;
-        return $this;
-    }
-
-    /**
-     * Changer les dimensions max
-     */
-    public function setMaxDimensions($width, $height)
-    {
-        $this->maxWidth = $width;
-        $this->maxHeight = $height;
-        return $this;
     }
 }
