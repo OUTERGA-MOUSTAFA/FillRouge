@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
-    /**
+    // /**
      * Liste des notifications
      */
     public function index(Request $request)
@@ -29,6 +29,27 @@ class NotificationController extends Controller
             ]
         ]);
     }
+    /**
+     * Liste des notifications
+     */
+    // public function index(Request $request)
+    // {
+    //     $user = $request->user();
+        
+    //     $notifications = $user->notifications()
+    //         ->orderBy('created_at', 'desc')
+    //         ->paginate(20);
+        
+    //     $unreadCount = $user->unreadNotifications()->count();
+        
+    //     return response()->json([
+    //         'success' => true,
+    //         'data' => [
+    //             'notifications' => $notifications,
+    //             'unread_count' => $unreadCount
+    //         ]
+    //     ]);
+    // }
     
     /**
      * Marquer une notification comme lue

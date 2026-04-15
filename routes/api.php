@@ -17,13 +17,13 @@ use Illuminate\Support\Facades\Route;
 
 // ========== ROUTES PUBLIQUES ==========
 Route::prefix('auth')->group(function () {
-    
-    Route::get('/csrf-token', function () {
-    return response()->json(['csrf_token' => csrf_token()]);
-});
 
-// Route publique pour le frontend
-Route::get('/sliders', [SliderController::class, 'index']);
+    Route::get('/csrf-token', function () {
+        return response()->json(['csrf_token' => csrf_token()]);
+    });
+
+    // Route publique pour le frontend
+    Route::get('/sliders', [SliderController::class, 'index']);
 
     // OAuth
     Route::get('/auth/google/redirect', [SocialAuthController::class, 'redirectToGoogle']);
@@ -32,21 +32,21 @@ Route::get('/sliders', [SliderController::class, 'index']);
     Route::get('/auth/facebook/callback', [SocialAuthController::class, 'handleFacebookCallback']);
 
     Route::post('/register', [AuthController::class, 'register']);
-//    admin role in termenal
-// php artisan tinker
-// $user = new App\Models\User();
-// $user->full_name = "Admin Name";
-// $user->email = "admin@example.com";
-// $user->password = Hash::make('password123');
-// $user->role = 'admin';
-// $user->save();
+    //    admin role in termenal
+    // php artisan tinker
+    // $user = new App\Models\User();
+    // $user->full_name = "Admin Name";
+    // $user->email = "admin@example.com";
+    // $user->password = Hash::make('password123');
+    // $user->role = 'admin';
+    // $user->save();
 
-// Route de développement - À supprimer en production
-if (app()->environment('local')) {
-    Route::get('/dev/last-verification-code', function () {
-        return response()->json(['code' => session()->get('last_verification_code')]);
-    });
-}
+    // Route de développement - À supprimer en production
+    if (app()->environment('local')) {
+        Route::get('/dev/last-verification-code', function () {
+            return response()->json(['code' => session()->get('last_verification_code')]);
+        });
+    }
 
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
@@ -169,5 +169,4 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::post('/sliders', [SliderController::class, 'store']);
     Route::put('/sliders/{id}', [SliderController::class, 'update']);
     Route::delete('/sliders/{id}', [SliderController::class, 'destroy']);
-
 });

@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '../src/store/authStore';
-import { usersService } from '../src/services/users';
 import { authService } from '../src/services/auth';
+import ReviewsList from '../src/components/profile/ReviewsList';
 import {
   UserIcon,
-  EnvelopeIcon,
   PhoneIcon,
   CalendarIcon,
   BriefcaseIcon,
@@ -16,14 +15,11 @@ import {
   CheckCircleIcon,
   PencilIcon,
   HomeIcon,
-  ChatBubbleLeftIcon,
-  HeartIcon,
-  ArrowRightOnRectangleIcon
-} from "@heroicons/react/24/outline";
+} from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
 export default function Profile() {
-  const { user, setUser, logout } = useAuthStore();
+  const { setUser, logout } = useAuthStore();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('info');
@@ -36,9 +32,11 @@ export default function Profile() {
     setLoading(true);
     try {
       const response = await authService.getMe();
+      console.log('Profile data:', response.data);
       setProfile(response.data);
       setUser(response.data);
     } catch (error) {
+      console.error('Error fetching profile:', error);
       toast.error('Erreur chargement du profil');
     } finally {
       setLoading(false);
@@ -59,7 +57,9 @@ export default function Profile() {
     );
   }
 
-  if (!profile) return null;
+  if (!profile) {
+    return <div className="p-10 text-center">No profile found</div>;
+  }
 
   const getInitials = (name) => {
     return name?.charAt(0).toUpperCase() || '?';
@@ -84,11 +84,11 @@ export default function Profile() {
                   <span className="text-4xl text-white font-bold">{getInitials(profile.full_name)}</span>
                 </div>
               )}
-              <Link 
-                to="/profile/edit" 
+              <Link
+                to="/profile/edit"
                 className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-md hover:scale-105 transition-transform"
               >
-                <EditIcon className="h-4 w-4 text-[#009966]" />
+                <PencilIcon className="h-4 w-4 text-[#009966]" />
               </Link>
             </div>
 
@@ -122,8 +122,8 @@ export default function Profile() {
 
             {/* Actions */}
             <div className="flex gap-2">
-              <Link 
-                to="/profile/edit" 
+              <Link
+                to="/profile/edit"
                 className="px-4 py-2 bg-white text-[#009966] rounded-lg font-medium hover:bg-gray-100 transition-colors"
               >
                 Modifier
@@ -196,7 +196,9 @@ export default function Profile() {
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-500">Membre depuis</span>
-                    <span className="font-medium">{new Date(profile.created_at).toLocaleDateString('fr-FR')}</span>
+                    <span className="font-medium">
+                      {profile.created_at ? new Date(profile.created_at).toLocaleDateString('fr-FR') : 'N/A'}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-500">Annonces</span>
@@ -209,7 +211,7 @@ export default function Profile() {
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-500">Note moyenne</span>
                     <div className="flex items-center gap-1">
-                      <StarIcon className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                      <StarIcon className="h-4 w-4 text-yellow-400" />
                       <span className="font-medium">{profile.average_rating || 0}/5</span>
                     </div>
                   </div>
@@ -218,7 +220,7 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* Main Content */}
+          {/* Main Content - reste identique */}
           <div className="lg:col-span-3">
             {/* Tab: Informations */}
             {activeTab === 'info' && (
@@ -285,9 +287,9 @@ export default function Profile() {
                       <div>
                         <p className="text-xs text-gray-400">Budget mensuel</p>
                         <p className="font-medium text-[#009966]">
-                          {profile.budget_min && profile.budget_max 
+                          {profile.budget_min && profile.budget_max
                             ? `${profile.budget_min} - ${profile.budget_max} MAD`
-                            : profile.budget_min 
+                            : profile.budget_min
                               ? `À partir de ${profile.budget_min} MAD`
                               : `Jusqu'à ${profile.budget_max} MAD`}
                         </p>
@@ -338,8 +340,8 @@ export default function Profile() {
                         <div className="flex justify-between py-2 border-b">
                           <span className="text-gray-500">Sommeil</span>
                           <span className="font-medium">
-                            {profile.profile.sleep_schedule === 'early_bird' ? 'Lève-tôt' : 
-                             profile.profile.sleep_schedule === 'night_owl' ? 'Couche-tard' : 'Flexible'}
+                            {profile.profile.sleep_schedule === 'early_bird' ? 'Lève-tôt' :
+                              profile.profile.sleep_schedule === 'night_owl' ? 'Couche-tard' : 'Flexible'}
                           </span>
                         </div>
                       )}
@@ -347,8 +349,8 @@ export default function Profile() {
                         <div className="flex justify-between py-2 border-b">
                           <span className="text-gray-500">Propreté</span>
                           <span className="font-medium">
-                            {profile.profile.cleanliness === 'very_clean' ? 'Très propre' : 
-                             profile.profile.cleanliness === 'moderate' ? 'Modéré' : 'Relax'}
+                            {profile.profile.cleanliness === 'very_clean' ? 'Très propre' :
+                              profile.profile.cleanliness === 'moderate' ? 'Modéré' : 'Relax'}
                           </span>
                         </div>
                       )}
@@ -381,7 +383,7 @@ export default function Profile() {
             {activeTab === 'reviews' && (
               <div className="bg-white rounded-xl shadow-sm p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Avis reçus</h3>
-                <ReviewsList userId={profile.id} />
+                {profile?.id && <ReviewsList userId={profile.id} />}
               </div>
             )}
 

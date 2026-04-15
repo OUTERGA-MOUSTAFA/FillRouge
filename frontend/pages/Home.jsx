@@ -96,6 +96,20 @@ export default function Home() {
       image: 'https://via.placeholder.com/1920x1080/16a34a/ffffff?text=Darna+3',
       button_text: 'Découvrir',
       button_link: '/listings',
+    },{
+      id: 4,
+      title: 'La communauté Darna',
+      subtitle: 'Rejoignez plus de 10,000 membres à la recherche du colocataire parfait',
+      image: 'https://via.placeholder.com/1920x1080/16a34a/ffffff?text=Darna+3',
+      button_text: 'Découvrir',
+      button_link: '/listings',
+    },{
+      id: 5,
+      title: 'La communauté Darna',
+      subtitle: 'Rejoignez plus de 10,000 membres à la recherche du colocataire parfait',
+      image: 'https://via.placeholder.com/1920x1080/16a34a/ffffff?text=Darna+3',
+      button_text: 'Découvrir',
+      button_link: '/listings',
     },
   ];
 

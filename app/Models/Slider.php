@@ -27,9 +27,19 @@ class Slider extends Model
 
     // Access a l'URL complète de l'image
     public function getImageUrlAttribute()
-    {
-        return Storage::disk('public')->url($this->image_path);
+{
+    if (!$this->image_path) {
+        return null;
     }
+    
+    // Si c'est une URL externe
+    if (filter_var($this->image_path, FILTER_VALIDATE_URL)) {
+        return $this->image_path;
+    }
+    
+    // Sinon, c'est un chemin local
+    return Storage::disk('public')->url($this->image_path);
+}
 
     // pour récupérer seulement les sliders actifs
     public function scopeActive($query)

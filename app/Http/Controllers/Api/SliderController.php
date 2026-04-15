@@ -26,7 +26,6 @@ class SliderController extends Controller
                     'button_link' => $slider->button_link,
                 ];
             });
-
         return response()->json([
             'success' => true,
             'data' => $sliders
