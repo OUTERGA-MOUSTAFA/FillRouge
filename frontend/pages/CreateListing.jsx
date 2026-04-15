@@ -1,761 +1,417 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { listingsService } from '../src/services/listings';
-import { useAuthStore } from '../src/store/authStore';
-import { 
-  PhotoIcon, XMarkIcon, MapPinIcon, 
-  CurrencyDollarIcon, HomeIcon, BedIcon,
-  WifiIcon, FireIcon, DevicePhoneMobileIcon,
-  TruckIcon, ChevronDownIcon
-} from '@heroicons/react/24/outline';
-import toast from 'react-hot-toast';
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { listingsService } from "../src/services/listings";
+import { useAuthStore } from "../src/store/authStore";
+import {
+  PhotoIcon,
+  XMarkIcon,
+  MapPinIcon,
+  CurrencyDollarIcon,
+  HomeIcon,
+  WifiIcon,
+  FireIcon,
+  DevicePhoneMobileIcon,
+  BuildingStorefrontIcon,
+  UserIcon,
+  CheckIcon,
+} from "@heroicons/react/24/outline";
+import toast from "react-hot-toast";
 
 const citiesList = [
-  'Agadir', 'Tanger', 'Fès', 'Meknès', 'Marrakech', 
-  'Casablanca', 'Rabat', 'Essaouira', 'Tétouan', 'Oujda', 
-  'Kenitra', 'Safi', 'El Jadida', 'Nador', 'Tetouan'
+  "Casablanca",
+  "Rabat",
+  "Marrakech",
+  "Tanger",
+  "Agadir",
+  "Fès",
+  "Meknès",
+  "Oujda",
 ];
 
 const amenitiesList = [
-  { id: 'wifi', name: 'WiFi', icon: WifiIcon },
-  { id: 'ac', name: 'Air Conditioning', icon: FireIcon },
-  { id: 'heating', name: 'Heating', icon: FireIcon },
-  { id: 'washing_machine', name: 'Washing Machine', icon: DevicePhoneMobileIcon },
-  { id: 'kitchen', name: 'Kitchen Access', icon: HomeIcon },
-  { id: 'lift', name: 'Lift', icon: TruckIcon },
-  { id: 'parking', name: 'Parking', icon: TruckIcon },
-  { id: 'pets', name: 'Pets Allowed', icon: HomeIcon },
+  { id: "wifi", name: "WiFi", icon: WifiIcon },
+  { id: "ac", name: "AC", icon: FireIcon },
+  { id: "parking", name: "Parking", icon: BuildingStorefrontIcon },
+  { id: "tv", name: "TV", icon: DevicePhoneMobileIcon },
+  { id: "kitchen", name: "Kitchen", icon: HomeIcon },
+  { id: "pets", name: "Pets", icon: UserIcon },
 ];
 
 export default function CreateListing() {
   const navigate = useNavigate();
-  const { user } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
+
+  const fileInputRef = useRef(null);
+
+  const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [currentStep, setCurrentStep] = useState(1);
+
   const [photos, setPhotos] = useState([]);
-  const [formData, setFormData] = useState({
-    // Basic Info
-    title: '',
-    description: '',
-    language: 'fr',
-    
-    // Location
-    city: '',
-    neighborhood: '',
-    street: '',
-    building_info: '',
-    
-    // Pricing & Availability
-    price: '',
-    currency: 'MAD',
-    availability_type: 'long_term',
-    available_from: '',
-    available_to: '',
-    
-    // Room Details
-    property_type: 'room', // room, apartment, house
-    room_type: 'private', // private, shared, entire
-    bed_type: 'single', // single, double, bunk
+  const [previews, setPreviews] = useState([]);
+
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    city: "",
+    price: "",
+    property_type: "room",
+    available_from: "",
     furnished: false,
-    bathroom: 'private', // private, shared
     amenities: [],
-    
-    // Preferences
-    preferred_gender: 'any',
-    smoking_allowed: false,
-    pets_allowed: false,
-    guests_allowed: true,
-    household_description: '',
   });
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      toast.error("Please login first");
+      navigate("/login");
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
+
+    setForm({
+      ...form,
+      [name]: type === "checkbox" ? checked : value,
+    });
   };
 
-  const handleAmenityToggle = (amenityId) => {
-    setFormData(prev => ({
-      ...prev,
-      amenities: prev.amenities.includes(amenityId)
-        ? prev.amenities.filter(a => a !== amenityId)
-        : [...prev.amenities, amenityId]
-    }));
+  const toggleAmenity = (id) => {
+    if (form.amenities.includes(id)) {
+      setForm({
+        ...form,
+        amenities: form.amenities.filter((x) => x !== id),
+      });
+    } else {
+      setForm({
+        ...form,
+        amenities: [...form.amenities, id],
+      });
+    }
   };
 
-  const handlePhotoUpload = (e) => {
+  const handleUpload = (e) => {
     const files = Array.from(e.target.files);
-    if (photos.length + files.length > 10) {
-      toast.error('Maximum 10 photos');
+
+    if (files.length + photos.length > 10) {
+      toast.error("Max 10 photos");
       return;
     }
+
     setPhotos([...photos, ...files]);
+
+    const urls = files.map((file) => URL.createObjectURL(file));
+    setPreviews([...previews, ...urls]);
   };
 
   const removePhoto = (index) => {
     setPhotos(photos.filter((_, i) => i !== index));
+    setPreviews(previews.filter((_, i) => i !== index));
   };
 
-  const nextStep = () => {
-    if (currentStep < 4) {
-      setCurrentStep(currentStep + 1);
-      window.scrollTo(0, 0);
+  const validateStep = () => {
+    if (step === 1) {
+      if (!form.title || !form.description) {
+        toast.error("Complete all fields");
+        return false;
+      }
     }
-  };
 
-  const prevStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-      window.scrollTo(0, 0);
+    if (step === 2) {
+      if (!form.city) {
+        toast.error("Choose city");
+        return false;
+      }
     }
+
+    if (step === 3) {
+      if (!form.price || !form.available_from) {
+        toast.error("Complete pricing info");
+        return false;
+      }
+    }
+
+    if (step === 4 && photos.length < 3) {
+      toast.error("Minimum 3 photos");
+      return false;
+    }
+
+    return true;
   };
 
-  const handleSubmit = async (e) => {
+  const next = () => {
+    if (validateStep()) setStep(step + 1);
+  };
+
+  const prev = () => setStep(step - 1);
+
+  const submit = async (e) => {
     e.preventDefault();
-    
-    if (photos.length < 3) {
-      toast.error('Veuillez ajouter au moins 3 photos');
-      return;
-    }
-    
-    if (!formData.title || !formData.description || !formData.price || !formData.city) {
-      toast.error('Veuillez remplir tous les champs obligatoires');
-      return;
-    }
-    
+
+    if (!validateStep()) return;
+
     setLoading(true);
-    
-    const submitData = new FormData();
-    submitData.append('type', formData.property_type === 'room' ? 'room' : 'apartment');
-    submitData.append('title', formData.title);
-    submitData.append('description', formData.description);
-    submitData.append('price', formData.price);
-    submitData.append('city', formData.city);
-    submitData.append('neighborhood', formData.neighborhood || '');
-    submitData.append('address', formData.street || '');
-    submitData.append('available_from', formData.available_from);
-    if (formData.available_to) submitData.append('available_until', formData.available_to);
-    submitData.append('furnished', formData.furnished);
-    submitData.append('amenities', JSON.stringify(formData.amenities));
-    submitData.append('bedrooms', formData.room_type === 'private' ? 1 : 2);
-    submitData.append('bathrooms', formData.bathroom === 'private' ? 1 : 2);
-    
-    photos.forEach(photo => {
-      submitData.append('photos[]', photo);
+
+    const fd = new FormData();
+
+    Object.keys(form).forEach((key) => {
+      if (key === "amenities") {
+        fd.append(key, JSON.stringify(form[key]));
+      } else {
+        fd.append(key, form[key]);
+      }
     });
-    
+
+    photos.forEach((photo, i) => {
+      fd.append(`photos[${i}]`, photo);
+    });
+
     try {
-      await listingsService.create(submitData);
-      toast.success('Annonce créée avec succès');
-      navigate('/my-listings');
+      await listingsService.create(fd);
+      toast.success("Listing created");
+      navigate("/my-listings");
     } catch (error) {
-      const message = error.response?.data?.message || 'Erreur lors de la création';
-      toast.error(message);
+      toast.error("Error");
     } finally {
       setLoading(false);
     }
   };
 
-  const steps = [
-    { number: 1, title: 'Basic Info', icon: HomeIcon },
-    { number: 2, title: 'Location', icon: MapPinIcon },
-    { number: 3, title: 'Pricing', icon: CurrencyDollarIcon },
-    { number: 4, title: 'Details', icon: BedIcon },
-  ];
+  const steps = ["Info", "Location", "Price", "Photos"];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container-custom max-w-4xl">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Post a Room Listing</h1>
-          <p className="text-gray-600 mt-2">Share details about your room so the right roommate can find it.</p>
+    <div className="min-h-screen bg-slate-100 py-10 px-4">
+      <div className="max-w-5xl mx-auto">
+        {/* header */}
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-bold text-slate-900">
+            Create New Listing
+          </h1>
+          <p className="text-slate-500 mt-2">
+            Publish your room in few steps
+          </p>
         </div>
 
-        {/* Steps */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center">
-            {steps.map((step) => (
-              <div key={step.number} className="flex-1 text-center">
-                <div className={`relative flex justify-center`}>
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-                    currentStep >= step.number 
-                      ? 'bg-primary-500 text-white' 
-                      : 'bg-gray-200 text-gray-500'
-                  }`}>
-                    {currentStep > step.number ? (
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    ) : (
-                      step.number
-                    )}
-                  </div>
-                  {step.number < 4 && (
-                    <div className={`absolute top-5 left-1/2 w-full h-0.5 ${
-                      currentStep > step.number ? 'bg-primary-500' : 'bg-gray-200'
-                    }`} style={{ transform: 'translateY(-50%)' }} />
-                  )}
-                </div>
-                <p className="text-xs mt-2 text-gray-500">{step.title}</p>
-              </div>
-            ))}
-          </div>
+        {/* progress */}
+        <div className="grid grid-cols-4 gap-4 mb-8">
+          {steps.map((item, index) => (
+            <div key={index}>
+              <div
+                className={`h-2 rounded-full ${
+                  step >= index + 1 ? "bg-emerald-500" : "bg-slate-200"
+                }`}
+              />
+              <p className="text-sm mt-2 text-center font-medium text-slate-600">
+                {item}
+              </p>
+            </div>
+          ))}
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Step 1: Basic Information */}
-          {currentStep === 1 && (
-            <div className="card p-8 space-y-6">
-              <h2 className="text-xl font-semibold text-gray-900 border-b pb-3">Basic Information</h2>
-              
-              {/* Property Type */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Property Type *
-                </label>
-                <div className="grid grid-cols-3 gap-4">
-                  {[
-                    { id: 'room', label: 'Room', icon: BedIcon },
-                    { id: 'apartment', label: 'Apartment', icon: HomeIcon },
-                    { id: 'house', label: 'House', icon: HomeIcon },
-                  ].map((type) => (
-                    <button
-                      key={type.id}
-                      type="button"
-                      onClick={() => setFormData({ ...formData, property_type: type.id })}
-                      className={`p-4 border-2 rounded-xl text-center transition-all ${
-                        formData.property_type === type.id
-                          ? 'border-primary-500 bg-primary-50 text-primary-700'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <type.icon className="h-6 w-6 mx-auto mb-2" />
-                      <span className="text-sm font-medium">{type.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
+        <form
+          onSubmit={submit}
+          className="bg-white rounded-3xl shadow-xl p-8 space-y-8"
+        >
+          {/* STEP 1 */}
+          {step === 1 && (
+            <>
+              <h2 className="text-2xl font-bold">Basic Info</h2>
 
-              {/* Title */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Listing Title *
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  required
-                  value={formData.title}
-                  onChange={handleChange}
-                  className="input"
-                  placeholder="e.g., Cozy room in Casablanca city center"
-                />
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description *
-                </label>
-                <textarea
-                  name="description"
-                  required
-                  rows="5"
-                  value={formData.description}
-                  onChange={handleChange}
-                  className="input"
-                  placeholder="Describe your room, the neighborhood, and what makes it special..."
-                />
-              </div>
-
-              {/* Language */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Content Language
-                </label>
-                <select
-                  name="language"
-                  value={formData.language}
-                  onChange={handleChange}
-                  className="input w-48"
-                >
-                  <option value="fr">Français</option>
-                  <option value="en">English</option>
-                  <option value="ar">العربية</option>
-                  <option value="ar">Tamzight</option>
-                </select>
-              </div>
-            </div>
-          )}
-
-          {/* Step 2: Location Details */}
-          {currentStep === 2 && (
-            <div className="card p-8 space-y-6">
-              <h2 className="text-xl font-semibold text-gray-900 border-b pb-3">Location Details</h2>
-              
-              {/* City */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  City *
-                </label>
-                <select
-                  name="city"
-                  required
-                  value={formData.city}
-                  onChange={handleChange}
-                  className="input"
-                >
-                  <option value="">-- Select City --</option>
-                  {citiesList.map(city => (
-                    <option key={city} value={city}>{city}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Neighborhood */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Neighborhood
-                </label>
-                <input
-                  type="text"
-                  name="neighborhood"
-                  value={formData.neighborhood}
-                  onChange={handleChange}
-                  className="input"
-                  placeholder="e.g., Maarif, Gauthier, Medina"
-                />
-              </div>
-
-              {/* Map Preview */}
-              <div className="bg-gray-100 rounded-lg p-4 text-center">
-                <MapPinIcon className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-500">Map location preview</p>
-                <button type="button" className="text-primary-600 text-sm mt-1">
-                  Set on Map
-                </button>
-              </div>
-
-              {/* Street */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Street (Optional)
-                </label>
-                <input
-                  type="text"
-                  name="street"
-                  value={formData.street}
-                  onChange={handleChange}
-                  className="input"
-                  placeholder="Street name"
-                />
-              </div>
-
-              {/* Building Info */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Apartment/Building Info (Optional)
-                </label>
-                <input
-                  type="text"
-                  name="building_info"
-                  value={formData.building_info}
-                  onChange={handleChange}
-                  className="input"
-                  placeholder="e.g., Apartment 3B, Building with green door"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Step 3: Pricing & Availability */}
-          {currentStep === 3 && (
-            <div className="card p-8 space-y-6">
-              <h2 className="text-xl font-semibold text-gray-900 border-b pb-3">Pricing & Availability</h2>
-              
-              {/* Price */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Monthly Price *
-                  </label>
-                  <input
-                    type="number"
-                    name="price"
-                    required
-                    value={formData.price}
-                    onChange={handleChange}
-                    className="input"
-                    placeholder="3000"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Currency
-                  </label>
-                  <select
-                    name="currency"
-                    value={formData.currency}
-                    onChange={handleChange}
-                    className="input"
+              <div className="grid md:grid-cols-3 gap-4">
+                {["room", "apartment", "house"].map((type) => (
+                  <button
+                    type="button"
+                    key={type}
+                    onClick={() =>
+                      setForm({ ...form, property_type: type })
+                    }
+                    className={`p-5 rounded-2xl border text-center font-semibold capitalize ${
+                      form.property_type === type
+                        ? "border-emerald-500 bg-emerald-50"
+                        : "border-slate-200"
+                    }`}
                   >
-                    <option value="MAD">MAD</option>
-                    <option value="EUR">EUR</option>
-                    <option value="USD">USD</option>
-                  </select>
-                </div>
+                    {type}
+                  </button>
+                ))}
               </div>
 
-              {/* Availability Type */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Availability Type *
-                </label>
-                <div className="flex gap-4">
-                  {[
-                    { id: 'short_term', label: 'Short-term (tourists)' },
-                    { id: 'long_term', label: 'Long-term' },
-                  ].map((type) => (
-                    <button
-                      key={type.id}
-                      type="button"
-                      onClick={() => setFormData({ ...formData, availability_type: type.id })}
-                      className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        formData.availability_type === type.id
-                          ? 'bg-primary-500 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }`}
-                    >
-                      {type.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <input
+                name="title"
+                placeholder="Listing title"
+                value={form.title}
+                onChange={handleChange}
+                className="w-full border rounded-xl px-4 py-3"
+              />
 
-              {/* Available From / To */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Available From *
-                  </label>
-                  <input
-                    type="date"
-                    name="available_from"
-                    required
-                    value={formData.available_from}
-                    onChange={handleChange}
-                    className="input"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Available To (Optional)
-                  </label>
-                  <input
-                    type="date"
-                    name="available_to"
-                    value={formData.available_to}
-                    onChange={handleChange}
-                    className="input"
-                  />
-                </div>
-              </div>
-            </div>
+              <textarea
+                rows="6"
+                name="description"
+                placeholder="Description..."
+                value={form.description}
+                onChange={handleChange}
+                className="w-full border rounded-xl px-4 py-3"
+              />
+            </>
           )}
 
-          {/* Step 4: Room Details & Preferences */}
-          {currentStep === 4 && (
-            <div className="space-y-6">
-              {/* Room Details */}
-              <div className="card p-8 space-y-6">
-                <h2 className="text-xl font-semibold text-gray-900 border-b pb-3">Room Details</h2>
-                
-                {/* Room Type */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Room Type *
-                  </label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {[
-                      { id: 'private', label: 'Private Room' },
-                      { id: 'shared', label: 'Shared Room' },
-                      { id: 'entire', label: 'Entire Place' },
-                    ].map((type) => (
-                      <button
-                        key={type.id}
-                        type="button"
-                        onClick={() => setFormData({ ...formData, room_type: type.id })}
-                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                          formData.room_type === type.id
-                            ? 'bg-primary-500 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
-                      >
-                        {type.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+          {/* STEP 2 */}
+          {step === 2 && (
+            <>
+              <h2 className="text-2xl font-bold">Location</h2>
 
-                {/* Bed Type */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Bed Type
-                  </label>
-                  <div className="flex gap-3">
-                    {['single', 'double', 'bunk'].map((type) => (
-                      <button
-                        key={type}
-                        type="button"
-                        onClick={() => setFormData({ ...formData, bed_type: type })}
-                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                          formData.bed_type === type
-                            ? 'bg-primary-500 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
-                      >
-                        {type.charAt(0).toUpperCase() + type.slice(1)}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+              <select
+                name="city"
+                value={form.city}
+                onChange={handleChange}
+                className="w-full border rounded-xl px-4 py-3"
+              >
+                <option value="">Choose City</option>
+                {citiesList.map((city) => (
+                  <option key={city}>{city}</option>
+                ))}
+              </select>
 
-                {/* Furnished & Bathroom */}
-                <div className="grid grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Furnished
-                    </label>
-                    <div className="flex gap-3">
-                      {['yes', 'no'].map((option) => (
-                        <button
-                          key={option}
-                          type="button"
-                          onClick={() => setFormData({ ...formData, furnished: option === 'yes' })}
-                          className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                            formData.furnished === (option === 'yes')
-                              ? 'bg-primary-500 text-white'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
-                        >
-                          {option === 'yes' ? 'Yes' : 'No'}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Bathroom
-                    </label>
-                    <div className="flex gap-3">
-                      {['private', 'shared'].map((type) => (
-                        <button
-                          key={type}
-                          type="button"
-                          onClick={() => setFormData({ ...formData, bathroom: type })}
-                          className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                            formData.bathroom === type
-                              ? 'bg-primary-500 text-white'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
-                        >
-                          {type === 'private' ? 'Private' : 'Shared'}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Amenities */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Amenities
-                  </label>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {amenitiesList.map((amenity) => {
-                      const Icon = amenity.icon;
-                      return (
-                        <button
-                          key={amenity.id}
-                          type="button"
-                          onClick={() => handleAmenityToggle(amenity.id)}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-                            formData.amenities.includes(amenity.id)
-                              ? 'bg-primary-500 text-white'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
-                        >
-                          <Icon className="h-4 w-4" />
-                          {amenity.name}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {/* Preferences */}
-              <div className="card p-8 space-y-6">
-                <h2 className="text-xl font-semibold text-gray-900 border-b pb-3">Preferences</h2>
-                
-                {/* Preferred Roommate */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Preferred Roommate
-                  </label>
-                  <div className="flex gap-3">
-                    {['any', 'male', 'female'].map((gender) => (
-                      <button
-                        key={gender}
-                        type="button"
-                        onClick={() => setFormData({ ...formData, preferred_gender: gender })}
-                        className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                          formData.preferred_gender === gender
-                            ? 'bg-primary-500 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
-                      >
-                        {gender === 'any' ? 'Any' : gender === 'male' ? 'Male' : 'Female'}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Toggles */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700">Smoking Allowed</span>
-                    <button
-                      type="button"
-                      onClick={() => setFormData({ ...formData, smoking_allowed: !formData.smoking_allowed })}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        formData.smoking_allowed ? 'bg-primary-500' : 'bg-gray-300'
-                      }`}
-                    >
-                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        formData.smoking_allowed ? 'translate-x-6' : 'translate-x-1'
-                      }`} />
-                    </button>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700">Pets Allowed</span>
-                    <button
-                      type="button"
-                      onClick={() => setFormData({ ...formData, pets_allowed: !formData.pets_allowed })}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        formData.pets_allowed ? 'bg-primary-500' : 'bg-gray-300'
-                      }`}
-                    >
-                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        formData.pets_allowed ? 'translate-x-6' : 'translate-x-1'
-                      }`} />
-                    </button>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700">Guests Allowed</span>
-                    <button
-                      type="button"
-                      onClick={() => setFormData({ ...formData, guests_allowed: !formData.guests_allowed })}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        formData.guests_allowed ? 'bg-primary-500' : 'bg-gray-300'
-                      }`}
-                    >
-                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        formData.guests_allowed ? 'translate-x-6' : 'translate-x-1'
-                      }`} />
-                    </button>
-                  </div>
-                </div>
-
-                {/* About Household */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    About the Household
-                  </label>
-                  <textarea
-                    name="household_description"
-                    rows="4"
-                    value={formData.household_description}
-                    onChange={handleChange}
-                    className="input"
-                    placeholder="Tell potential roommates about your lifestyle, daily routine, house rules..."
-                  />
-                </div>
-              </div>
-
-              {/* Upload Photos */}
-              <div className="card p-8">
-                <h2 className="text-xl font-semibold text-gray-900 border-b pb-3 mb-4">Upload Photos</h2>
-                
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handlePhotoUpload}
-                    className="hidden"
-                    id="photo-upload"
-                  />
-                  <label
-                    htmlFor="photo-upload"
-                    className="cursor-pointer inline-flex flex-col items-center"
-                  >
-                    <PhotoIcon className="h-12 w-12 text-gray-400 mb-2" />
-                    <span className="text-gray-600">Drag and drop photos here or click to upload</span>
-                    <span className="text-xs text-gray-400 mt-1">Upload up to 10 photos</span>
-                  </label>
-                </div>
-                
-                {photos.length > 0 && (
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-4">
-                    {photos.map((photo, index) => (
-                      <div key={index} className="relative">
-                        <img
-                          src={URL.createObjectURL(photo)}
-                          alt={`Preview ${index + 1}`}
-                          className="h-24 w-full object-cover rounded-lg"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removePhoto(index)}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
-                        >
-                          <XMarkIcon className="h-4 w-4" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <p className="text-sm text-gray-500 mt-2">
-                  {photos.length} / 10 photos uploaded
+              <div className="bg-slate-100 rounded-2xl p-8 text-center">
+                <MapPinIcon className="w-10 h-10 mx-auto text-emerald-500" />
+                <p className="mt-3 text-slate-500">
+                  Map integration coming soon
                 </p>
               </div>
-            </div>
+            </>
           )}
 
-          {/* Navigation Buttons */}
-          <div className="flex gap-4 pt-4">
-            {currentStep > 1 && (
+          {/* STEP 3 */}
+          {step === 3 && (
+            <>
+              <h2 className="text-2xl font-bold">Pricing</h2>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <input
+                  type="number"
+                  name="price"
+                  placeholder="Price"
+                  value={form.price}
+                  onChange={handleChange}
+                  className="border rounded-xl px-4 py-3"
+                />
+
+                <input
+                  type="date"
+                  name="available_from"
+                  value={form.available_from}
+                  onChange={handleChange}
+                  className="border rounded-xl px-4 py-3"
+                />
+              </div>
+
+              <label className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  name="furnished"
+                  checked={form.furnished}
+                  onChange={handleChange}
+                />
+                Furnished
+              </label>
+            </>
+          )}
+
+          {/* STEP 4 */}
+          {step === 4 && (
+            <>
+              <h2 className="text-2xl font-bold">Details & Photos</h2>
+
+              <div>
+                <p className="font-semibold mb-3">Amenities</p>
+
+                <div className="grid md:grid-cols-3 gap-3">
+                  {amenitiesList.map((item) => {
+                    const Icon = item.icon;
+
+                    return (
+                      <button
+                        type="button"
+                        key={item.id}
+                        onClick={() => toggleAmenity(item.id)}
+                        className={`flex items-center gap-3 p-4 rounded-xl border ${
+                          form.amenities.includes(item.id)
+                            ? "bg-emerald-500 text-white border-emerald-500"
+                            : "border-slate-200"
+                        }`}
+                      >
+                        <Icon className="w-5 h-5" />
+                        {item.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* photos */}
+              <div className="border-2 border-dashed rounded-2xl p-8 text-center">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  hidden
+                  onChange={handleUpload}
+                />
+
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current.click()}
+                  className="bg-emerald-600 text-white px-6 py-3 rounded-xl"
+                >
+                  Upload Photos
+                </button>
+
+                <p className="text-sm text-slate-500 mt-2">
+                  Minimum 3 photos
+                </p>
+              </div>
+
+              {previews.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                  {previews.map((img, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={img}
+                        className="h-28 w-full object-cover rounded-xl"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => removePhoto(index)}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
+                      >
+                        <XMarkIcon className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+
+          {/* buttons */}
+          <div className="flex gap-4 pt-6">
+            {step > 1 && (
               <button
                 type="button"
-                onClick={prevStep}
-                className="btn-secondary flex-1"
+                onClick={prev}
+                className="flex-1 py-3 rounded-xl bg-slate-200"
               >
                 Previous
               </button>
             )}
-            
-            {currentStep < 4 ? (
+
+            {step < 4 ? (
               <button
                 type="button"
-                onClick={nextStep}
-                className="btn-primary flex-1"
+                onClick={next}
+                className="flex-1 py-3 rounded-xl bg-emerald-600 text-white"
               >
                 Continue
               </button>
@@ -763,9 +419,9 @@ export default function CreateListing() {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-primary flex-1"
+                className="flex-1 py-3 rounded-xl bg-emerald-600 text-white"
               >
-                {loading ? 'Publishing...' : 'Publish Listing'}
+                {loading ? "Publishing..." : "Publish Listing"}
               </button>
             )}
           </div>
