@@ -3,17 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { listingsService } from "../src/services/listings";
 import { useAuthStore } from "../src/store/authStore";
 import {
-  PhotoIcon,
   XMarkIcon,
   MapPinIcon,
-  CurrencyDollarIcon,
   HomeIcon,
   WifiIcon,
   FireIcon,
   DevicePhoneMobileIcon,
   BuildingStorefrontIcon,
   UserIcon,
-  CheckIcon,
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import { useMessages } from '../src/hooks/useMessages';
 import { useAuthStore } from '../src/store/authStore';

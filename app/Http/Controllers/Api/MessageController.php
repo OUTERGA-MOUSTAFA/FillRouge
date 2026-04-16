@@ -28,7 +28,7 @@ class MessageController extends Controller
     public function conversations(Request $request)
     {
         $user = $request->user();
-        $userId = (int) $user->id; // ✅ Cast explicite
+        $userId = (int) $user->id; // Cast explicite
         
         // Récupérer tous les IDs des utilisateurs avec qui on a conversé
         $conversationUserIds = Message::where('sender_id', $userId)
@@ -45,7 +45,7 @@ class MessageController extends Controller
             return response()->json(['success' => true, 'data' => []]);
         }
         
-        // ✅ Eager loading: une seule requête pour tous les users
+        // Eager loading: une seule requête pour tous les users
         $users = User::withTrashed()->whereIn('id', $conversationUserIds)->get()->keyBy('id');
         
         // Récupérer le dernier message pour chaque conversation

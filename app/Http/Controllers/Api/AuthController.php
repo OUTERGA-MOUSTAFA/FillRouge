@@ -38,6 +38,9 @@ class AuthController extends Controller
             'gender' => 'nullable|in:male,female,other',
             'birth_date' => 'nullable|date|before:today',
             'role' => 'required|string|in:chercheur,semsar',
+            'interests' => 'nullable|array',
+            'interests.*' => 'string',
+            'bio' => 'nullable|string|max:1000',
         ]);
 
         if ($validator->fails()) {
@@ -54,13 +57,11 @@ class AuthController extends Controller
             'subscription_plan' => 'free',
             'remaining_ads' => 2,
             'role' => $request->role,
+            'interests' => implode(',', $request->interests ?? []),
+            'bio' => $request->bio,
         ]);
 
-        // Créer le profil
-        $user->profile()->create();
-
         // Envoyer codes de vérification
-        // Auto-vérifier l'email en développement
         if (app()->environment('local')) {
             $user->update(['email_verified_at' => now()]);
         } else {
@@ -70,10 +71,14 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        // Charger le profil avec les données
+        $user->load('profile');
+
         return response()->json([
             'success' => true,
             'message' => 'Inscription réussie. Veuillez vérifier votre email et téléphone.',
-            'user' => $user->only(['id', 'full_name', 'email', 'phone']),
+            'user' => $user->only(['id', 'full_name', 'email', 'phone', 'role']),
+            'profile' => $user->profile,
             'token' => $token
         ], 201);
     }

@@ -14,7 +14,6 @@ export default function Register() {
   const [avatar, setAvatar] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     full_name: '',
@@ -466,7 +465,7 @@ export default function Register() {
               {/* Login Link */}
               <p className="text-center text-sm text-gray-600">
                 Already have an account?{' '}
-                <Link to="/login" className="text-green-600 hover:text-white font-medium">
+                <Link to="/login" className="text-green-600 hover:text-green-800 font-medium">
                   Login
                 </Link>
               </p>
