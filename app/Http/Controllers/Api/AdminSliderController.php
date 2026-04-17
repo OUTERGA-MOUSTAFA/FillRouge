@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 
 class AdminSliderController extends Controller
 {
-    public function index() // Pour l'admin - récupère TOUS les sliders
+    public function index()
     {
         $sliders = Slider::ordered()->get();
         return response()->json(['success' => true, 'data' => $sliders]);

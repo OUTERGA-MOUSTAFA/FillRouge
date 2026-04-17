@@ -120,6 +120,22 @@ class IncomeVerificationController extends Controller
     /**
  * Liste des demandes (Admin)
  */
+// public function list(Request $request)
+// {
+//     $query = IncomeVerification::with('user');
+    
+//     if ($request->status) {
+//         $query->where('status', $request->status);
+//     }
+    
+//     $perPage = $request->per_page ?? 20;
+//     $verifications = $query->orderBy('created_at', 'desc')->paginate($perPage);
+    
+//     return response()->json([
+//         'success' => true,
+//         'data' => $verifications
+//     ]);
+// }
 public function list(Request $request)
 {
     $query = IncomeVerification::with('user');
@@ -128,8 +144,7 @@ public function list(Request $request)
         $query->where('status', $request->status);
     }
     
-    $perPage = $request->per_page ?? 20;
-    $verifications = $query->orderBy('created_at', 'desc')->paginate($perPage);
+    $verifications = $query->latest()->paginate(20);
     
     return response()->json([
         'success' => true,
