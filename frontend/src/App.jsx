@@ -6,7 +6,6 @@ import AdminRoute from './components/common/AdminRoute';
 import LoadingSpinner from './components/common/LoadingSpinner';
 import { useAuthStore } from './store/authStore';
 import CompleteProfile from '../pages/CompletProfile';
-import AdminSliders from '../pages/Admin/Sliders';
 
 // Lazy loading des pages - réduction de la taille du bundle initial
 const Home = lazy(() => import('../pages/Home'));
@@ -37,13 +36,14 @@ const SubscriptionPlans = lazy(() => import('../pages/Subscription/Plans'));
 const SubscriptionCheckout = lazy(() => import('../pages/Subscription/Checkout'));
 
 // Admin Pages
-const AdminDashboard = lazy(() => import('../pages/Admin/Dashboard'));
-const AdminUsers = lazy(() => import('../pages/Admin/Users'));
-const AdminUserDetail = lazy(() => import('../pages/Admin/UserDetail'));
-const AdminListings = lazy(() => import('../pages/Admin/Listings'));
-const AdminReports = lazy(() => import('../pages/Admin/Reports'));
-const AdminIncomeVerifications = lazy(() => import('../pages/Admin/IncomeVerifications'));
-
+const AdminDashboard = lazy(() => import('../pages/Admin/AdminDashboard'));
+const AdminUsers = lazy(() => import('../pages/Admin/AdminUsers'));
+const AdminUserDetail = lazy(() => import('../pages/Admin/AdminUserDetail'));
+const AdminListings = lazy(() => import('../pages/Admin/AdminListings'));
+const AdminReports = lazy(() => import('../pages/Admin/AdminReports'));
+const AdminIncomeVerifications = lazy(() => import('../pages/Admin/AdminIncomeVerifications'));
+const Favorites = lazy(() => import('../pages/Favorites'));
+const AdminSliders = lazy(() => import('../pages/Admin/AdminSliders'));
 function App() {
   const { token, fetchUser } = useAuthStore();
 
@@ -85,6 +85,7 @@ function App() {
             <Route path="/my-listings" element={<ProtectedRoute><MyListings /></ProtectedRoute>} />
             <Route path="/listings/create" element={<ProtectedRoute><CreateListing /></ProtectedRoute>} />
             <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+            <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
 
             {/* Subscription */}
             <Route path="/subscription/plans" element={<ProtectedRoute><SubscriptionPlans /></ProtectedRoute>} />
@@ -96,8 +97,8 @@ function App() {
             <Route path="/admin/users/:id" element={<AdminRoute><AdminUserDetail /></AdminRoute>} />
             <Route path="/admin/listings" element={<AdminRoute><AdminListings /></AdminRoute>} />
             <Route path="/admin/reports" element={<AdminRoute><AdminReports /></AdminRoute>} />
-            <Route path="/admin/income-verifications" element={<AdminRoute><AdminIncomeVerifications /></AdminRoute>} />
             <Route path="/admin/sliders" element={<AdminRoute><AdminSliders /></AdminRoute>} />
+            <Route path="/admin/income-verifications" element={<AdminRoute><AdminIncomeVerifications /></AdminRoute>} />
           </Routes>
         </Suspense>
       </main>

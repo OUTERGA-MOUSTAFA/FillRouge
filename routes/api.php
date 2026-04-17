@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\AdminSliderController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BackgroundCheckController;
 use App\Http\Controllers\Api\IncomeVerificationController;
@@ -177,5 +178,5 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     // Route::post('/sliders', [SliderController::class, 'store']);
     // Route::put('/sliders/{id}', [SliderController::class, 'update']);
     // Route::delete('/sliders/{id}', [SliderController::class, 'destroy']);
-    Route::apiResource('sliders', SliderController::class);
+    Route::apiResource('sliders', AdminSliderController::class);
 });
