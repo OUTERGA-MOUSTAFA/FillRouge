@@ -39,11 +39,11 @@ export default function Login() {
     <div className="min-h-screen flex bg-gray-50">
 
       {/* ── Panneau gauche — illustration / brand ─────────────────────── */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-primary-600">
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#009966]">
         {/* Formes décoratives */}
-        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary-500 opacity-40" />
+        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-[#00BBA7] opacity-40" />
         <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-teal-500 opacity-20" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-64 w-64 rounded-full bg-primary-400 opacity-20" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-64 w-64 rounded-full bg-[#33bfaf] opacity-20" />
 
         {/* Contenu */}
         <div className="relative z-10 flex flex-col justify-between p-12 text-white w-full">
@@ -60,14 +60,14 @@ export default function Login() {
             <h2 className="text-4xl font-extrabold leading-snug mb-4">
               Trouvez votre<br />colocataire idéal<br />au Maroc.
             </h2>
-            <p className="text-primary-100 text-base max-w-xs leading-relaxed">
+            <p className="text-[#ccefeb] text-base max-w-xs leading-relaxed">
               Des milliers de profils vérifiés dans toutes les grandes villes — Casablanca, Rabat, Marrakech et plus.
             </p>
           </div>
 
           {/* Témoignage */}
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-5">
-            <p className="text-sm text-primary-50 italic leading-relaxed mb-3">
+            <p className="text-sm text-[#e6f7f5] italic leading-relaxed mb-3">
               "J'ai trouvé ma colocataire en moins d'une semaine grâce à Darna. L'interface est simple et les profils sont fiables."
             </p>
             <div className="flex items-center gap-2">
@@ -86,7 +86,7 @@ export default function Login() {
 
         {/* Logo mobile */}
         <div className="lg:hidden flex items-center gap-2 mb-10">
-          <div className="h-9 w-9 rounded-xl bg-primary-600 flex items-center justify-center">
+          <div className="h-9 w-9 rounded-xl bg-[#009966] flex items-center justify-center">
             <span className="text-white font-extrabold text-lg">D</span>
           </div>
           <span className="text-xl font-bold text-gray-900">Darna</span>
@@ -158,7 +158,7 @@ export default function Login() {
                   onChange={e => setEmail(e.target.value)}
                   placeholder="ahmed@exemple.com"
                   className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white
-                    focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 transition-all"
+                    focus:outline-none focus:ring-2 focus:ring-[#00BBA7]/30 focus:border-[#00BBA7] transition-all"
                 />
               </div>
             </div>
@@ -187,7 +187,7 @@ export default function Login() {
                   onChange={e => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl text-sm bg-white
-                    focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 transition-all"
+                    focus:outline-none focus:ring-2 focus:ring-[#00BBA7]/30 focus:border-[#00BBA7] transition-all"
                 />
                 <button
                   type="button"
@@ -209,7 +209,7 @@ export default function Login() {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={e => setRememberMe(e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-[#00BBA7]"
               />
               <label htmlFor="remember-me" className="text-sm text-gray-600">
                 Se souvenir de moi
@@ -223,7 +223,7 @@ export default function Login() {
               className="w-full flex items-center justify-center gap-2 py-3 rounded-xl
                 bg-[#009966] text-white text-sm font-semibold
                 hover:bg-[#00734d] active:scale-[0.99]
-                focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
+                focus:outline-none focus:ring-2 focus:ring-[#00BBA7] focus:ring-offset-2
                 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
             >
               {loading ? (

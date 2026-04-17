@@ -105,13 +105,13 @@ class ListingController extends Controller
 
         $user = $request->user();
         
-        // ✅ Correction: Vérifier si l'email est vérifié
-        if (!$user->email_verified_at) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Veuillez vérifier votre email avant de publier une annonce.'
-            ], 403);
-        }
+        // Vérifier si l'email est vérifié
+        // if (!$user->email_verified_at) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Veuillez vérifier votre email avant de publier une annonce.'
+        //     ], 403);
+        // }
 
         $validator = Validator::make($request->all(), [
             'type' => 'required|in:room,apartment,looking_for_roommate',

@@ -179,6 +179,90 @@ class AdminController extends Controller
         ]);
     }
     
+
+    /**
+ * Récupérer les annonces récentes
+ */
+public function recentListings()
+{
+    $listings = Listing::with('user')
+        ->latest()
+        ->limit(10)
+        ->get()
+        ->map(function($listing) {
+            return [
+                'id' => $listing->id,
+                'title' => $listing->title,
+                'city' => $listing->city,
+                'status' => $listing->status,
+                'created_at' => $listing->created_at,
+                'user' => $listing->user ? [
+                    'full_name' => $listing->user->full_name,
+                ] : null,
+            ];
+        });
+    
+    return response()->json([
+        'success' => true,
+        'data' => $listings
+    ]);
+}
+
+/**
+ * Récupérer les nouveaux utilisateurs
+ */
+public function recentUsers()
+{
+    $users = User::latest()
+        ->limit(10)
+        ->get()
+        ->map(function($user) {
+            return [
+                'id' => $user->id,
+                'full_name' => $user->full_name,
+                'email' => $user->email,
+                'avatar' => $user->avatar,
+                'email_verified_at' => $user->email_verified_at,
+                'created_at' => $user->created_at,
+            ];
+        });
+    
+    return response()->json([
+        'success' => true,
+        'data' => $users
+    ]);
+}
+
+/**
+ * Récupérer les signalements en attente
+ */
+public function pendingReports()
+{
+    $reports = Report::with(['reportedUser', 'listing'])
+        ->where('status', 'pending')
+        ->latest()
+        ->limit(10)
+        ->get()
+        ->map(function($report) {
+            return [
+                'id' => $report->id,
+                'listing_id' => $report->listing_id,
+                'reason' => $report->reason,
+                'status' => $report->status,
+                'created_at' => $report->created_at,
+                'reportedUser' => $report->reportedUser ? [
+                    'full_name' => $report->reportedUser->full_name,
+                ] : null,
+            ];
+        });
+    
+    return response()->json([
+        'success' => true,
+        'data' => $reports
+    ]);
+
+}
+
     /**
      * Afficher un utilisateur spécifique
      */

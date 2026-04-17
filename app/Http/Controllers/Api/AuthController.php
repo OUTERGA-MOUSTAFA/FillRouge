@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\UserProfile;
 use App\Models\VerificationCode;
 use App\Services\SmsService;
 use App\Services\TwoFactorService;
@@ -12,7 +13,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -26,7 +26,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Inscription
+     * Inscription utilisateur
      */
     public function register(Request $request)
     {
@@ -39,14 +39,16 @@ class AuthController extends Controller
             'birth_date' => 'nullable|date|before:today',
             'role' => 'required|string|in:chercheur,semsar',
             'interests' => 'nullable|array',
-            'interests.*' => 'string',
+            'interests.*' => 'string|in:cooking,fitness,tech,travel,study,remote_work,music,sports,reading,art,gaming,outdoors',
             'bio' => 'nullable|string|max:1000',
+            'city' => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
+        
+        // Créer l'utilisateur
         $user = User::create([
             'full_name' => $request->full_name,
             'email' => $request->email,
@@ -57,11 +59,24 @@ class AuthController extends Controller
             'subscription_plan' => 'free',
             'remaining_ads' => 2,
             'role' => $request->role,
-            'interests' => implode(',', $request->interests ?? []),
-            'bio' => $request->bio,
         ]);
 
-        // Envoyer codes de vérification
+        // Créer le profil utilisateur avec les intérêts et la bio
+        $profileData = [
+            'user_id' => $user->id,
+        ];
+        
+        if ($request->has('interests')) {
+            $profileData['interests'] = $request->interests;
+        }
+        
+        if ($request->has('bio')) {
+            $profileData['bio'] = $request->bio;
+        }
+        
+        $user->profile()->create($profileData);
+
+        // Vérification email (auto-vérifié en développement)
         if (app()->environment('local')) {
             $user->update(['email_verified_at' => now()]);
         } else {
@@ -71,7 +86,7 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        // Charger le profil avec les données
+        // Charger le profil
         $user->load('profile');
 
         return response()->json([
@@ -84,7 +99,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Connexion
+     * Connexion utilisateur
      */
     public function login(Request $request)
     {
@@ -109,9 +124,8 @@ class AuthController extends Controller
         // Vérifier 2FA
         if ($user->two_factor_enabled) {
             $twoFactorToken = Str::random(64);
-
             cache()->put("2fa:{$twoFactorToken}", $user->id, 300);
-
+            
             return response()->json([
                 'success' => true,
                 'requires_2fa' => true,
@@ -125,7 +139,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'user' => $user->only(['id', 'full_name', 'email', 'phone', 'subscription_plan']),
+            'user' => $user->only(['id', 'full_name', 'email', 'phone', 'role']),
             'token' => $token
         ]);
     }
@@ -145,7 +159,7 @@ class AuthController extends Controller
         }
 
         $userId = cache()->get("2fa:{$request->two_factor_token}");
-
+        
         if (!$userId) {
             return response()->json([
                 'success' => false,
@@ -154,7 +168,7 @@ class AuthController extends Controller
         }
 
         $user = User::find($userId);
-
+        
         if (!$this->twoFactorService->verifyCode($user->two_factor_secret, $request->code)) {
             return response()->json([
                 'success' => false,
@@ -163,13 +177,13 @@ class AuthController extends Controller
         }
 
         cache()->forget("2fa:{$request->two_factor_token}");
-
+        
         $token = $user->createToken('auth_token')->plainTextToken;
         $user->update(['last_seen_at' => now()]);
 
         return response()->json([
             'success' => true,
-            'user' => $user->only(['id', 'full_name', 'email', 'phone']),
+            'user' => $user->only(['id', 'full_name', 'email', 'phone', 'role']),
             'token' => $token
         ]);
     }
@@ -180,7 +194,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
-
+        
         return response()->json([
             'success' => true,
             'message' => 'Déconnecté'
@@ -188,12 +202,12 @@ class AuthController extends Controller
     }
 
     /**
-     * Envoyer vérification email
+     * Envoyer code de vérification email
      */
     private function sendEmailVerification(User $user)
     {
         $code = $this->smsService->generateOtp();
-
+        
         VerificationCode::create([
             'user_id' => $user->id,
             'type' => 'email',
@@ -202,23 +216,19 @@ class AuthController extends Controller
             'expires_at' => now()->addMinutes(10),
         ]);
 
-        Mail::send('emails.verification', [
-            'user' => $user,
-            'code' => $code
-        ], function ($message) use ($user) {
+        Mail::send('emails.verification', ['user' => $user, 'code' => $code], function ($message) use ($user) {
             $message->to($user->email)
-                ->subject('Vérification de votre email - Darna');
+                    ->subject('Vérification email - Darna');
         });
     }
 
     /**
-     * Envoyer vérification SMS
+     * Envoyer code de vérification SMS
      */
-
     private function sendPhoneVerification(User $user)
     {
         $code = $this->smsService->generateOtp();
-
+        
         VerificationCode::create([
             'user_id' => $user->id,
             'type' => 'phone',
@@ -227,14 +237,11 @@ class AuthController extends Controller
             'expires_at' => now()->addMinutes(10),
         ]);
 
-        // Intégration SMS avec Twilio ou API locale marocaine
         $this->smsService->send($user->phone, "Votre code Darna: {$code}");
     }
 
-
-
     /**
-     * ***********la vérification de l'email***********************
+     * Vérifier email
      */
     public function verifyEmail(Request $request)
     {
@@ -247,7 +254,7 @@ class AuthController extends Controller
         }
 
         $user = $request->user();
-
+        
         $verification = VerificationCode::where('user_id', $user->id)
             ->where('type', 'email')
             ->where('code', $request->code)
@@ -270,10 +277,9 @@ class AuthController extends Controller
             'message' => 'Email vérifié'
         ]);
     }
-    /************************************************************ */
 
     /**
-     ****************** Développer la vérification du numéro de téléphone**************************
+     * Vérifier téléphone
      */
     public function verifyPhone(Request $request)
     {
@@ -286,7 +292,7 @@ class AuthController extends Controller
         }
 
         $user = $request->user();
-
+        
         $verification = VerificationCode::where('user_id', $user->id)
             ->where('type', 'phone')
             ->where('code', $request->code)
@@ -309,49 +315,25 @@ class AuthController extends Controller
             'message' => 'Téléphone vérifié'
         ]);
     }
-    /******************************************************** */
 
     /**
-     * Activer 2FA
+     * Renvoyer les codes de vérification
      */
-    public function enableTwoFactor(Request $request)
+    public function resendVerification(Request $request)
     {
         $user = $request->user();
-
-        $secret = $this->twoFactorService->generateSecret();
-        $qrCode = $this->twoFactorService->generateQRCode($user->email, $secret);
-
-        $user->update([
-            'two_factor_enabled' => true,
-            'two_factor_secret' => $secret,
-            'two_factor_recovery_codes' => json_encode($this->twoFactorService->generateRecoveryCodes())
-        ]);
-
+        
+        if (!$user->email_verified_at) {
+            $this->sendEmailVerification($user);
+        }
+        
+        if (!$user->phone_verified_at) {
+            $this->sendPhoneVerification($user);
+        }
+        
         return response()->json([
             'success' => true,
-            'message' => '2FA activé',
-            'data' => [
-                'secret' => $secret,
-                'qr_code' => $qrCode,
-                'recovery_codes' => json_decode($user->two_factor_recovery_codes)
-            ]
-        ]);
-    }
-
-    /**
-     * Désactiver 2FA
-     */
-    public function disableTwoFactor(Request $request)
-    {
-        $request->user()->update([
-            'two_factor_enabled' => false,
-            'two_factor_secret' => null,
-            'two_factor_recovery_codes' => null,
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => '2FA désactivé'
+            'message' => 'Codes de vérification renvoyés'
         ]);
     }
 
@@ -370,15 +352,14 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
         $token = Str::random(64);
-
+        
         cache()->put("password_reset:{$token}", $user->id, 3600);
-
-        // Envoyer email de réinitialisation
+        
         Mail::send('emails.password-reset', ['token' => $token, 'user' => $user], function ($message) use ($user) {
-            $message->to($user->email);
-            $message->subject('Réinitialisation mot de passe - Darna');
+            $message->to($user->email)
+                    ->subject('Réinitialisation mot de passe - Darna');
         });
-
+        
         return response()->json([
             'success' => true,
             'message' => 'Email de réinitialisation envoyé'
@@ -400,7 +381,7 @@ class AuthController extends Controller
         }
 
         $userId = cache()->get("password_reset:{$request->token}");
-
+        
         if (!$userId) {
             return response()->json([
                 'success' => false,
@@ -410,9 +391,9 @@ class AuthController extends Controller
 
         $user = User::find($userId);
         $user->update(['password' => Hash::make($request->password)]);
-
+        
         cache()->forget("password_reset:{$request->token}");
-
+        
         return response()->json([
             'success' => true,
             'message' => 'Mot de passe réinitialisé'
@@ -420,23 +401,46 @@ class AuthController extends Controller
     }
 
     /**
-     * Renvoyer vérification
+     * Activer 2FA
      */
-    public function resendVerification(Request $request)
+    public function enableTwoFactor(Request $request)
     {
         $user = $request->user();
-
-        if (!$user->email_verified_at) {
-            $this->sendEmailVerification($user);
-        }
-
-        if (!$user->phone_verified_at) {
-            $this->sendPhoneVerification($user);
-        }
-
+        
+        $secret = $this->twoFactorService->generateSecret();
+        $qrCode = $this->twoFactorService->generateQRCode($user->email, $secret);
+        
+        $user->update([
+            'two_factor_enabled' => true,
+            'two_factor_secret' => $secret,
+            'two_factor_recovery_codes' => json_encode($this->twoFactorService->generateRecoveryCodes())
+        ]);
+        
         return response()->json([
             'success' => true,
-            'message' => 'Codes de vérification renvoyés'
+            'message' => '2FA activé',
+            'data' => [
+                'secret' => $secret,
+                'qr_code' => $qrCode,
+                'recovery_codes' => json_decode($user->two_factor_recovery_codes)
+            ]
+        ]);
+    }
+
+    /**
+     * Désactiver 2FA
+     */
+    public function disableTwoFactor(Request $request)
+    {
+        $request->user()->update([
+            'two_factor_enabled' => false,
+            'two_factor_secret' => null,
+            'two_factor_recovery_codes' => null,
+        ]);
+        
+        return response()->json([
+            'success' => true,
+            'message' => '2FA désactivé'
         ]);
     }
 }

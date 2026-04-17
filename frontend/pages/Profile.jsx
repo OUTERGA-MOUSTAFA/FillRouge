@@ -15,11 +15,17 @@ import {
   CheckCircleIcon,
   PencilIcon,
   HomeIcon,
+  HeartIcon,
+  MoonIcon,
+  FireIcon,
+  UserGroupIcon,
+  SparklesIcon,
+  DocumentTextIcon
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
 export default function Profile() {
-  const { setUser, logout } = useAuthStore();
+  const { user, setUser, logout } = useAuthStore();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('info');
@@ -32,11 +38,9 @@ export default function Profile() {
     setLoading(true);
     try {
       const response = await authService.getMe();
-      console.log('Profile data:', response.data);
       setProfile(response.data);
       setUser(response.data);
     } catch (error) {
-      console.error('Error fetching profile:', error);
       toast.error('Erreur chargement du profil');
     } finally {
       setLoading(false);
@@ -49,6 +53,30 @@ export default function Profile() {
     window.location.href = '/login';
   };
 
+  const getCompletionPercentage = () => {
+    if (!profile?.profile) return 0;
+    let score = 0;
+    if (profile.full_name) score += 10;
+    if (profile.phone) score += 5;
+    if (profile.birth_date) score += 5;
+    if (profile.gender) score += 5;
+    if (profile.profession) score += 5;
+    if (profile.profile?.city) score += 5;
+    if (profile.profile?.bio && profile.profile.bio.length > 20) score += 10;
+    if (profile.profile?.interests?.length > 0) score += 10;
+    if (profile.profile?.smoking) score += 5;
+    if (profile.profile?.pets) score += 5;
+    if (profile.profile?.sleep_schedule) score += 5;
+    if (profile.profile?.cleanliness) score += 5;
+    if (profile.profile?.social_level) score += 5;
+    if (profile.email_verified_at) score += 10;
+    if (profile.phone_verified_at) score += 10;
+    return Math.min(100, score);
+  };
+
+  const completion = getCompletionPercentage();
+  const isProfileComplete = completion >= 80;
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -57,12 +85,57 @@ export default function Profile() {
     );
   }
 
-  if (!profile) {
-    return <div className="p-10 text-center">No profile found</div>;
-  }
+  if (!profile) return null;
 
   const getInitials = (name) => {
     return name?.charAt(0).toUpperCase() || '?';
+  };
+
+  const getLabel = (value, options) => {
+    const option = options.find(opt => opt.value === value);
+    return option?.label || value;
+  };
+
+  const smokingOptions = [
+    { value: 'no', label: 'Non-fumeur' },
+    { value: 'occasionally', label: 'Occasionnel' },
+    { value: 'yes', label: 'Fumeur' }
+  ];
+
+  const petsOptions = [
+    { value: 'no', label: 'Non' },
+    { value: 'maybe', label: 'Peut-être' },
+    { value: 'yes', label: 'Oui' }
+  ];
+
+  const sleepOptions = [
+    { value: 'early_bird', label: 'Lève-tôt' },
+    { value: 'flexible', label: 'Flexible' },
+    { value: 'night_owl', label: 'Couche-tard' }
+  ];
+
+  const cleanlinessOptions = [
+    { value: 'relaxed', label: 'Relax' },
+    { value: 'moderate', label: 'Modéré' },
+    { value: 'very_clean', label: 'Très propre' }
+  ];
+
+  const socialOptions = [
+    { value: 'introvert', label: 'Introverti' },
+    { value: 'ambivert', label: 'Ambiverti' },
+    { value: 'extrovert', label: 'Extraverti' }
+  ];
+
+  const genderOptions = [
+    { value: 'male', label: 'Homme' },
+    { value: 'female', label: 'Femme' },
+    { value: 'other', label: 'Autre' }
+  ];
+
+  const interestLabels = {
+    cooking: 'Cuisine', fitness: 'Sport', tech: 'Technologie', travel: 'Voyage',
+    study: 'Études', remote_work: 'Télétravail', music: 'Musique', sports: 'Sports',
+    reading: 'Lecture', art: 'Art', gaming: 'Jeux vidéo', outdoors: 'Plein air'
   };
 
   return (
@@ -139,6 +212,34 @@ export default function Profile() {
         </div>
       </div>
 
+      {/* Barre de progression du profil */}
+      <div className="bg-white border-b shadow-sm">
+        <div className="container-custom py-4">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex-1">
+              <div className="flex justify-between text-sm mb-1">
+                <span className="text-gray-600">Complétion du profil</span>
+                <span className="text-[#009966] font-medium">{completion}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div
+                  className="bg-[#009966] h-2.5 rounded-full transition-all duration-500"
+                  style={{ width: `${completion}%` }}
+                ></div>
+              </div>
+            </div>
+            {!isProfileComplete && (
+              <Link
+                to="/complete-profile"
+                className="px-4 py-2 bg-[#009966] text-white rounded-lg text-sm font-medium hover:bg-[#00BBA7] transition-colors"
+              >
+                Compléter mon profil
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+
       <div className="container-custom py-8">
         <div className="grid lg:grid-cols-4 gap-6">
           {/* Sidebar Navigation */}
@@ -157,26 +258,37 @@ export default function Profile() {
                   <span>Informations</span>
                 </button>
                 <button
-                  onClick={() => setActiveTab('listings')}
+                  onClick={() => setActiveTab('interests')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                    activeTab === 'listings'
+                    activeTab === 'interests'
                       ? 'bg-[#00BBA7]/10 text-[#009966] font-medium'
                       : 'text-gray-600 hover:bg-gray-50'
                   }`}
                 >
-                  <HomeIcon className="h-5 w-5" />
-                  <span>Mes annonces</span>
+                  <HeartIcon className="h-5 w-5" />
+                  <span>Centres d'intérêt</span>
                 </button>
                 <button
-                  onClick={() => setActiveTab('reviews')}
+                  onClick={() => setActiveTab('lifestyle')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                    activeTab === 'reviews'
+                    activeTab === 'lifestyle'
                       ? 'bg-[#00BBA7]/10 text-[#009966] font-medium'
                       : 'text-gray-600 hover:bg-gray-50'
                   }`}
                 >
-                  <StarIcon className="h-5 w-5" />
-                  <span>Avis reçus</span>
+                  <SparklesIcon className="h-5 w-5" />
+                  <span>Mode de vie</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('preferences')}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                    activeTab === 'preferences'
+                      ? 'bg-[#00BBA7]/10 text-[#009966] font-medium'
+                      : 'text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  <UserGroupIcon className="h-5 w-5" />
+                  <span>Préférences</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('security')}
@@ -220,7 +332,7 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* Main Content - reste identique */}
+          {/* Main Content */}
           <div className="lg:col-span-3">
             {/* Tab: Informations */}
             {activeTab === 'info' && (
@@ -228,23 +340,31 @@ export default function Profile() {
                 {/* Bio */}
                 {profile.profile?.bio && (
                   <div className="bg-white rounded-xl shadow-sm p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">À propos</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                      <DocumentTextIcon className="h-5 w-5 text-[#00BBA7]" />
+                      À propos
+                    </h3>
                     <p className="text-gray-600 leading-relaxed">{profile.profile.bio}</p>
                   </div>
                 )}
 
                 {/* Informations détaillées */}
                 <div className="bg-white rounded-xl shadow-sm p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Informations détaillées</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Informations personnelles</h3>
                   <div className="grid md:grid-cols-2 gap-4">
+                    <div className="flex items-center gap-3 text-gray-600">
+                      <UserIcon className="h-5 w-5 text-[#4FD1C5]" />
+                      <div>
+                        <p className="text-xs text-gray-400">Nom complet</p>
+                        <p className="font-medium">{profile.full_name}</p>
+                      </div>
+                    </div>
                     {profile.gender && (
                       <div className="flex items-center gap-3 text-gray-600">
                         <UserIcon className="h-5 w-5 text-[#4FD1C5]" />
                         <div>
                           <p className="text-xs text-gray-400">Genre</p>
-                          <p className="font-medium">
-                            {profile.gender === 'male' ? 'Homme' : profile.gender === 'female' ? 'Femme' : 'Autre'}
-                          </p>
+                          <p className="font-medium">{getLabel(profile.gender, genderOptions)}</p>
                         </div>
                       </div>
                     )}
@@ -275,6 +395,15 @@ export default function Profile() {
                         </div>
                       </div>
                     )}
+                    {profile.profile?.neighborhood && (
+                      <div className="flex items-center gap-3 text-gray-600">
+                        <MapPinIcon className="h-5 w-5 text-[#4FD1C5]" />
+                        <div>
+                          <p className="text-xs text-gray-400">Quartier</p>
+                          <p className="font-medium">{profile.profile.neighborhood}</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -297,93 +426,129 @@ export default function Profile() {
                     </div>
                   </div>
                 )}
+              </div>
+            )}
 
-                {/* Centres d'intérêt */}
-                {profile.profile?.interests?.length > 0 && (
-                  <div className="bg-white rounded-xl shadow-sm p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Centres d'intérêt</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {profile.profile.interests.map((interest) => (
-                        <span
-                          key={interest}
-                          className="px-3 py-1.5 bg-[#00BBA7]/10 text-[#009966] rounded-full text-sm font-medium"
-                        >
-                          {interest}
-                        </span>
-                      ))}
-                    </div>
+            {/* Tab: Centres d'intérêt */}
+            {activeTab === 'interests' && (
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <HeartIcon className="h-5 w-5 text-[#00BBA7]" />
+                  Centres d'intérêt
+                </h3>
+                {profile.profile?.interests?.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {profile.profile.interests.map((interest) => (
+                      <span
+                        key={interest}
+                        className="px-3 py-1.5 bg-[#00BBA7]/10 text-[#009966] rounded-full text-sm font-medium"
+                      >
+                        {interestLabels[interest] || interest}
+                      </span>
+                    ))}
                   </div>
-                )}
-
-                {/* Mode de vie */}
-                {profile.profile && (
-                  <div className="bg-white rounded-xl shadow-sm p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Mode de vie</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      {profile.profile.smoking && (
-                        <div className="flex justify-between py-2 border-b">
-                          <span className="text-gray-500">Tabac</span>
-                          <span className="font-medium">
-                            {profile.profile.smoking === 'yes' ? 'Oui' : profile.profile.smoking === 'no' ? 'Non' : 'Occasionnel'}
-                          </span>
-                        </div>
-                      )}
-                      {profile.profile.pets && (
-                        <div className="flex justify-between py-2 border-b">
-                          <span className="text-gray-500">Animaux</span>
-                          <span className="font-medium">
-                            {profile.profile.pets === 'yes' ? 'Oui' : profile.profile.pets === 'no' ? 'Non' : 'Peut-être'}
-                          </span>
-                        </div>
-                      )}
-                      {profile.profile.sleep_schedule && (
-                        <div className="flex justify-between py-2 border-b">
-                          <span className="text-gray-500">Sommeil</span>
-                          <span className="font-medium">
-                            {profile.profile.sleep_schedule === 'early_bird' ? 'Lève-tôt' :
-                              profile.profile.sleep_schedule === 'night_owl' ? 'Couche-tard' : 'Flexible'}
-                          </span>
-                        </div>
-                      )}
-                      {profile.profile.cleanliness && (
-                        <div className="flex justify-between py-2 border-b">
-                          <span className="text-gray-500">Propreté</span>
-                          <span className="font-medium">
-                            {profile.profile.cleanliness === 'very_clean' ? 'Très propre' :
-                              profile.profile.cleanliness === 'moderate' ? 'Modéré' : 'Relax'}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                ) : (
+                  <p className="text-gray-500 text-center py-4">Aucun centre d'intérêt renseigné</p>
                 )}
               </div>
             )}
 
-            {/* Tab: Mes annonces */}
-            {activeTab === 'listings' && (
+            {/* Tab: Mode de vie */}
+            {activeTab === 'lifestyle' && (
               <div className="bg-white rounded-xl shadow-sm p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900">Mes annonces</h3>
-                  <Link to="/listings/create" className="px-4 py-2 bg-[#009966] text-white rounded-lg text-sm hover:bg-[#00BBA7] transition-colors">
-                    + Nouvelle annonce
-                  </Link>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <SparklesIcon className="h-5 w-5 text-[#00BBA7]" />
+                  Mode de vie
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {profile.profile?.smoking && (
+                    <div className="flex justify-between py-2 border-b">
+                      <span className="text-gray-500 flex items-center gap-2">
+                        <FireIcon className="h-4 w-4 text-gray-400" /> Tabac
+                      </span>
+                      <span className="font-medium">{getLabel(profile.profile.smoking, smokingOptions)}</span>
+                    </div>
+                  )}
+                  {profile.profile?.pets && (
+                    <div className="flex justify-between py-2 border-b">
+                      <span className="text-gray-500 flex items-center gap-2">
+                        <HeartIcon className="h-4 w-4 text-gray-400" /> Animaux
+                      </span>
+                      <span className="font-medium">{getLabel(profile.profile.pets, petsOptions)}</span>
+                    </div>
+                  )}
+                  {profile.profile?.sleep_schedule && (
+                    <div className="flex justify-between py-2 border-b">
+                      <span className="text-gray-500 flex items-center gap-2">
+                        <MoonIcon className="h-4 w-4 text-gray-400" /> Sommeil
+                      </span>
+                      <span className="font-medium">{getLabel(profile.profile.sleep_schedule, sleepOptions)}</span>
+                    </div>
+                  )}
+                  {profile.profile?.cleanliness && (
+                    <div className="flex justify-between py-2 border-b">
+                      <span className="text-gray-500 flex items-center gap-2">
+                        <SparklesIcon className="h-4 w-4 text-gray-400" /> Propreté
+                      </span>
+                      <span className="font-medium">{getLabel(profile.profile.cleanliness, cleanlinessOptions)}</span>
+                    </div>
+                  )}
+                  {profile.profile?.social_level && (
+                    <div className="flex justify-between py-2 border-b md:col-span-2">
+                      <span className="text-gray-500 flex items-center gap-2">
+                        <UserGroupIcon className="h-4 w-4 text-gray-400" /> Niveau social
+                      </span>
+                      <span className="font-medium">{getLabel(profile.profile.social_level, socialOptions)}</span>
+                    </div>
+                  )}
                 </div>
-                <div className="text-center py-8 text-gray-500">
-                  <HomeIcon className="h-12 w-12 mx-auto text-gray-300 mb-3" />
-                  <p>Vous n'avez pas encore d'annonces</p>
-                  <Link to="/listings/create" className="text-[#009966] hover:underline mt-2 inline-block">
-                    Créer ma première annonce
-                  </Link>
-                </div>
+                {!profile.profile?.smoking && !profile.profile?.pets && !profile.profile?.sleep_schedule && !profile.profile?.cleanliness && (
+                  <p className="text-gray-500 text-center py-4">Aucune préférence de vie renseignée</p>
+                )}
               </div>
             )}
 
-            {/* Tab: Avis reçus */}
-            {activeTab === 'reviews' && (
+            {/* Tab: Préférences colocataire */}
+            {activeTab === 'preferences' && (
               <div className="bg-white rounded-xl shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Avis reçus</h3>
-                {profile?.id && <ReviewsList userId={profile.id} />}
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <UserGroupIcon className="h-5 w-5 text-[#00BBA7]" />
+                  Préférences colocataire
+                </h3>
+                <div className="space-y-4">
+                  {profile.profile?.preferred_gender && (
+                    <div className="flex justify-between py-2 border-b">
+                      <span className="text-gray-500">Genre préféré</span>
+                      <span className="font-medium">
+                        {profile.profile.preferred_gender === 'male' ? 'Homme' :
+                         profile.profile.preferred_gender === 'female' ? 'Femme' : 'Peu importe'}
+                      </span>
+                    </div>
+                  )}
+                  {profile.profile?.accepts_pets !== null && (
+                    <div className="flex justify-between py-2 border-b">
+                      <span className="text-gray-500">Accepte les animaux</span>
+                      <span className="font-medium">{profile.profile.accepts_pets ? 'Oui' : 'Non'}</span>
+                    </div>
+                  )}
+                  {profile.profile?.accepts_smokers !== null && (
+                    <div className="flex justify-between py-2 border-b">
+                      <span className="text-gray-500">Accepte les fumeurs</span>
+                      <span className="font-medium">{profile.profile.accepts_smokers ? 'Oui' : 'Non'}</span>
+                    </div>
+                  )}
+                  {(profile.profile?.preferred_min_age || profile.profile?.preferred_max_age) && (
+                    <div className="flex justify-between py-2 border-b">
+                      <span className="text-gray-500">Tranche d'âge préférée</span>
+                      <span className="font-medium">
+                        {profile.profile.preferred_min_age || '18'} - {profile.profile.preferred_max_age || '100'} ans
+                      </span>
+                    </div>
+                  )}
+                </div>
+                {!profile.profile?.preferred_gender && !profile.profile?.accepts_pets && !profile.profile?.accepts_smokers && (
+                  <p className="text-gray-500 text-center py-4">Aucune préférence renseignée</p>
+                )}
               </div>
             )}
 

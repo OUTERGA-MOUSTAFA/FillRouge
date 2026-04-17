@@ -5,6 +5,8 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 import AdminRoute from './components/common/AdminRoute';
 import LoadingSpinner from './components/common/LoadingSpinner';
 import { useAuthStore } from './store/authStore';
+import CompleteProfile from '../pages/CompletProfile';
+import AdminSliders from '../pages/Admin/Sliders';
 
 // Lazy loading des pages - réduction de la taille du bundle initial
 const Home = lazy(() => import('../pages/Home'));
@@ -75,6 +77,7 @@ function App() {
             {/* Protected */}
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/profile/edit" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
+            <Route path="/complete-profile" element={<ProtectedRoute><CompleteProfile /></ProtectedRoute>} />
             <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
             <Route path="/messages/:userId" element={<ProtectedRoute><Conversation /></ProtectedRoute>} />
             <Route path="/matches" element={<ProtectedRoute><Matches /></ProtectedRoute>} />
@@ -94,6 +97,7 @@ function App() {
             <Route path="/admin/listings" element={<AdminRoute><AdminListings /></AdminRoute>} />
             <Route path="/admin/reports" element={<AdminRoute><AdminReports /></AdminRoute>} />
             <Route path="/admin/income-verifications" element={<AdminRoute><AdminIncomeVerifications /></AdminRoute>} />
+            <Route path="/admin/sliders" element={<AdminRoute><AdminSliders /></AdminRoute>} />
           </Routes>
         </Suspense>
       </main>

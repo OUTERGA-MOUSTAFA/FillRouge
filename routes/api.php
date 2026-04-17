@@ -22,9 +22,14 @@ Route::prefix('auth')->group(function () {
         return response()->json(['csrf_token' => csrf_token()]);
     });
 
+
     // Route publique pour le frontend
     Route::get('/sliders', [SliderController::class, 'index']);
 
+    // Profils publics
+    Route::get('/users/{user}', [UserController::class, 'show']);
+    Route::get('/users/{user}/reviews', [ReviewController::class, 'userReviews']); // ← Ajouter
+    
     // OAuth
     Route::get('/auth/google/redirect', [SocialAuthController::class, 'redirectToGoogle']);
     Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
@@ -116,7 +121,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/reviews/{user}', [ReviewController::class, 'store']);
     Route::put('/reviews/{review}', [ReviewController::class, 'update']);
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy']);
-
+    
     // Paiements
     Route::post('/subscription/checkout', [PaymentController::class, 'checkout']);
     Route::get('/subscription/plans', [PaymentController::class, 'plans']);
@@ -151,12 +156,15 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
 
     Route::get('/listings', [AdminController::class, 'listings']);
     Route::delete('/listings/{listing}', [AdminController::class, 'deleteListing']);
+     Route::get('/recent-listings', [AdminController::class, 'recentListings']);
+    Route::get('/recent-users', [AdminController::class, 'recentUsers']);
+    Route::get('/pending-reports', [AdminController::class, 'pendingReports']);
 
     Route::get('/reports', [AdminController::class, 'reports']);
     Route::put('/reports/{report}/resolve', [AdminController::class, 'resolveReport']);
 
     Route::get('/stats', [AdminController::class, 'statistics']);
-
+    Route::get('/stats/advanced', [AdminController::class, 'advancedStats']);
 
     Route::get('/income-verifications', [IncomeVerificationController::class, 'list']);
     Route::post('/income-verifications/{id}/approve', [IncomeVerificationController::class, 'approve']);
@@ -166,7 +174,8 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
 
 
     // Admin only can add image slider
-    Route::post('/sliders', [SliderController::class, 'store']);
-    Route::put('/sliders/{id}', [SliderController::class, 'update']);
-    Route::delete('/sliders/{id}', [SliderController::class, 'destroy']);
+    // Route::post('/sliders', [SliderController::class, 'store']);
+    // Route::put('/sliders/{id}', [SliderController::class, 'update']);
+    // Route::delete('/sliders/{id}', [SliderController::class, 'destroy']);
+    Route::apiResource('sliders', SliderController::class);
 });

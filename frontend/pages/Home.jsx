@@ -56,7 +56,7 @@ export default function Home() {
   const fetchSliders = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/sliders');
+      const response = await api.get('/auth/sliders');
       
       if (response.data.success && response.data.data.length > 0) {
         setSliders(response.data.data);
@@ -117,7 +117,7 @@ export default function Home() {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#009966] mx-auto mb-4"></div>
           <p className="text-gray-600">Chargement...</p>
         </div>
       </div>
@@ -184,7 +184,7 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {stats.map((stat) => (
               <div key={stat.label}>
-                <div className="text-3xl font-bold text-primary-600">{stat.value}</div>
+                <div className="text-3xl font-bold text-[#009966]">{stat.value}</div>
                 <div className="text-gray-600 mt-1">{stat.label}</div>
               </div>
             ))}
@@ -207,8 +207,8 @@ export default function Home() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature) => (
               <div key={feature.name} className="text-center">
-                <div className="inline-flex items-center justify-center p-3 bg-primary-100 rounded-full mb-4">
-                  <feature.icon className="h-6 w-6 text-primary-600" />
+                <div className="inline-flex items-center justify-center p-3 bg-[#ccefeb] rounded-full mb-4">
+                  <feature.icon className="h-6 w-6 text-[#009966]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   {feature.name}

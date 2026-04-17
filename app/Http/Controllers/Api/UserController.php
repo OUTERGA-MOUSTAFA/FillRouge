@@ -58,7 +58,7 @@ class UserController extends Controller
     }
 
     /**
-     * Mettre à jour le profil utilisateur
+     * Mettre à jour le profil utilisateur (table users)
      */
     public function updateProfile(Request $request)
     {
@@ -71,7 +71,7 @@ class UserController extends Controller
             'profession' => 'nullable|string|max:255',
             'budget_min' => 'nullable|numeric|min:0',
             'budget_max' => 'nullable|numeric|min:0|gte:budget_min',
-            'phone' => 'nullable|string|unique:users,phone,' . $user->id . '|regex:/^(\+212|0)[5-6-7][0-9]{8}$/',
+            'phone' => 'nullable|string|unique:users,phone,' . $user->id,
         ]);
 
         if ($validator->fails()) {
@@ -91,7 +91,7 @@ class UserController extends Controller
     }
 
     /**
-     * Mettre à jour les détails du profil étendu
+     * Mettre à jour les détails du profil (table user_profiles)
      */
     public function updateProfileDetails(Request $request)
     {
@@ -100,7 +100,6 @@ class UserController extends Controller
 
         $validator = Validator::make($request->all(), [
             'bio' => 'nullable|string|max:1000',
-            'description' => 'nullable|string|max:2000',
             'interests' => 'nullable|array',
             'interests.*' => 'string|in:cooking,fitness,tech,travel,study,remote_work,music,sports,reading,art,gaming,outdoors',
             'smoking' => 'nullable|in:yes,no,occasionally',
@@ -114,10 +113,6 @@ class UserController extends Controller
             'preferred_max_age' => 'nullable|integer|min:18|max:100|gte:preferred_min_age',
             'accepts_pets' => 'nullable|boolean',
             'accepts_smokers' => 'nullable|boolean',
-            'city' => 'nullable|string|max:255',
-            'neighborhood' => 'nullable|string|max:255',
-            'latitude' => 'nullable|numeric|between:-90,90',
-            'longitude' => 'nullable|numeric|between:-180,180',
         ]);
 
         if ($validator->fails()) {
@@ -216,12 +211,12 @@ class UserController extends Controller
     {
         $user = $request->user();
 
-        // Vérifier si l'utilisateur a un profil complet
-        if (!$user->profile || $user->profile->getCompletionScore() < 60) {
+        // Vérifier si l'utilisateur a un profil
+        if (!$user->profile) {
             return response()->json([
                 'success' => false,
                 'message' => 'Veuillez compléter votre profil pour recevoir des recommandations',
-                'completion_score' => $user->profile ? $user->profile->getCompletionScore() : 0
+                'completion_score' => 0
             ], 400);
         }
 
@@ -234,7 +229,6 @@ class UserController extends Controller
             'total' => count($recommendations)
         ]);
     }
-
     /**
      * Obtenir le score de compatibilité avec un autre utilisateur
      */
@@ -312,7 +306,6 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'query' => 'nullable|string|min:2',
-            'city' => 'nullable|string',
             'min_age' => 'nullable|integer|min:18',
             'max_age' => 'nullable|integer|max:100',
             'gender' => 'nullable|in:male,female,other',
@@ -347,7 +340,7 @@ class UserController extends Controller
 
         // Ville
         if ($request->city) {
-            $query->whereHas('profile', function ($q) use ($request) {
+            $query->whereHas('user', function ($q) use ($request) {
                 $q->where('city', 'LIKE', "%{$request->city}%");
             });
         }

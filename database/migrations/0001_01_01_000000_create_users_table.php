@@ -23,7 +23,6 @@ return new class extends Migration
             $table->string('avatar')->nullable();
 
             $table->json('preferred_languages')->nullable(); // ['ar', 'fr', 'en', 'es']
-            $table->json('interests')->nullable(); // ['cooking', 'fitness', 'tech', ...]
             $table->enum('sleep_schedule', ['early_bird', 'night_owl'])->nullable();
             $table->boolean('has_pets')->default(false);
             $table->boolean('is_smoker')->default(false);

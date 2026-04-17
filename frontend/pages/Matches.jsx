@@ -4,9 +4,11 @@ import { matchesService } from '../src/services/matches';
 import { usersService } from '../src/services/users';
 import MatchCard from '../src/components/matches/MatchCard';
 import RecommendationCard from '../src/components/matches/RecommendationCard';
+import { useAuthStore } from '../src/store/authStore';
 import toast from 'react-hot-toast';
 
 export default function Matches() {
+  const { user } = useAuthStore();
   const [matches, setMatches] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,6 +29,7 @@ export default function Matches() {
       setMatches(matchesRes.data || []);
       setRecommendations(recosRes.data || []);
     } catch (error) {
+      console.error('Error fetching data:', error);
       const message = error.response?.data?.message || 'Erreur chargement des données';
       toast.error(message);
     } finally {
@@ -40,8 +43,7 @@ export default function Matches() {
       toast.success('Match accepté !');
       fetchData();
     } catch (error) {
-      const message = error.response?.data?.message || 'Erreur';
-      toast.error(message);
+      toast.error('Erreur');
     }
   };
 
@@ -51,8 +53,7 @@ export default function Matches() {
       toast.success('Match refusé');
       fetchData();
     } catch (error) {
-      const message = error.response?.data?.message || 'Erreur';
-      toast.error(message);
+      toast.error('Erreur');
     }
   };
 
@@ -62,18 +63,18 @@ export default function Matches() {
 
   const handleLike = async (userId) => {
     try {
+      // Ici vous pouvez implémenter la logique pour liker une recommandation
       toast.success('Intérêt envoyé !');
       fetchData();
     } catch (error) {
-      const message = error.response?.data?.message || 'Erreur';
-      toast.error(message);
+      toast.error('Erreur');
     }
   };
 
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00BBA7]"></div>
       </div>
     );
   }
@@ -82,31 +83,42 @@ export default function Matches() {
     <div className="container-custom py-8">
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Matches & Recommandations</h1>
 
+      {/* Tabs */}
       <div className="border-b mb-6">
         <div className="flex gap-6">
           <button
             onClick={() => setActiveTab('matches')}
-            className={`pb-3 font-medium ${activeTab === 'matches' ? 'text-primary-600 border-b-2 border-primary-600' : 'text-gray-500'}`}
+            className={`pb-3 font-medium ${activeTab === 'matches' ? 'text-[#009966] border-b-2 border-[#009966]' : 'text-gray-500'}`}
           >
             Mes matches ({matches.length})
           </button>
           <button
             onClick={() => setActiveTab('recommendations')}
-            className={`pb-3 font-medium ${activeTab === 'recommendations' ? 'text-primary-600 border-b-2 border-primary-600' : 'text-gray-500'}`}
+            className={`pb-3 font-medium ${activeTab === 'recommendations' ? 'text-[#009966] border-b-2 border-[#009966]' : 'text-gray-500'}`}
           >
             Recommandations ({recommendations.length})
           </button>
         </div>
       </div>
 
+      {/* Matches Tab */}
       {activeTab === 'matches' && (
         <div className="space-y-4">
           {matches.length === 0 ? (
-            <div className="card p-12 text-center">
-              <p className="text-gray-500">Aucun match pour le moment</p>
-              <p className="text-sm text-gray-400 mt-2">
+            <div className="bg-white rounded-xl shadow-sm p-12 text-center">
+              <div className="text-6xl mb-4">💔</div>
+              <p className="text-gray-500 mb-2">Aucun match pour le moment</p>
+              <p className="text-sm text-gray-400">
                 Complétez votre profil pour recevoir des recommandations
               </p>
+              {(!user?.profile?.interests || user.profile.interests.length === 0) && (
+                <button
+                  onClick={() => navigate('/profile/edit-details')}
+                  className="mt-4 btn-primary text-sm"
+                >
+                  Compléter mon profil
+                </button>
+              )}
             </div>
           ) : (
             matches.map((match) => (
@@ -122,14 +134,24 @@ export default function Matches() {
         </div>
       )}
 
+      {/* Recommendations Tab */}
       {activeTab === 'recommendations' && (
         <div className="space-y-4">
           {recommendations.length === 0 ? (
-            <div className="card p-12 text-center">
-              <p className="text-gray-500">Aucune recommandation pour le moment</p>
-              <p className="text-sm text-gray-400 mt-2">
+            <div className="bg-white rounded-xl shadow-sm p-12 text-center">
+              <div className="text-6xl mb-4">🔍</div>
+              <p className="text-gray-500 mb-2">Aucune recommandation pour le moment</p>
+              <p className="text-sm text-gray-400">
                 Complétez votre profil pour recevoir des suggestions
               </p>
+              {(!user?.profile?.interests || user.profile.interests.length === 0) && (
+                <button
+                  onClick={() => navigate('/profile/edit-details')}
+                  className="mt-4 btn-primary text-sm"
+                >
+                  Compléter mon profil
+                </button>
+              )}
             </div>
           ) : (
             recommendations.map((rec) => (

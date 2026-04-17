@@ -43,6 +43,8 @@ export const authService = {
         return response.data;
     },
 
+    
+
     uploadAvatar: async (file) => {
         const formData = new FormData();
         formData.append('avatar', file);
