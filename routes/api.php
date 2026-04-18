@@ -64,8 +64,8 @@ Route::prefix('auth')->group(function () {
 
 // Annonces publiques
 Route::get('/listings', [ListingController::class, 'index']);
-Route::get('/listings/{listing}', [ListingController::class, 'show']);
 Route::get('/listings/search', [ListingController::class, 'search']);
+Route::get('/listings/{listing}', [ListingController::class, 'show']);
 
 // Profils publics
 Route::get('/users/{user}', [UserController::class, 'show']);
@@ -95,9 +95,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/search/listings', [ListingController::class, 'search']);
 
     // Annonces
-    Route::get('/my-listings', [ListingController::class, 'myListings']);
     Route::post('/listings', [ListingController::class, 'store']);
-    Route::put('/listings/{listing}', [ListingController::class, 'update']);
+    Route::get('/MyListings', [ListingController::class, 'myListings']);
+    Route::put('/listings/{id}', [ListingController::class, 'update']);
     Route::delete('/listings/{listing}', [ListingController::class, 'destroy']);
     Route::post('/listings/{listing}/toggle-status', [ListingController::class, 'toggleStatus']);
     Route::post('/listings/{listing}/feature', [ListingController::class, 'makeFeatured']);

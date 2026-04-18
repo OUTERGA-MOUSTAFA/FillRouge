@@ -166,7 +166,7 @@ export default function CreateListing() {
     try {
       await listingsService.create(fd);
       toast.success("Listing created");
-      navigate("/my-listings");
+      navigate("/MyListings");
     } catch (error) {
       toast.error("Error");
     } finally {

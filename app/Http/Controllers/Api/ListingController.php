@@ -104,7 +104,7 @@ class ListingController extends Controller
         }
 
         $user = $request->user();
-        
+
         // Vérifier si l'email est vérifié
         // if (!$user->email_verified_at) {
         //     return response()->json([
@@ -195,9 +195,20 @@ class ListingController extends Controller
     /**
      * Mettre à jour une annonce
      */
-    public function update(Request $request, Listing $listing)
+    public function update(Request $request, $id)
     {
-       if (!Gate::allows('update', $listing)) {
+        // Récupérer d'abord le listing
+        $listing = Listing::find($id);
+
+        if (!$listing) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Annonce non trouvée'
+            ], 404);
+        }
+
+        // Vérifier l'autorisation ListingPolicy Admin ola Semsar
+        if (!Gate::allows('update', $listing)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Vous n\'êtes pas autorisé à modifier cette annonce.'
@@ -238,7 +249,7 @@ class ListingController extends Controller
      * Supprimer une annonce
      * Implémenter la modification et suppression des annonces
      */
-     public function destroy(Listing $listing)
+    public function destroy(Listing $listing)
     {
         if (!Gate::allows('delete', $listing)) {
             return response()->json([
@@ -264,7 +275,7 @@ class ListingController extends Controller
      * Activer/Désactiver une annonce
      * toggleStatus()
      */
-   public function toggleStatus(Listing $listing)
+    public function toggleStatus(Listing $listing)
     {
         if (!Gate::allows('update', $listing)) {
             return response()->json([
@@ -310,11 +321,11 @@ class ListingController extends Controller
     public function myListings(Request $request)
     {
         $user = $request->user();
-        
+
         $listings = Listing::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->paginate(20);
-        
+
         return response()->json([
             'success' => true,
             'data' => $listings

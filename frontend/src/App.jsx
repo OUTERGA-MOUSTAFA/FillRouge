@@ -1,4 +1,4 @@
-import { lazy, Suspense , useEffect} from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/common/Navbar';
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -6,6 +6,7 @@ import AdminRoute from './components/common/AdminRoute';
 import LoadingSpinner from './components/common/LoadingSpinner';
 import { useAuthStore } from './store/authStore';
 import CompleteProfile from '../pages/CompletProfile';
+import EditListing from '../pages/EditListing';
 
 // Lazy loading des pages - réduction de la taille du bundle initial
 const Home = lazy(() => import('../pages/Home'));
@@ -60,9 +61,19 @@ function App() {
         <Suspense fallback={<LoadingSpinner />}>
           <Routes>
             {/* Public */}
+            {/* <Route path="/" element={<Home />} />
+            <Route path="/listings" element={<Listings />} />
+
+            <Route path="/listings/create" element={<ProtectedRoute><CreateListing /></ProtectedRoute>} />
+            <Route path="/listings/:id" element={<ListingDetail />} />
+            <Route path="/users/:id" element={<UserProfile />} /> */}
+
+            {/* Public */}
             <Route path="/" element={<Home />} />
             <Route path="/listings" element={<Listings />} />
+            <Route path="/listings/create" element={<ProtectedRoute><CreateListing /></ProtectedRoute>} />  {/* ← BEFORE :id */}
             <Route path="/listings/:id" element={<ListingDetail />} />
+            <Route path="/listings/:id" element={<ProtectedRoute><EditListing /></ProtectedRoute>} />
             <Route path="/users/:id" element={<UserProfile />} />
 
             {/* Auth */}
@@ -82,8 +93,7 @@ function App() {
             <Route path="/messages/:userId" element={<ProtectedRoute><Conversation /></ProtectedRoute>} />
             <Route path="/matches" element={<ProtectedRoute><Matches /></ProtectedRoute>} />
             <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
-            <Route path="/my-listings" element={<ProtectedRoute><MyListings /></ProtectedRoute>} />
-            <Route path="/listings/create" element={<ProtectedRoute><CreateListing /></ProtectedRoute>} />
+            <Route path="/MyListings" element={<ProtectedRoute><MyListings /></ProtectedRoute>} />
             <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
             <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
 

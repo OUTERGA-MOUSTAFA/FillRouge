@@ -3,96 +3,96 @@ import api from './api';
 export const adminService = {
   // Dashboard
   getStats: async (period = 'month') => {
-    const response = await api.get('/auth/admin/stats', { params: { period } });
+    const response = await api.get('/admin/stats', { params: { period } });
     return response.data;
   },
   
   getAdvancedStats: async (startDate, endDate) => {
-    const response = await api.get('/auth/admin/stats/advanced', { params: { start_date: startDate, end_date: endDate } });
+    const response = await api.get('/admin/stats/advanced', { params: { start_date: startDate, end_date: endDate } });
     return response.data;
   },
   
   // Users
   getUsers: async (params) => {
-    const response = await api.get('/auth/admin/users', { params });
+    const response = await api.get('/admin/users', { params });
     return response.data;
   },
   
   getUser: async (userId) => {
-    const response = await api.get(`/auth/admin/users/${userId}`);
+    const response = await api.get(`/admin/users/${userId}`);
     return response.data;
   },
   
   suspendUser: async (userId, days, reason) => {
-    const response = await api.put(`/auth/admin/users/${userId}/suspend`, { days, reason });
+    const response = await api.put(`/admin/users/${userId}/suspend`, { days, reason });
     return response.data;
   },
   
   unsuspendUser: async (userId) => {
-    const response = await api.put(`/auth/admin/users/${userId}/unsuspend`);
+    const response = await api.put(`/admin/users/${userId}/unsuspend`);
     return response.data;
   },
   
   verifyUser: async (userId) => {
-    const response = await api.put(`/auth/admin/users/${userId}/verify`);
+    const response = await api.put(`/admin/users/${userId}/verify`);
     return response.data;
   },
   
   deleteUser: async (userId) => {
-    const response = await api.delete(`/auth/admin/users/${userId}`);
+    const response = await api.delete(`/admin/users/${userId}`);
     return response.data;
   },
   
   // Listings
   getListings: async (params) => {
-    const response = await api.get('/auth/admin/listings', { params });
+    const response = await api.get('/admin/listings', { params });
     return response.data;
   },
   
   deleteListing: async (listingId) => {
-    const response = await api.delete(`/auth/admin/listings/${listingId}`);
+    const response = await api.delete(`/admin/listings/${listingId}`);
     return response.data;
   },
   
   // Reports
   getReports: async (params) => {
-    const response = await api.get('/auth/admin/reports', { params });
+    const response = await api.get('/admin/reports', { params });
     return response.data;
   },
   
   resolveReport: async (reportId, action, note) => {
-    const response = await api.put(`/auth/admin/reports/${reportId}/resolve`, { action, note });
+    const response = await api.put(`/admin/reports/${reportId}/resolve`, { action, note });
     return response.data;
   },
   
   // Income Verifications
   getIncomeVerifications: async (params) => {
-    const response = await api.get('/auth/admin/income-verifications', { params });
+    const response = await api.get('/admin/income-verifications', { params });
     return response.data;
   },
   
   approveIncomeVerification: async (id, expiresInDays = 365) => {
-    const response = await api.post(`/auth/admin/income-verifications/${id}/approve`, { expires_in_days: expiresInDays });
+    const response = await api.post(`/admin/income-verifications/${id}/approve`, { expires_in_days: expiresInDays });
     return response.data;
   },
   
   rejectIncomeVerification: async (id, reason) => {
-    const response = await api.post(`/auth/admin/income-verifications/${id}/reject`, { reason });
+    const response = await api.post(`/admin/income-verifications/${id}/reject`, { reason });
     return response.data;
   },
 
    getRecentListings: async () => {
-    const response = await api.get('/auth/admin/recent-listings');
+    const response = await api.get('/admin/recent-listings');
     return response.data;
   },
   
   getRecentUsers: async () => {
-    const response = await api.get('/auth/admin/recent-users');
+    const response = await api.get('/admin/recent-users');
     return response.data;
   },
   
   getPendingReports: async () => {
-    const response = await api.get('/auth/admin/pending-reports');
+    const response = await api.get('/admin/pending-reports');
     return response.data;
   },
 };

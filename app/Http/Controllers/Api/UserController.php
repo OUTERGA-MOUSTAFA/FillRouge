@@ -39,17 +39,17 @@ class UserController extends Controller
         $user->remaining_messages = $user->getRemainingMessagesToday();
         $user->remaining_ads = $user->getRemainingAds();
         $user->profile_completion = $user->profile ? $user->profile->getCompletionScore() : 0;
-        //  $user = $request->user()
-        //     ->load([
-        //         'profile',
-        //         'reviews' => fn($q) => $q->where('is_visible', true)->latest(),
-        //         'subscription'
-        //     ])
-        //     ->loadCount([
-        //         'listings',
-        //         'reviews'
-        //     ]);
-        // $user->average_rating = $user->reviews()->avg('rating') ?? 0;
+         $user = $request->user()
+            ->load([
+                'profile',
+                'reviews' => fn($q) => $q->where('is_visible', true)->latest(),
+                'subscription'
+            ])
+            ->loadCount([
+                'listings',
+                'reviews'
+            ]);
+        $user->average_rating = $user->reviews()->avg('rating') ?? 0;
 
         return response()->json([
             'success' => true,

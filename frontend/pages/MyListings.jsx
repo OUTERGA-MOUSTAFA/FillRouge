@@ -154,7 +154,7 @@ export default function MyListings() {
                     {listing.status === 'active' ? 'Désactiver' : 'Activer'}
                   </button>
                   <Link
-                    to={`/listings/edit/${listing.id}`}
+                    to={`/listings/${listing.id}`}
                     className="btn-secondary text-sm flex items-center justify-center gap-1"
                   >
                     <PencilIcon className="h-4 w-4" />

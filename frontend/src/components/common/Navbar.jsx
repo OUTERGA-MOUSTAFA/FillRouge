@@ -33,7 +33,7 @@ const getNavItems = (user) => {
 
   if (user.role === 'semsar') return [
     ...base,
-    { name: 'Mes annonces', href: '/my-listings', icon: DocumentTextIcon },
+    { name: 'Mes annonces', href: '/MyListings', icon: DocumentTextIcon },
     { name: 'Messages',     href: '/messages',    icon: ChatBubbleLeftRightIcon },
   ];
 
@@ -57,7 +57,7 @@ const getUserMenuItems = (role) => {
 
   if (role === 'semsar') return [
     ...common,
-    { href: '/my-listings',        emoji: '📋', label: 'Mes annonces' },
+    { href: '/myLlistings',        emoji: '📋', label: 'Mes annonces' },
     { href: '/subscription/plans', emoji: '💎', label: 'Abonnement' },
   ];
 

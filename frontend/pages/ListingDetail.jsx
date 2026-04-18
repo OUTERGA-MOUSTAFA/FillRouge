@@ -6,8 +6,8 @@ import {
   FlagIcon, CheckCircleIcon, FireIcon, ShieldCheckIcon
 } from '@heroicons/react/24/outline';
 import { StarIcon } from '@heroicons/react/24/solid';
-import { listingsService } from '../src/services/listings';  // ← chemin corrigé
-import { useAuthStore } from '../src/store/authStore';  // ← chemin corrigé
+import { listingsService } from '../src/services/listings';
+import { useAuthStore } from '../src/store/authStore';
 import toast from 'react-hot-toast';
 
 // Icônes pour les commodités
