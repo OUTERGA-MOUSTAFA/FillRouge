@@ -36,7 +36,6 @@ const amenitiesList = [
 
 export default function CreateListing() {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuthStore();
 
   const fileInputRef = useRef(null);
 
@@ -57,12 +56,12 @@ export default function CreateListing() {
     amenities: [],
   });
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      toast.error("Please login first");
-      navigate("/login");
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!isAuthenticated) {
+  //     toast.error("Please login first");
+  //     navigate("/CreateListing");
+  //   }
+  // }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -151,14 +150,24 @@ export default function CreateListing() {
 
     const fd = new FormData();
 
-    Object.keys(form).forEach((key) => {
-      if (key === "amenities") {
-        fd.append(key, JSON.stringify(form[key]));
-      } else {
-        fd.append(key, form[key]);
-      }
+    //map property_type backend expecting type
+    fd.append('type', form.property_type);
+
+    fd.append('title', form.title);
+    fd.append('description', form.description);
+    fd.append('price', form.price);
+    fd.append('city', form.city);
+    fd.append('available_from', form.available_from);
+
+    // boolean '1'/'0',
+    fd.append('furnished', form.furnished ? '1' : '0');
+
+    // amenities must be array items
+    form.amenities.forEach((amenity, i) => {
+      fd.append(`amenities[${i}]`, amenity);
     });
 
+    // Photos
     photos.forEach((photo, i) => {
       fd.append(`photos[${i}]`, photo);
     });
@@ -168,7 +177,13 @@ export default function CreateListing() {
       toast.success("Listing created");
       navigate("/MyListings");
     } catch (error) {
-      toast.error("Error");
+      // console.log('Validation errors:', error.response?.data);
+      const errors = error.response?.data?.errors;
+      if (errors) {
+        Object.values(errors).flat().forEach(msg => toast.error(msg));
+      } else {
+        toast.error(error.response?.data?.message || "Error");
+      }
     } finally {
       setLoading(false);
     }
@@ -194,9 +209,8 @@ export default function CreateListing() {
           {steps.map((item, index) => (
             <div key={index}>
               <div
-                className={`h-2 rounded-full ${
-                  step >= index + 1 ? "bg-emerald-500" : "bg-slate-200"
-                }`}
+                className={`h-2 rounded-full ${step >= index + 1 ? "bg-emerald-500" : "bg-slate-200"
+                  }`}
               />
               <p className="text-sm mt-2 text-center font-medium text-slate-600">
                 {item}
@@ -222,11 +236,10 @@ export default function CreateListing() {
                     onClick={() =>
                       setForm({ ...form, property_type: type })
                     }
-                    className={`p-5 rounded-2xl border text-center font-semibold capitalize ${
-                      form.property_type === type
-                        ? "border-emerald-500 bg-emerald-50"
-                        : "border-slate-200"
-                    }`}
+                    className={`p-5 rounded-2xl border text-center font-semibold capitalize ${form.property_type === type
+                      ? "border-emerald-500 bg-emerald-50"
+                      : "border-slate-200"
+                      }`}
                   >
                     {type}
                   </button>
@@ -331,11 +344,10 @@ export default function CreateListing() {
                         type="button"
                         key={item.id}
                         onClick={() => toggleAmenity(item.id)}
-                        className={`flex items-center gap-3 p-4 rounded-xl border ${
-                          form.amenities.includes(item.id)
-                            ? "bg-emerald-500 text-white border-emerald-500"
-                            : "border-slate-200"
-                        }`}
+                        className={`flex items-center gap-3 p-4 rounded-xl border ${form.amenities.includes(item.id)
+                          ? "bg-emerald-500 text-white border-emerald-500"
+                          : "border-slate-200"
+                          }`}
                       >
                         <Icon className="w-5 h-5" />
                         {item.name}
