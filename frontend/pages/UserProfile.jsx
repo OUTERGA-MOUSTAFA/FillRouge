@@ -48,7 +48,7 @@ export default function UserProfile() {
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00BBA7]"></div>
       </div>
     );
   }
@@ -102,7 +102,7 @@ export default function UserProfile() {
                   <h4 className="font-medium text-gray-700 mb-2">Intérêts communs</h4>
                   <div className="flex flex-wrap gap-2">
                     {compatibility.common_interests.map((interest) => (
-                      <span key={interest} className="px-2 py-1 bg-primary-100 text-primary-700 rounded-full text-sm">
+                      <span key={interest} className="px-2 py-1 bg-[#ccefeb] text-[#00734d] rounded-full text-sm">
                         {interest}
                       </span>
                     ))}

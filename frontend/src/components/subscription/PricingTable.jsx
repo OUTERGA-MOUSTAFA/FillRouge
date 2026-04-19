@@ -22,7 +22,7 @@ export default function PricingTable({ plans, currentPlan, onSelect }) {
             <th className="p-4 text-left">Fonctionnalité</th>
             <th className="p-4 text-center bg-gray-50 rounded-t-lg">Gratuit</th>
             <th className="p-4 text-center bg-gray-50 rounded-t-lg">Standard</th>
-            <th className="p-4 text-center bg-primary-50 rounded-t-lg">Premium</th>
+            <th className="p-4 text-center bg-[#e6f7f5] rounded-t-lg">Premium</th>
           </tr>
         </thead>
         <tbody>

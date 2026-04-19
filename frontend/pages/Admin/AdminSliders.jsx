@@ -146,13 +146,13 @@ export default function AdminSliders() {
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00BBA7]"></div>
       </div>
     );
   }
 
   return (
-    <div className="container-custom py-8">
+    <div className="container-custom p-8">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Gestion des Sliders</h1>

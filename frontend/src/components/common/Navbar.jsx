@@ -145,15 +145,15 @@ function UserMenu({ user, onLogout }) {
 
   return (
     <Menu as="div" className="relative">
-      <Menu.Button className="flex items-center gap-2 rounded-xl px-2.5 py-1.5 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500/30">
+      <Menu.Button className="flex items-center gap-2 rounded-xl px-2.5 py-1.5 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-[#00BBA7]/30">
         {user?.avatar ? (
           <img
             src={user.avatar}
             alt={user.full_name}
-            className="h-8 w-8 rounded-full object-cover ring-2 ring-primary-100"
+            className="h-8 w-8 rounded-full object-cover ring-2 ring-[#ccefeb]"
           />
         ) : (
-          <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
+          <div className="h-8 w-8 rounded-full bg-[#ccefeb] flex items-center justify-center">
             <span className="text-[#00734d] font-bold text-sm">
               {user?.full_name?.[0]?.toUpperCase() ?? '?'}
             </span>
@@ -305,7 +305,7 @@ export default function Navbar() {
                       to={item.href}
                       className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                         isActive(item.href)
-                          ? 'bg-primary-50 text-[#00734d]'
+                          ? 'bg-[#e6f7f5] text-[#00734d]'
                           : 'text-gray-700 hover:bg-gray-100'
                       }`}
                     >
@@ -334,7 +334,7 @@ export default function Navbar() {
 
                 {user ? <UserMenu user={user} onLogout={handleLogout} /> : <GuestMenu />}
 
-                <Disclosure.Button className="md:hidden flex items-center justify-center h-9 w-9 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500/30">
+                <Disclosure.Button className="md:hidden flex items-center justify-center h-9 w-9 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-[#00BBA7]/30">
                   {open ? <XMarkIcon className="h-5 w-5" /> : <Bars3Icon className="h-5 w-5" />}
                 </Disclosure.Button>
               </div>
@@ -352,7 +352,7 @@ export default function Navbar() {
                   onClick={close}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                     isActive(item.href)
-                      ? 'bg-primary-50 text-[#00734d]'
+                      ? 'bg-[#e6f7f5] text-[#00734d]'
                       : 'text-gray-700 hover:bg-gray-50'
                   }`}
                 >
@@ -380,7 +380,7 @@ export default function Navbar() {
                       {user?.avatar ? (
                         <img src={user.avatar} className="h-9 w-9 rounded-full object-cover" alt="" />
                       ) : (
-                        <div className="h-9 w-9 rounded-full bg-primary-100 flex items-center justify-center">
+                        <div className="h-9 w-9 rounded-full bg-[#ccefeb] flex items-center justify-center">
                           <span className="text-[#00734d] font-bold">{user?.full_name?.[0]}</span>
                         </div>
                       )}

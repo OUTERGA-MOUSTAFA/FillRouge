@@ -19,16 +19,16 @@ export default function Notifications() {
         <div className="container-custom py-8 max-w-3xl">
             <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-3">
-                    <BellIcon className="h-8 w-8 text-primary-500" />
+                    <BellIcon className="h-8 w-8 text-[#00BBA7]" />
                     <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
                     {unreadCount > 0 && (
-                        <span className="bg-primary-500 text-white px-2 py-1 rounded-full text-xs">
+                        <span className="bg-[#00BBA7] text-white px-2 py-1 rounded-full text-xs">
                             {unreadCount} non lues
                         </span>
                     )}
                 </div>
                 {unreadCount > 0 && (
-                    <button onClick={markAllAsRead} className="text-primary-600 hover:text-primary-700 text-sm">
+                    <button onClick={markAllAsRead} className="text-[#009966] hover:text-[#00734d] text-sm">
                         Tout marquer comme lu
                     </button>
                 )}
@@ -37,7 +37,7 @@ export default function Notifications() {
             <div className="space-y-3">
                 {loading ? (
                     <div className="flex justify-center py-12">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00BBA7]"></div>
                     </div>
                 ) : notifications.length === 0 ? (
                     <div className="card p-12 text-center">
@@ -48,7 +48,7 @@ export default function Notifications() {
                     notifications.map((notification) => (
                         <div
                             key={notification.id}
-                            className={`card p-4 transition-all ${!notification.is_read ? 'bg-primary-50 border-primary-200' : ''}`}
+                            className={`card p-4 transition-all ${!notification.is_read ? 'bg-[#e6f7f5] border-[#99dfd7]' : ''}`}
                             onClick={() => !notification.is_read && markAsRead(notification.id)}
                         >
                             <div className="flex items-start gap-4">
@@ -61,7 +61,7 @@ export default function Notifications() {
                                     </p>
                                 </div>
                                 {!notification.is_read && (
-                                    <CheckCircleIcon className="h-5 w-5 text-primary-500" />
+                                    <CheckCircleIcon className="h-5 w-5 text-[#00BBA7]" />
                                 )}
                             </div>
                         </div>

@@ -36,7 +36,7 @@ export default function ForgotPassword() {
             Nous avons envoyé un lien de réinitialisation à {email}.<br />
             Vérifiez votre boîte de réception.
           </p>
-          <Link to="/login" className="text-primary-600 hover:text-primary-500">
+          <Link to="/login" className="text-[#009966] hover:text-[#00BBA7]">
             Retour à la connexion
           </Link>
         </div>
@@ -77,7 +77,7 @@ export default function ForgotPassword() {
           </button>
           
           <div className="text-center">
-            <Link to="/login" className="text-primary-600 hover:text-primary-500">
+            <Link to="/login" className="text-[#009966] hover:text-[#00BBA7]">
               Retour à la connexion
             </Link>
           </div>

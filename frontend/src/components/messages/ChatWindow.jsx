@@ -36,7 +36,7 @@ export default function ChatWindow({ messages, currentUserId, otherUser, onSendM
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm overflow-hidden flex flex-col h-[600px]">
+    <div className="bg-gray-50 rounded-xl shadow-sm overflow-hidden flex flex-col h-[600px]">
       {/* Header */}
       <div className="p-4 border-b bg-gray-50 flex items-center gap-3">
         {otherUser?.avatar ? (
@@ -79,7 +79,7 @@ export default function ChatWindow({ messages, currentUserId, otherUser, onSendM
         <div className="flex gap-2">
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="p-2 text-gray-500 hover:text-primary-600 rounded-lg hover:bg-gray-100"
+            className="p-2 text-gray-500 hover:text-[#009966] rounded-lg hover:bg-gray-100"
           >
             <PhotoIcon className="h-5 w-5" />
           </button>

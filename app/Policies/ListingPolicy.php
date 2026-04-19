@@ -17,7 +17,7 @@ class ListingPolicy
         if (!in_array($user->role, ['semsar'])) {
             return false;
         }
-        
+
         // Vérifier la limite d'annonces
         return $user->canCreateListing();
     }
@@ -25,18 +25,23 @@ class ListingPolicy
     /**
      * Vérifier si l'utilisateur peut voir l'annonce
      */
-    public function view(User $user, Listing $listing): bool
+    public function view(?User $user, Listing $listing): bool
     {
         // Les annonces actives sont visibles par tous
         if ($listing->status === 'active') {
             return true;
         }
-        
+
         // Le propriétaire (semsar) peut voir ses annonces même inactives
         if ($user->id === $listing->user_id && $user->role === 'semsar') {
             return true;
         }
-        
+
+        // Must be logged in for inactive listings
+        if (!$user) {
+            return false;
+        }
+
         // L'admin peut voir toutes les annonces
         return $user->role === 'admin';
     }
@@ -45,13 +50,13 @@ class ListingPolicy
      * Vérifier si l'utilisateur peut modifier l'annonce
      * Seulement le semsar qui l'a créée ou l'admin
      */
-    public function update(User $user, Listing $listing): bool
+    public function update(?User $user, Listing $listing): bool
     {
         // Le semsar propriétaire peut modifier son annonce
         if ($user->id === $listing->user_id && $user->role === 'semsar') {
             return true;
         }
-        
+
         // L'admin peut modifier toutes les annonces
         return $user->role === 'admin';
     }
@@ -66,7 +71,7 @@ class ListingPolicy
         if ($user->id === $listing->user_id && $user->role === 'semsar') {
             return true;
         }
-        
+
         // L'admin peut supprimer toutes les annonces
         return $user->role === 'admin';
     }
@@ -81,7 +86,7 @@ class ListingPolicy
         if ($user->id === $listing->user_id && $user->role === 'semsar') {
             return true;
         }
-        
+
         // L'admin peut activer/désactiver toutes les annonces
         return $user->role === 'admin';
     }
@@ -95,7 +100,7 @@ class ListingPolicy
         if ($user->id === $listing->user_id && $user->is_premium && $user->role === 'semsar') {
             return true;
         }
-        
+
         // L'admin peut mettre en avant n'importe quelle annonce
         return $user->role === 'admin';
     }

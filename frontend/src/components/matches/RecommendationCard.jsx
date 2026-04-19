@@ -24,7 +24,7 @@ export default function RecommendationCard({ recommendation, onLike }) {
         
         {/* Info */}
         <div className="flex-1">
-          <Link to={`/users/${user.id}`} className="font-semibold text-gray-900 hover:text-primary-600">
+          <Link to={`/users/${user.id}`} className="font-semibold text-gray-900 hover:text-[#009966]">
             {user.full_name}
           </Link>
           <div className="text-sm text-gray-500">{user.age} ans</div>
@@ -36,7 +36,7 @@ export default function RecommendationCard({ recommendation, onLike }) {
         {/* Like button */}
         <button
           onClick={() => onLike?.(user.id)}
-          className="p-2 rounded-full bg-primary-100 text-primary-600 hover:bg-primary-200 transition-colors"
+          className="p-2 rounded-full bg-[#ccefeb] text-[#009966] hover:bg-[#99dfd7] transition-colors"
         >
           <HeartIcon className="h-6 w-6" />
         </button>

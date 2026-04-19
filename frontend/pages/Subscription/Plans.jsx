@@ -79,27 +79,27 @@ const PLAN_STYLES = {
     price:      'text-gray-900',
   },
   standard: {
-    ring:       'ring-teal-300',
-    badgeBg:    'bg-teal-50 text-teal-700',
-    iconBg:     'bg-teal-50 text-teal-600',
-    btn:        'bg-teal-500 text-white hover:bg-teal-600',
-    activeBg:   'bg-teal-50',
-    price:      'text-teal-600',
+    ring:       'ring-[#66edd5]',
+    badgeBg:    'bg-[#e6fcf8] text-[#2f7d76]',
+    iconBg:     'bg-[#e6fcf8] text-[#3fa79e]',
+    btn:        'bg-[#4FD1C5] text-white hover:bg-[#3fa79e]',
+    activeBg:   'bg-[#e6fcf8]',
+    price:      'text-[#3fa79e]',
   },
   premium: {
-    ring:       'ring-primary-400',
-    badgeBg:    'bg-primary-600 text-white',
-    iconBg:     'bg-primary-50 text-primary-600',
-    btn:        'bg-primary-600 text-white hover:bg-primary-700',
-    activeBg:   'bg-primary-50',
-    price:      'text-primary-600',
+    ring:       'ring-[#33bfaf]',
+    badgeBg:    'bg-[#009966] text-white',
+    iconBg:     'bg-[#e6f7f5] text-[#009966]',
+    btn:        'bg-[#009966] text-white hover:bg-[#00734d]',
+    activeBg:   'bg-[#e6f7f5]',
+    price:      'text-[#009966]',
   },
 };
 
 // ─── Composant principal ──────────────────────────────────────────────────────
 
 export default function SubscriptionPlans() {
-  const [plans, setPlans]                       = useState(null);
+  const [setPlans]                       = useState(null);
   const [currentSubscription, setCurrentSubscription] = useState(null);
   const [viewMode, setViewMode]                 = useState('cards');
   const [loading, setLoading]                   = useState(true);
@@ -133,7 +133,7 @@ export default function SubscriptionPlans() {
   if (loading) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
-        <div className="h-12 w-12 rounded-full border-4 border-primary-100 border-t-primary-500 animate-spin" />
+        <div className="h-12 w-12 rounded-full border-4 border-[#ccefeb] border-t-[#00BBA7] animate-spin" />
         <p className="text-sm text-gray-400">Chargement des plans…</p>
       </div>
     );
@@ -148,18 +148,18 @@ export default function SubscriptionPlans() {
       <div className="relative overflow-hidden bg-white border-b border-gray-100">
         {/* Décoration de fond */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-primary-50 opacity-60" />
-          <div className="absolute -bottom-12 -left-12 h-64 w-64 rounded-full bg-teal-50 opacity-50" />
+          <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-[#e6f7f5] opacity-60" />
+          <div className="absolute -bottom-12 -left-12 h-64 w-64 rounded-full bg-[#66edd5] opacity-50" />
         </div>
 
         <div className="relative max-w-3xl mx-auto px-4 py-14 text-center">
-          <span className="inline-flex items-center gap-1.5 bg-primary-50 text-primary-600 text-xs font-semibold px-3 py-1 rounded-full mb-4">
-            <StarSolid className="h-3 w-3 text-primary-500" />
+          <span className="inline-flex items-center gap-1.5 bg-[#e6f7f5] text-[#009966] text-xs font-semibold px-3 py-1 rounded-full mb-4">
+            <StarSolid className="h-3 w-3 text-[#00BBA7]" />
             Darna Premium
           </span>
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-3">
             Trouvez votre colocataire idéal,{' '}
-            <span className="text-primary-600">plus vite</span>
+            <span className="text-[#009966]">plus vite</span>
           </h1>
           <p className="text-gray-500 text-base sm:text-lg max-w-xl mx-auto">
             Passez à un plan payant pour débloquer toutes les fonctionnalités et maximiser vos chances.
@@ -183,16 +183,16 @@ export default function SubscriptionPlans() {
         {/* ── Bannière abonnement actuel ─────────────────────────────────── */}
         {currentPlan !== 'free' && (
           <div className="mb-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4
-                          bg-white border border-primary-100 rounded-2xl px-6 py-4 shadow-sm">
+                          bg-white border border-[#ccefeb] rounded-2xl px-6 py-4 shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-primary-50 flex items-center justify-center">
-                <ShieldCheckIcon className="h-5 w-5 text-primary-600" />
+              <div className="h-10 w-10 rounded-full bg-[#e6f7f5] flex items-center justify-center">
+                <ShieldCheckIcon className="h-5 w-5 text-[#009966]" />
               </div>
               <div>
                 <p className="text-sm font-semibold text-gray-900">Votre abonnement actuel</p>
                 <p className="text-sm text-gray-500">
                   Plan{' '}
-                  <span className="font-medium text-primary-600">
+                  <span className="font-medium text-[#009966]">
                     {currentPlan === 'premium' ? 'Premium' : 'Standard'}
                   </span>
                   {currentSubscription?.remaining_days > 0 && (
@@ -206,7 +206,7 @@ export default function SubscriptionPlans() {
             {currentPlan !== 'premium' && (
               <button
                 onClick={() => handleSelectPlan('premium')}
-                className="flex items-center gap-2 bg-primary-600 text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-primary-700 transition-colors shrink-0"
+                className="flex items-center gap-2 bg-[#009966] text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-[#00734d] transition-colors shrink-0"
               >
                 Passer à Premium <ArrowRightIcon className="h-4 w-4" />
               </button>
@@ -256,7 +256,7 @@ function PlanCard({ planKey, isCurrent, onSelect, featured, delay }) {
       style={{ animationDelay: `${delay}ms` }}
       className={`relative flex flex-col bg-white rounded-2xl overflow-hidden transition-all duration-300
         ${featured
-          ? 'ring-2 ' + styles.ring + ' shadow-xl shadow-primary-100 scale-[1.02]'
+          ? 'ring-2 ' + styles.ring + ' shadow-xl shadow-[#ccefeb] scale-[1.02]'
           : 'ring-1 ' + styles.ring + ' shadow-sm hover:shadow-md'
         }`}
     >
@@ -289,16 +289,16 @@ function PlanCard({ planKey, isCurrent, onSelect, featured, delay }) {
       </div>
 
       {/* Séparateur */}
-      <div className={`h-px mx-5 ${featured ? 'bg-primary-100' : 'bg-gray-100'}`} />
+      <div className={`h-px mx-5 ${featured ? 'bg-[#ccefeb]' : 'bg-gray-100'}`} />
 
       {/* Fonctionnalités */}
       <div className="p-6 flex-1 space-y-3">
         {meta.features.map((f, i) => (
           <div key={i} className="flex items-center gap-2.5">
             <div className={`h-5 w-5 rounded-full flex items-center justify-center shrink-0
-              ${f.included ? 'bg-primary-50' : 'bg-gray-50'}`}>
+              ${f.included ? 'bg-[#e6f7f5]' : 'bg-gray-50'}`}>
               {f.included
-                ? <CheckIcon className="h-3 w-3 text-primary-600 stroke-[2.5]" />
+                ? <CheckIcon className="h-3 w-3 text-[#009966] stroke-[2.5]" />
                 : <span className="h-1.5 w-1.5 rounded-full bg-gray-300 block" />
               }
             </div>
@@ -369,7 +369,7 @@ function ComparaisonTable({ currentPlan, onSelect }) {
                 return (
                   <td key={key} className="p-4 text-center">
                     {included
-                      ? <CheckIcon className="h-5 w-5 text-primary-600 mx-auto stroke-[2.5]" />
+                      ? <CheckIcon className="h-5 w-5 text-[#009966] mx-auto stroke-[2.5]" />
                       : <span className="inline-block h-1.5 w-1.5 rounded-full bg-gray-300 mx-auto" />
                     }
                   </td>
@@ -415,7 +415,7 @@ function ViewBtn({ active, onClick, children }) {
       onClick={onClick}
       className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
         active
-          ? 'bg-white text-primary-600 shadow-sm'
+          ? 'bg-white text-[#009966] shadow-sm'
           : 'text-gray-500 hover:text-gray-700'
       }`}
     >

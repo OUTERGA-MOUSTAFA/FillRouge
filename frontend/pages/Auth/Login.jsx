@@ -42,7 +42,7 @@ export default function Login() {
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#009966]">
         {/* Formes décoratives */}
         <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-[#00BBA7] opacity-40" />
-        <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-teal-500 opacity-20" />
+        <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-[#4FD1C5] opacity-20" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-64 w-64 rounded-full bg-[#33bfaf] opacity-20" />
 
         {/* Contenu */}
@@ -74,7 +74,7 @@ export default function Login() {
               <div className="h-8 w-8 rounded-full bg-white/30 flex items-center justify-center text-xs font-bold">S</div>
               <div>
                 <p className="text-xs font-semibold">Salma B.</p>
-                <p className="text-xs text-primary-200">Casablanca</p>
+                <p className="text-xs text-[#99dfd7]">Casablanca</p>
               </div>
             </div>
           </div>
@@ -98,7 +98,7 @@ export default function Login() {
             <h1 className="text-2xl font-bold text-gray-900 mb-1">Bon retour 👋</h1>
             <p className="text-sm text-gray-500">
               Pas encore de compte ?{' '}
-              <Link to="/register" className="text-primary-600 font-medium hover:text-primary-700 transition-colors">
+              <Link to="/register" className="text-[#009966] font-medium hover:text-[#00734d] transition-colors">
                 Créer un compte
               </Link>
             </p>
@@ -171,7 +171,7 @@ export default function Login() {
                 </label>
                 <Link
                   to="/forgot-password"
-                  className="text-xs text-primary-600 font-medium hover:text-primary-700 transition-colors"
+                  className="text-xs text-[#009966] font-medium hover:text-[#00734d] transition-colors"
                 >
                   Mot de passe oublié ?
                 </Link>
@@ -209,7 +209,7 @@ export default function Login() {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={e => setRememberMe(e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-[#00BBA7]"
+                className="h-4 w-4 rounded border-gray-300 text-[#009966] focus:ring-[#00BBA7]"
               />
               <label htmlFor="remember-me" className="text-sm text-gray-600">
                 Se souvenir de moi
@@ -243,7 +243,7 @@ export default function Login() {
           {/* Lien inscription (mobile) */}
           <p className="mt-6 text-center text-sm text-gray-500 lg:hidden">
             Pas encore de compte ?{' '}
-            <Link to="/register" className="text-primary-600 font-medium hover:text-primary-700">
+            <Link to="/register" className="text-[#009966] font-medium hover:text-[#00734d]">
               Créer un compte
             </Link>
           </p>

@@ -223,24 +223,30 @@ class User extends Authenticatable
     /**
      * Vérifier si l'utilisateur peut envoyer un message
      */
-    public function canSendMessage()
-    {
-        if ($this->is_premium) {
-            return true;
-        }
+    // public function canSendMessage()
+    // {
+    //     if ($this->is_premium) {
+    //         return true;
+    //     }
 
-        $dailyLimit = $this->subscription_plan === 'standard' ? 50 : 5;
+    //     $dailyLimit = match ($this->subscription_plan) {
+    //         'standard' => 50,
+    //         'premium'  => PHP_INT_MAX,
+    //         default    => 20,
+    //     };
 
-        // Reset le compteur quotidien si nécessaire
-        if ($this->last_message_reset_date != now()->toDateString()) {
-            $this->update([
-                'daily_messages_count' => 0,
-                'last_message_reset_date' => now()
-            ]);
-        }
+    //     $today = now()->toDateString();
 
-        return $this->daily_messages_count < $dailyLimit;
-    }
+    //     if (!$this->last_message_reset_date || $this->last_message_reset_date != $today) {
+    //         $this->update([
+    //             'daily_messages_count'    => 0,
+    //             'last_message_reset_date' => $today,
+    //         ]);
+    //         return true;
+    //     }
+
+    //     return ($this->daily_messages_count ?? 0) < $dailyLimit;
+    // }
 
     /**
      * Vérifier si l'utilisateur peut créer une annonce
@@ -278,17 +284,17 @@ class User extends Authenticatable
     /**
      * Obtenir le nombre de messages restants aujourd'hui
      */
-    public function getRemainingMessagesToday()
-    {
-        if ($this->is_premium) {
-            return PHP_INT_MAX;
-        }
+    // public function getRemainingMessagesToday()
+    // {
+    //     if ($this->is_premium) {
+    //         return PHP_INT_MAX;
+    //     }
 
-        $dailyLimit = $this->subscription_plan === 'standard' ? 50 : 5;
-        $used = $this->daily_messages_count;
+    //     $dailyLimit = $this->subscription_plan === 'standard' ? 50 : 5;
+    //     $used = $this->daily_messages_count;
 
-        return max(0, $dailyLimit - $used);
-    }
+    //     return max(0, $dailyLimit - $used);
+    // }
 
     /**
      * Obtenir le nombre d'annonces restantes
@@ -383,5 +389,60 @@ class User extends Authenticatable
     {
         return $query->whereBetween('budget_min', [$min, $max])
             ->orWhereBetween('budget_max', [$min, $max]);
+    }
+
+
+    // app/Models/User.php
+
+    /**
+     * Vérifier si l'utilisateur peut envoyer un message
+     */
+    public function canSendMessage()
+    {
+        // Premium = messages illimités
+        if ($this->is_premium) {
+            return true;
+        }
+
+        $dailyLimit = $this->subscription_plan === 'standard' ? 50 : 5;
+
+        // Obtenir la date d'aujourd'hui
+        $today = now()->toDateString();
+
+        // Obtenir la dernière date de reset (gérer le cas NULL)
+        $lastReset = $this->last_message_reset_date
+            ? $this->last_message_reset_date->toDateString()
+            : null;
+
+        // Reset le compteur quotidien si nécessaire
+        if ($lastReset !== $today) {
+            $this->update([
+                'daily_messages_count' => 0,
+                'last_message_reset_date' => $today // Sauvegarder en format date string
+            ]);
+
+            // Rafraîchir l'instance pour avoir les nouvelles valeurs
+            $this->refresh();
+        }
+
+        // Obtenir le compteur actuel (gérer le cas NULL)
+        $currentCount = $this->daily_messages_count ?? 0;
+
+        return $currentCount < $dailyLimit;
+    }
+
+    /**
+     * Obtenir le nombre de messages restants aujourd'hui
+     */
+    public function getRemainingMessagesToday()
+    {
+        if ($this->is_premium) {
+            return PHP_INT_MAX;
+        }
+
+        $dailyLimit = $this->subscription_plan === 'standard' ? 50 : 5;
+        $used = $this->daily_messages_count ?? 0; // ✅ Gérer NULL
+
+        return max(0, $dailyLimit - $used);
     }
 }

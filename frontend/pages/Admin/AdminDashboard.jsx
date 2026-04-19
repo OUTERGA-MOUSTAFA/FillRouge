@@ -91,24 +91,24 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00BBA7]"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container-custom py-8">
+    <div className="min-h-screen bg-gray-100">
+      <div className="container-custom py-8 px-4">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-gray-900">Dashboard Overview</h1>
-          <p className="text-gray-500 mt-1">Welcome back! Here's what's happening today.</p>
+          <p className="text-gray-700 mt-1">Welcome back! Here's what's happening today.</p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
           {statsCards.map((stat) => (
-            <div key={stat.title} className="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition-shadow">
+            <div key={stat.title} className="bg-white rounded-xl shadow-sm p-5 hover:shadow-lg transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-500 text-sm">{stat.title}</p>
@@ -140,7 +140,7 @@ export default function AdminDashboard() {
               {stats?.users?.evolution?.map((item, index) => (
                 <div key={index} className="flex-1 text-center">
                   <div 
-                    className="bg-primary-500 rounded-t-lg transition-all hover:bg-primary-600"
+                    className="bg-[#00BBA7] rounded-t-lg transition-all hover:bg-[#009966]"
                     style={{ height: `${(item.count / 250) * 200}px` }}
                   >
                     <span className="text-xs text-white font-medium -mt-5 block">{item.count}</span>
@@ -163,7 +163,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="flex-1 bg-gray-100 rounded-full h-8 overflow-hidden">
                     <div 
-                      className="bg-gradient-to-r from-primary-500 to-primary-400 h-full rounded-full flex items-center justify-end pr-2 text-white text-xs font-medium"
+                      className="bg-gradient-to-r from-[#00BBA7] to-[#33bfaf] h-full rounded-full flex items-center justify-end pr-2 text-white text-xs font-medium"
                       style={{ width: `${(city.count / stats.top_cities[0].count) * 100}%` }}
                     >
                       {city.count}
@@ -176,7 +176,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Room Type Distribution */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+        <div className="bg-gray-200 rounded-xl shadow-sm p-6 mb-8">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Room Type Distribution</h3>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center">
@@ -213,7 +213,7 @@ export default function AdminDashboard() {
         {/* Recent Listings & New Users */}
         <div className="grid lg:grid-cols-2 gap-6 mb-8">
           {/* Recent Listings */}
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div className="bg-gray-200 rounded-xl shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b bg-gray-50">
               <h3 className="text-lg font-semibold text-gray-900">Recent Listings</h3>
             </div>
@@ -247,7 +247,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* New Users */}
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div className="bg-gray-200 rounded-xl shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b bg-gray-50">
               <h3 className="text-lg font-semibold text-gray-900">New Users</h3>
             </div>
@@ -289,7 +289,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Moderation Queue */}
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="bg-gray-200rounded-xl shadow-sm overflow-hidden">
           <div className="px-6 py-4 border-b bg-gray-50">
             <h3 className="text-lg font-semibold text-gray-900">Moderation Queue</h3>
           </div>
@@ -305,7 +305,7 @@ export default function AdminDashboard() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-gray-200divide-y divide-gray-200">
                 {moderationQueue.map((report) => (
                   <tr key={report.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 text-sm text-gray-900">L-{report.listing_id || report.id}</td>
@@ -320,7 +320,7 @@ export default function AdminDashboard() {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <button className="text-primary-600 hover:text-primary-800 text-sm font-medium">
+                      <button className="text-[#009966] hover:text-[#004d33] text-sm font-medium">
                         Review
                       </button>
                     </td>

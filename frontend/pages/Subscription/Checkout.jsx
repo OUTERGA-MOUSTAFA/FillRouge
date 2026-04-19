@@ -64,7 +64,7 @@ export default function SubscriptionCheckout() {
                 onClick={() => setPaymentMethod('stripe')}
                 className={`flex-1 p-3 border rounded-lg text-center transition-colors ${
                   paymentMethod === 'stripe'
-                    ? 'border-primary-500 bg-primary-50'
+                    ? 'border-[#00BBA7] bg-[#e6f7f5]'
                     : 'border-gray-300 hover:border-gray-400'
                 }`}
               >
@@ -75,7 +75,7 @@ export default function SubscriptionCheckout() {
                 onClick={() => setPaymentMethod('cmi')}
                 className={`flex-1 p-3 border rounded-lg text-center transition-colors ${
                   paymentMethod === 'cmi'
-                    ? 'border-primary-500 bg-primary-50'
+                    ? 'border-[#00BBA7] bg-[#e6f7f5]'
                     : 'border-gray-300 hover:border-gray-400'
                 }`}
               >

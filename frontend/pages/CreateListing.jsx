@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { listingsService } from "../src/services/listings";
-import { useAuthStore } from "../src/store/authStore";
 import {
   XMarkIcon,
   MapPinIcon,

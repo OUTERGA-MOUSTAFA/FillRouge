@@ -137,7 +137,7 @@ export default function ListingFilters({ isOpen, onClose, onApply }) {
                           onClick={() => setFilters({ ...filters, type: filters.type === type ? '' : type })}
                           className={`px-3 py-1 rounded-full text-sm ${
                             filters.type === type
-                              ? 'bg-primary-500 text-white'
+                              ? 'bg-[#00BBA7] text-white'
                               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                           }`}
                         >
@@ -157,7 +157,7 @@ export default function ListingFilters({ isOpen, onClose, onApply }) {
                           onClick={() => handleAmenityToggle(amenity)}
                           className={`px-3 py-1 rounded-full text-sm ${
                             filters.amenities.includes(amenity)
-                              ? 'bg-primary-500 text-white'
+                              ? 'bg-[#00BBA7] text-white'
                               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                           }`}
                         >

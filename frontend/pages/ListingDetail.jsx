@@ -31,6 +31,9 @@ export default function ListingDetail() {
   const [reportDescription, setReportDescription] = useState('');
   const { user } = useAuthStore();
 
+  // Vérifier si l'utilisateur est admin
+  const isAdmin = user?.role === 'admin' || user?.is_admin === true;
+
   useEffect(() => {
     fetchListing();
     window.scrollTo(0, 0);
@@ -65,6 +68,8 @@ export default function ListingDetail() {
       return;
     }
     try {
+      // Ici tu peux ajouter l'appel API pour signaler l'annonce
+      // await reportsService.create({ listing_id: id, reason: reportReason, description: reportDescription });
       toast.success('Signalement envoyé à l\'équipe de modération');
       setShowReportModal(false);
       setReportReason('');
@@ -78,7 +83,7 @@ export default function ListingDetail() {
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00BBA7]"></div>
       </div>
     );
   }
@@ -89,9 +94,9 @@ export default function ListingDetail() {
   const mainPhoto = listing.main_photo || photos[0];
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-100 min-h-screen px-4">
       {/* Gallery Section */}
-      <div className="bg-white border-b">
+      <div className="bg-gray-100 border-b border-b-[#009966]">
         <div className="container-custom py-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="rounded-xl overflow-hidden h-96 lg:h-[500px]">
@@ -109,7 +114,7 @@ export default function ListingDetail() {
                     key={index}
                     onClick={() => setSelectedPhoto(index)}
                     className={`rounded-xl overflow-hidden h-28 lg:h-[calc(500px/3-8px)] ${
-                      selectedPhoto === index ? 'ring-2 ring-primary-500' : ''
+                      selectedPhoto === index ? 'ring-2 ring-[#00BBA7]' : ''
                     }`}
                   >
                     <img src={photo} alt="" className="w-full h-full object-cover" />
@@ -138,7 +143,7 @@ export default function ListingDetail() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-3xl font-bold text-primary-600">
+                  <div className="text-3xl font-bold text-[#009966]">
                     {listing.price.toLocaleString()} MAD
                   </div>
                   <div className="text-sm text-gray-500">/mois</div>
@@ -150,7 +155,7 @@ export default function ListingDetail() {
               
               <div className="flex flex-wrap gap-2 mt-4">
                 {listing.is_featured && (
-                  <span className="inline-flex items-center px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm">
+                  <span className="inline-flex items-center px-3 py-1 bg-[#ccefeb] text-[#00734d] rounded-full text-sm">
                     <FireIcon className="h-4 w-4 mr-1" />
                     Mis en avant
                   </span>
@@ -188,7 +193,7 @@ export default function ListingDetail() {
             )}
           </div>
 
-          {/* Sidebar */}
+          {/* Sidebar - Host Information */}
           <div>
             <div className="bg-white rounded-xl p-6 mb-6 sticky top-24">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Hébergé par</h2>
@@ -207,7 +212,7 @@ export default function ListingDetail() {
                 <div className="ml-4">
                   <Link
                     to={`/users/${listing.user_id}`}
-                    className="font-semibold text-gray-900 hover:text-primary-600"
+                    className="font-semibold text-gray-900 hover:text-[#009966]"
                   >
                     {listing.user?.full_name}
                   </Link>
@@ -243,21 +248,24 @@ export default function ListingDetail() {
                   Partager
                 </button>
                 
-                <button
-                  onClick={() => setShowReportModal(true)}
-                  className="w-full text-red-600 hover:text-red-700 text-sm flex items-center justify-center gap-2"
-                >
-                  <FlagIcon className="h-4 w-4" />
-                  Signaler l'annonce
-                </button>
+                {/* Le bouton Signaler n'apparaît que pour les admins */}
+                {isAdmin && (
+                  <button
+                    onClick={() => setShowReportModal(true)}
+                    className="w-full text-red-600 hover:text-red-700 text-sm flex items-center justify-center gap-2"
+                  >
+                    <FlagIcon className="h-4 w-4" />
+                    Signaler l'annonce
+                  </button>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Report Modal */}
-      {showReportModal && (
+      {/* Report Modal - accessible uniquement par les admins */}
+      {showReportModal && isAdmin && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Signaler cette annonce</h3>

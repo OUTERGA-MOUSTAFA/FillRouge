@@ -101,7 +101,7 @@ export default function AdminReports() {
       <div className="space-y-4">
         {loading ? (
           <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00BBA7]"></div>
           </div>
         ) : reports.map((report) => (
           <div key={report.id} className="card p-6">

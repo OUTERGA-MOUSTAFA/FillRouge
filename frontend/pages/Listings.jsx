@@ -32,7 +32,7 @@ export default function Listings() {
   };
 
   return (
-    <div className="container-custom py-8">
+    <div className="container-custom py-8 px-4">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div>
@@ -52,13 +52,13 @@ export default function Listings() {
           <div className="flex rounded-lg border border-gray-300 overflow-hidden">
             <button
               onClick={() => setViewMode('list')}
-              className={`px-4 py-2 ${viewMode === 'list' ? 'bg-primary-500 text-white' : 'bg-white text-gray-700'}`}
+              className={`px-4 py-2 ${viewMode === 'list' ? 'bg-[#00BBA7] text-white' : 'bg-white text-gray-700'}`}
             >
               Liste
             </button>
             <button
               onClick={() => setViewMode('map')}
-              className={`px-4 py-2 ${viewMode === 'map' ? 'bg-primary-500 text-white' : 'bg-white text-gray-700'}`}
+              className={`px-4 py-2 ${viewMode === 'map' ? 'bg-[#00BBA7] text-white' : 'bg-white text-gray-700'}`}
             >
               <MapIcon className="h-5 w-5" />
             </button>
@@ -69,7 +69,7 @@ export default function Listings() {
       {/* Content */}
       {loading ? (
         <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00BBA7]"></div>
         </div>
       ) : viewMode === 'list' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

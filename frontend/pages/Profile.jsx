@@ -214,7 +214,7 @@ export default function Profile() {
 
       {/* Barre de progression du profil */}
       <div className="bg-white border-b shadow-sm">
-        <div className="container-custom py-4">
+        <div className="container-custom p-4">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex-1">
               <div className="flex justify-between text-sm mb-1">

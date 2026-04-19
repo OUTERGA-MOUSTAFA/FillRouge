@@ -74,7 +74,7 @@ export default function VerifyPhone() {
             type="button"
             onClick={handleResend}
             disabled={resendLoading}
-            className="w-full text-center text-primary-600 hover:text-primary-500"
+            className="w-full text-center text-[#009966] hover:text-[#00BBA7]"
           >
             {resendLoading ? 'Envoi...' : 'Renvoyer le code SMS'}
           </button>

@@ -7,6 +7,7 @@ import LoadingSpinner from './components/common/LoadingSpinner';
 import { useAuthStore } from './store/authStore';
 import CompleteProfile from '../pages/CompletProfile';
 import EditListing from '../pages/EditListing';
+import NoConversation from '../pages/NoConversation';
 
 // Lazy loading des pages - réduction de la taille du bundle initial
 const Home = lazy(() => import('../pages/Home'));
@@ -89,7 +90,12 @@ function App() {
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/profile/edit" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
             <Route path="/complete-profile" element={<ProtectedRoute><CompleteProfile /></ProtectedRoute>} />
-            <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+            {/* <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} /> */}
+            <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>}>
+              <Route index element={<NoConversation />} />
+              <Route path=":userId" element={<Conversation />} />
+            </Route>
+
             <Route path="/messages/:userId" element={<ProtectedRoute><Conversation /></ProtectedRoute>} />
             <Route path="/matches" element={<ProtectedRoute><Matches /></ProtectedRoute>} />
             <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />

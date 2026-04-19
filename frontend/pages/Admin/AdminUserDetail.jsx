@@ -27,7 +27,7 @@ export default function AdminUserDetail() {
   if (loading) {
     return (
       <div className="flex justify-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00BBA7]"></div>
       </div>
     );
   }
@@ -37,7 +37,7 @@ export default function AdminUserDetail() {
   return (
     <div className="container-custom py-8">
       <div className="mb-6">
-        <Link to="/admin/users" className="text-primary-600 hover:text-primary-800">
+        <Link to="/admin/users" className="text-[#009966] hover:text-[#004d33]">
           ← Retour à la liste
         </Link>
       </div>

@@ -61,7 +61,7 @@ export default function NotificationBell() {
               <h3 className="font-semibold text-gray-900">Notifications</h3>
               <Link 
                 to="/notifications" 
-                className="text-xs text-primary-600 hover:text-primary-700"
+                className="text-xs text-[#009966] hover:text-[#00734d]"
                 onClick={() => setIsOpen(false)}
               >
                 Voir tout
@@ -79,7 +79,7 @@ export default function NotificationBell() {
                 <div
                   key={notification.id}
                   className={`p-3 border-b hover:bg-gray-50 cursor-pointer transition-colors ${
-                    !notification.is_read ? 'bg-primary-50' : ''
+                    !notification.is_read ? 'bg-[#e6f7f5]' : ''
                   }`}
                   onClick={() => {
                     markAsRead(notification.id);
@@ -94,7 +94,7 @@ export default function NotificationBell() {
                       <p className="text-xs text-gray-400 mt-1">{formatTime(notification.created_at)}</p>
                     </div>
                     {!notification.is_read && (
-                      <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-[#00BBA7] rounded-full"></div>
                     )}
                   </div>
                 </div>
@@ -106,7 +106,7 @@ export default function NotificationBell() {
             <div className="p-2 border-t text-center">
               <Link 
                 to="/notifications" 
-                className="text-xs text-primary-600 hover:text-primary-700"
+                className="text-xs text-[#009966] hover:text-[#00734d]"
                 onClick={() => setIsOpen(false)}
               >
                 +{notifications.length - 5} notifications supplémentaires

@@ -37,9 +37,9 @@ export default function PlanCard({ plan, isCurrent, onSelect, featured = false }
   };
 
   return (
-    <div className={`card p-6 ${featured ? 'ring-2 ring-primary-500 relative' : ''}`}>
+    <div className={`card p-6 ${featured ? 'ring-2 ring-[#00BBA7] relative' : ''}`}>
       {featured && (
-        <div className="absolute top-0 right-0 bg-primary-500 text-white px-3 py-1 rounded-bl-lg rounded-tr-lg text-sm font-semibold">
+        <div className="absolute top-0 right-0 bg-[#00BBA7] text-white px-3 py-1 rounded-bl-lg rounded-tr-lg text-sm font-semibold">
           POPULAIRE
         </div>
       )}
@@ -47,7 +47,7 @@ export default function PlanCard({ plan, isCurrent, onSelect, featured = false }
       <div className="text-center mb-6">
         <h3 className="text-2xl font-bold text-gray-900">{getPlanName(plan)}</h3>
         <div className="mt-4">
-          <span className="text-4xl font-bold text-primary-600">{getPlanPrice(plan)}</span>
+          <span className="text-4xl font-bold text-[#009966]">{getPlanPrice(plan)}</span>
         </div>
       </div>
       

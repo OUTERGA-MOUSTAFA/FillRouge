@@ -25,7 +25,7 @@ export default function MatchCard({ match, onAccept, onDecline, onMessage }) {
         {/* Info */}
         <div className="flex-1">
           <div className="flex items-center justify-between">
-            <Link to={`/users/${user.id}`} className="font-semibold text-gray-900 hover:text-primary-600">
+            <Link to={`/users/${user.id}`} className="font-semibold text-gray-900 hover:text-[#009966]">
               {user.full_name}
             </Link>
             <div className={`text-lg font-bold ${getScoreColor(compatibility_score)}`}>
@@ -38,7 +38,7 @@ export default function MatchCard({ match, onAccept, onDecline, onMessage }) {
           {common_interests && common_interests.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
               {common_interests.slice(0, 3).map((interest) => (
-                <span key={interest} className="px-2 py-0.5 bg-primary-100 text-primary-700 rounded-full text-xs">
+                <span key={interest} className="px-2 py-0.5 bg-[#ccefeb] text-[#00734d] rounded-full text-xs">
                   {interest}
                 </span>
               ))}

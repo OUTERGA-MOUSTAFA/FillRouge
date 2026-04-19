@@ -130,7 +130,7 @@ export default function AdminUsers() {
               {loading ? (
                 <tr>
                   <td colSpan="6" className="px-6 py-4 text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00BBA7] mx-auto"></div>
                   </td>
                 </tr>
               ) : users.map((user) => (
@@ -143,7 +143,7 @@ export default function AdminUsers() {
                         <UserCircleIcon className="h-10 w-10 text-gray-400" />
                       )}
                       <div className="ml-4">
-                        <Link to={`/admin/users/${user.id}`} className="text-sm font-medium text-gray-900 hover:text-primary-600">
+                        <Link to={`/admin/users/${user.id}`} className="text-sm font-medium text-gray-900 hover:text-[#009966]">
                           {user.full_name}
                         </Link>
                         <div className="text-sm text-gray-500">{user.age} ans</div>
@@ -178,7 +178,7 @@ export default function AdminUsers() {
                     <div className="flex gap-2">
                       <Link
                         to={`/admin/users/${user.id}`}
-                        className="text-primary-600 hover:text-primary-800"
+                        className="text-[#009966] hover:text-[#004d33]"
                       >
                         Voir
                       </Link>

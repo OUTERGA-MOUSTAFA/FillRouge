@@ -6,7 +6,7 @@ export default function ListingCard({ listing, featured = false }) {
   
   return (
     <Link to={`/listings/${listing.id}`} className="block group">
-      <div className={`card ${featured ? 'ring-2 ring-primary-500' : ''}`}>
+      <div className={`card ${featured ? 'ring-2 ring-[#00BBA7]' : ''}`}>
         {/* Image */}
         <div className="relative h-48 overflow-hidden">
           {mainPhoto ? (
@@ -21,7 +21,7 @@ export default function ListingCard({ listing, featured = false }) {
             </div>
           )}
           {featured && (
-            <div className="absolute top-2 left-2 bg-primary-500 text-white px-2 py-1 rounded-md text-xs font-semibold">
+            <div className="absolute top-2 left-2 bg-[#00BBA7] text-white px-2 py-1 rounded-md text-xs font-semibold">
               ⭐ Mis en avant
             </div>
           )}
@@ -33,10 +33,10 @@ export default function ListingCard({ listing, featured = false }) {
         {/* Contenu */}
         <div className="p-4">
           <div className="flex justify-between items-start mb-2">
-            <h3 className="font-semibold text-lg text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-1">
+            <h3 className="font-semibold text-lg text-gray-900 group-hover:text-(#009966) transition-colors line-clamp-1">
               {listing.title}
             </h3>
-            <span className="text-primary-600 font-bold">
+            <span className="text-(#009966) font-bold">
               {listing.price.toLocaleString()} MAD
               <span className="text-xs text-gray-500 font-normal">/mois</span>
             </span>

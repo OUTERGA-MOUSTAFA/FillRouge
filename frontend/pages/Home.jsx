@@ -223,7 +223,7 @@ export default function Home() {
       </section>
 
       {/* ========== CTA SECTION ========== */}
-      <section className="bg-primary-50 py-16">
+      <section className="bg-[#e6f7f5] py-16">
         <div className="container-custom text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
             Prêt à trouver votre colocataire ?

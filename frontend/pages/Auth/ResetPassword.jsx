@@ -42,7 +42,7 @@ export default function ResetPassword() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <p className="text-red-600">Token invalide ou manquant</p>
-          <Link to="/forgot-password" className="text-primary-600 mt-4 inline-block">
+          <Link to="/forgot-password" className="text-[#009966] mt-4 inline-block">
             Demander un nouveau lien
           </Link>
         </div>

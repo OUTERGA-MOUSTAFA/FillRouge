@@ -178,13 +178,13 @@ export default function Onboarding() {
   }, [formData, avatar, idDocument]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white py-12">
+    <div className="min-h-screen bg-gradient-to-br from-[#e6f7f5] to-white py-12">
       <div className="container-custom max-w-4xl">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           {/* Header */}
-          <div className="bg-primary-600 px-8 py-6 text-white">
+          <div className="bg-[#009966] px-8 py-6 text-white">
             <h1 className="text-2xl font-bold">Set Up Your Profile</h1>
-            <p className="text-primary-100 mt-1">Tell us about yourself to find the best match.</p>
+            <p className="text-[#ccefeb] mt-1">Tell us about yourself to find the best match.</p>
             <div className="mt-4">
               <div className="flex items-center gap-3">
                 <div className="flex-1 bg-white/20 rounded-full h-2">
@@ -211,7 +211,7 @@ export default function Onboarding() {
                       <img 
                         src={avatarPreview} 
                         alt="Preview" 
-                        className="h-24 w-24 rounded-full object-cover border-2 border-primary-500"
+                        className="h-24 w-24 rounded-full object-cover border-2 border-[#00BBA7]"
                       />
                       <button
                         type="button"
@@ -344,7 +344,7 @@ export default function Onboarding() {
                     onClick={() => handleLanguageToggle(lang.code)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
                       formData.preferred_languages.includes(lang.code)
-                        ? 'bg-primary-500 text-white'
+                        ? 'bg-[#00BBA7] text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
@@ -379,7 +379,7 @@ export default function Onboarding() {
                     onClick={() => handleInterestToggle(interest)}
                     className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
                       formData.interests.includes(interest)
-                        ? 'bg-primary-500 text-white'
+                        ? 'bg-[#00BBA7] text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
@@ -406,7 +406,7 @@ export default function Onboarding() {
                         onClick={() => setFormData({ ...formData, sleep_schedule: schedule })}
                         className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                           formData.sleep_schedule === schedule
-                            ? 'bg-primary-500 text-white'
+                            ? 'bg-[#00BBA7] text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
@@ -429,7 +429,7 @@ export default function Onboarding() {
                         onClick={() => setFormData({ ...formData, pets: option })}
                         className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                           formData.pets === option
-                            ? 'bg-primary-500 text-white'
+                            ? 'bg-[#00BBA7] text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
@@ -452,7 +452,7 @@ export default function Onboarding() {
                         onClick={() => setFormData({ ...formData, smoking: option })}
                         className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                           formData.smoking === option
-                            ? 'bg-primary-500 text-white'
+                            ? 'bg-[#00BBA7] text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
@@ -475,7 +475,7 @@ export default function Onboarding() {
                         onClick={() => setFormData({ ...formData, cleanliness: level })}
                         className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                           formData.cleanliness === level
-                            ? 'bg-primary-500 text-white'
+                            ? 'bg-[#00BBA7] text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
@@ -498,7 +498,7 @@ export default function Onboarding() {
                         onClick={() => setFormData({ ...formData, social_level: level })}
                         className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                           formData.social_level === level
-                            ? 'bg-primary-500 text-white'
+                            ? 'bg-[#00BBA7] text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >

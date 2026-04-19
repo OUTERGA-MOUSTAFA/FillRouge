@@ -62,13 +62,13 @@ export default function MyListings() {
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00BBA7]"></div>
       </div>
     );
   }
 
   return (
-    <div className="container-custom py-8">
+    <div className="container-custom py-8 px-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Mes annonces</h1>
         <Link to="/listings/create" className="btn-primary flex items-center gap-2">
@@ -90,7 +90,7 @@ export default function MyListings() {
             <div key={listing.id} className="card overflow-hidden">
               <div className="flex flex-col md:flex-row">
                 {/* Image */}
-                <div className="md:w-48 h-48 bg-gray-200">
+                <div className="md:w-48 h-48 bg-gray-200 rounded-b-sm">
                   {listing.main_photo || listing.photos?.[0] ? (
                     <img
                       src={listing.main_photo || listing.photos[0]}
