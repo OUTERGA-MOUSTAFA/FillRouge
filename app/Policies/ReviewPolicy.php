@@ -16,7 +16,10 @@ class ReviewPolicy
         if ($user->id === $reviewed->id) {
             return false;
         }
-        
+
+        if ($user->role != 'semsar') {
+            return false;
+        }
         // Vérifier s'il y a eu une interaction (message ou location)
         $hasInteraction = $user->sentMessages()
             ->where('receiver_id', $reviewed->id)
@@ -34,7 +37,7 @@ class ReviewPolicy
     public function update(User $user, Review $review): bool
     {
         // Seulement l'auteur peut modifier, et dans les 48h
-        return $user->id === $review->reviewer_id && $review->canBeEdited();
+        return $user->id === $review->reviewer_id && $review->canBeEdited();// canBeEdited kayna f model
     }
 
     /**

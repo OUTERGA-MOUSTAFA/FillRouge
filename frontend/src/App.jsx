@@ -8,7 +8,7 @@ import { useAuthStore } from './store/authStore';
 import CompleteProfile from '../pages/CompletProfile';
 import EditListing from '../pages/EditListing';
 import NoConversation from '../pages/NoConversation';
-
+import "./i18n";
 // Lazy loading des pages - réduction de la taille du bundle initial
 const Home = lazy(() => import('../pages/Home'));
 const Listings = lazy(() => import('../pages/Listings'));
@@ -56,9 +56,12 @@ function App() {
   }, [token, fetchUser]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    // <div className="min-h-screen bg-gray-50">
+    //   <Navbar />
+    //   <main>
+    <div className="min-h-screen bg-gray-500 flex flex-col">
       <Navbar />
-      <main>
+      <main className="flex-1">
         <Suspense fallback={<LoadingSpinner />}>
           <Routes>
             {/* Public */}
@@ -74,7 +77,7 @@ function App() {
             <Route path="/listings" element={<Listings />} />
             <Route path="/listings/create" element={<ProtectedRoute><CreateListing /></ProtectedRoute>} />  {/* ← BEFORE :id */}
             <Route path="/listings/:id" element={<ListingDetail />} />
-            <Route path="/listings/:id" element={<ProtectedRoute><EditListing /></ProtectedRoute>} />
+            <Route path="/listings/:id/edit" element={<ProtectedRoute><EditListing /></ProtectedRoute>} />
             <Route path="/users/:id" element={<UserProfile />} />
 
             {/* Auth */}
@@ -96,7 +99,7 @@ function App() {
               <Route path=":userId" element={<Conversation />} />
             </Route>
 
-            <Route path="/messages/:userId" element={<ProtectedRoute><Conversation /></ProtectedRoute>} />
+            {/* <Route path="/messages/:userId" element={<ProtectedRoute><Conversation /></ProtectedRoute>} /> */}
             <Route path="/matches" element={<ProtectedRoute><Matches /></ProtectedRoute>} />
             <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
             <Route path="/MyListings" element={<ProtectedRoute><MyListings /></ProtectedRoute>} />

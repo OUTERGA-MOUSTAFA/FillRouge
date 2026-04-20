@@ -264,7 +264,7 @@ export default function Navbar() {
 
   const navItems = getNavItems(user);
 
-  // ✅ Fix: exact match for '/', prefix match for everything else
+  // exact match for '/', prefix match for everything else
   const isActive = (href) =>
     href === '/'
       ? location.pathname === '/'

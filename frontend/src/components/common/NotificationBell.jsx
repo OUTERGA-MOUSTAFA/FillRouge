@@ -6,7 +6,7 @@ import { useNotifications } from '../../hooks/useNotifications';
 export default function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const { notifications, unreadCount, markAsRead, fetchNotifications } = useNotifications();
+  const { notifications, unreadCount, markAsRead } = useNotifications();
 
   useEffect(() => {
     const handleClickOutside = (event) => {

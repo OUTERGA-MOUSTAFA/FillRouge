@@ -11,6 +11,7 @@ use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 
 class MessageController extends Controller
 {
@@ -23,15 +24,11 @@ class MessageController extends Controller
         $this->notificationService = $notificationService;
     }
 
-    /**
-     * Liste des conversations (corrigé: N+1, null safety, eager loading)
-     */
     public function conversations(Request $request)
     {
         $user = $request->user();
-        $userId = (int) $user->id; // Cast explicite
+        $userId = (int) $user->id;
 
-        // Récupérer tous les IDs des utilisateurs avec qui on a conversé
         $conversationUserIds = Message::where('sender_id', $userId)
             ->orWhere('receiver_id', $userId)
             ->selectRaw('DISTINCT CASE 
@@ -46,10 +43,8 @@ class MessageController extends Controller
             return response()->json(['success' => true, 'data' => []]);
         }
 
-        // Eager loading: une seule requête pour tous les users
         $users = User::withTrashed()->whereIn('id', $conversationUserIds)->get()->keyBy('id');
 
-        // Récupérer le dernier message pour chaque conversation
         $lastMessages = Message::whereIn('id', function ($query) use ($userId) {
             $query->selectRaw('MAX(id)')
                 ->from('messages')
@@ -65,7 +60,6 @@ class MessageController extends Controller
             return $message->sender_id == $userId ? $message->receiver_id : $message->sender_id;
         });
 
-        // Compter les messages non lus par conversation
         $unreadCounts = Message::where('receiver_id', $userId)
             ->where('is_read', false)
             ->selectRaw('sender_id, COUNT(*) as count')
@@ -75,21 +69,19 @@ class MessageController extends Controller
         $conversations = [];
         foreach ($conversationUserIds as $otherId) {
             $otherUser = $users->get($otherId);
-            // ✅ Vérification null
             if (!$otherUser) continue;
 
             $conversations[] = [
                 'user' => [
-                    'id' => $otherUser->id,
+                    'id'        => $otherUser->id,
                     'full_name' => $otherUser->full_name,
-                    'avatar' => $otherUser->avatar,
+                    'avatar'    => $otherUser->avatar,
                 ],
                 'last_message' => $lastMessages->get($otherId),
                 'unread_count' => $unreadCounts->get($otherId, 0),
             ];
         }
 
-        // Trier par date du dernier message
         usort($conversations, function ($a, $b) {
             $dateA = $a['last_message']?->created_at ?? now()->subYear();
             $dateB = $b['last_message']?->created_at ?? now()->subYear();
@@ -99,15 +91,11 @@ class MessageController extends Controller
         return response()->json(['success' => true, 'data' => $conversations]);
     }
 
-    /**
-     * Conversation avec un utilisateur spécifique
-     */
     public function conversation(Request $request, $userId)
     {
-        $user = User::findOrFail($userId);
-        $currentUser = $request->user();
-        $currentUserId = (int) $currentUser->id;
-        $otherUserId = (int) $user->id;
+        $otherUser = User::findOrFail($userId);
+        $currentUserId = (int) $request->user()->id;
+        $otherUserId = (int) $otherUser->id;
 
         $messages = Message::betweenUsers($currentUserId, $otherUserId)
             ->notDeletedFor($currentUserId)
@@ -115,7 +103,6 @@ class MessageController extends Controller
             ->with('sender')
             ->get();
 
-        // mark as read...
         Message::betweenUsers($currentUserId, $otherUserId)
             ->where('receiver_id', $currentUserId)
             ->where('is_read', false)
@@ -125,185 +112,155 @@ class MessageController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
-                'user' => $user->only(['id', 'full_name', 'avatar']),
-                'messages' => $messages
+                'user'     => $otherUser->only(['id', 'full_name', 'avatar']),
+                'messages' => $messages,
             ]
         ]);
     }
-    /**
-     * Envoyer un message (avec notifications)
-     */
-    // public function send(Request $request, User $receiver)
-    // {
-    //     $sender = $request->user();
-
-    //     if (!Gate::allows('send', $receiver)) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Vous ne pouvez pas envoyer de message à cet utilisateur'
-    //         ], 403);
-    //     }
-
-    //     $validator = Validator::make($request->all(), [
-    //         'content' => 'required|string|max:5000',
-    //         'listing_id' => 'nullable|exists:listings,id',
-    //         'attachments' => 'nullable|array|max:5',
-    //         'attachments.*' => 'image|mimes:jpeg,png,jpg|max:5120'
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         return response()->json(['errors' => $validator->errors()], 422);
-    //     }
-
-    //     // Upload des pièces jointes
-    //     $attachments = [];
-    //     if ($request->hasFile('attachments')) {
-    //         foreach ($request->file('attachments') as $file) {
-    //             $attachments[] = $this->imageService->upload($file, 'messages');
-    //         }
-    //     }
-
-    //     $message = Message::create([
-    //         'sender_id' => $sender->id,
-    //         'receiver_id' => $receiver->id,
-    //         'listing_id' => $request->listing_id,
-    //         'content' => $request->content,
-    //         'attachments' => $attachments,
-    //     ]);
-
-    //     // Incrémenter le compteur
-    //     $sender->incrementMessagesCount();
-
-    //     // Envoyer notification (correction du TODO)
-    //     $this->notificationService->newMessage($receiver, $sender, $message);
-
-    //     // Déclencher l'event WebSocket
-    //     event(new MessageSent($message));
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Message envoyé',
-    //         'data' => $message->load('sender')
-    //     ], 201);
-    // }
 
     public function send(Request $request, $userId)
     {
+        // 1. Find receiver
         $receiver = User::find($userId);
-
         if (!$receiver) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Utilisateur non trouvé'
-            ], 404);
+            return response()->json(['success' => false, 'message' => 'Utilisateur non trouvé'], 404);
         }
 
         $sender = $request->user();
 
-        if ($sender->id === $receiver->id) {
-            return response()->json(['success' => false, 'message' => 'Vous ne pouvez pas vous envoyer un message'], 403);
+        // 2. Check policy — ONE check, correct direction
+        if (!Gate::allows('send', $receiver)) {
+            $errorMessage = match (true) {
+                $receiver->role === 'admin'
+                    => 'Vous ne pouvez pas contacter un administrateur.',
+                $sender->role === 'semsar'
+                    => 'Vous ne pouvez répondre qu\'aux chercheurs qui vous ont contacté en premier.',
+                $receiver->role !== 'semsar'
+                    => 'Vous ne pouvez contacter que des propriétaires (semsar).',
+                !$sender->canSendMessage()
+                    => 'Vous avez atteint votre limite de messages aujourd\'hui. Passez à un plan supérieur.',
+                default
+                    => 'Vous ne pouvez pas envoyer de message à cet utilisateur.',
+            };
+
+            return response()->json([
+                'success'          => false,
+                'message'          => $errorMessage,
+                'upgrade_required' => !$sender->canSendMessage() && $sender->subscription_plan === 'free',
+            ], 403);
         }
 
+        // 3. Validate — content OR attachments required, not both mandatory
         $validator = Validator::make($request->all(), [
-            'content' => 'required|string|max:5000',
-            'listing_id' => 'nullable|exists:listings,id',
+            'content'       => 'nullable|string|max:5000',
+            'listing_id'    => 'nullable|exists:listings,id',
+            'attachments'   => 'nullable|array|max:5',
+            'attachments.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
+        // 4. Must have text OR image
+        $hasText  = !empty(trim($request->content ?? ''));
+        $hasFiles = $request->hasFile('attachments');
+
+        if (!$hasText && !$hasFiles) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Le message doit contenir du texte ou au moins une image.',
+            ], 422);
+        }
+
+        // 5. Upload attachments
+        $attachments = [];
+        if ($hasFiles) {
+            foreach ($request->file('attachments') as $file) {
+                try {
+                    $attachments[] = $this->imageService->upload($file, 'messages');
+                } catch (\Exception $e) {
+                    Log::error('Image upload failed', ['error' => $e->getMessage()]);
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Erreur upload image: ' . $e->getMessage(),
+                    ], 500);
+                }
+            }
+        }
+
+        // 6. Create message
         $message = Message::create([
             'sender_id'   => $sender->id,
             'receiver_id' => $receiver->id,
             'listing_id'  => $request->listing_id,
-            'content'     => $request->content,
-            'attachments' => [],
+            'content'     => trim($request->content ?? ''),
+            'attachments' => $attachments,
+            'is_read'     => false,
         ]);
+
+        // 7. Increment daily counter
+        $sender->increment('daily_messages_count');
+
+        // 8. WebSocket event (optional — won't break if Reverb isn't running)
+        try {
+            event(new MessageSent($message));
+        } catch (\Exception $e) {
+            Log::warning('WebSocket event failed', ['error' => $e->getMessage()]);
+        }
+
+        // 9. Notification (optional)
+        try {
+            $this->notificationService->newMessage($receiver, $sender, $message);
+        } catch (\Exception $e) {
+            Log::warning('Notification failed', ['error' => $e->getMessage()]);
+        }
 
         return response()->json([
             'success' => true,
             'message' => 'Message envoyé',
-            'data'    => $message->load('sender')
+            'data'    => $message->load('sender'),
         ], 201);
     }
 
-    /**
-     * Méthode index manquante
-     */
     public function index(Request $request)
     {
         return $this->conversations($request);
     }
 
-    /**
-     * Marquer un message comme lu
-     */
     public function markAsRead(Message $message)
     {
         if (!Gate::allows('view', $message)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Non autorisé'
-            ], 403);
+            return response()->json(['success' => false, 'message' => 'Non autorisé'], 403);
         }
-
         $message->markAsRead();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Message marqué comme lu'
-        ]);
+        return response()->json(['success' => true, 'message' => 'Message marqué comme lu']);
     }
 
-    /**
-     * Supprimer un message
-     */
     public function destroy(Message $message)
     {
         if (!Gate::allows('delete', $message)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Non autorisé'
-            ], 403);
+            return response()->json(['success' => false, 'message' => 'Non autorisé'], 403);
         }
-
         $message->deleteForUser(auth()->id());
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Message supprimé'
-        ]);
+        return response()->json(['success' => true, 'message' => 'Message supprimé']);
     }
 
-    /**
-     * Signaler un message
-     */
     public function report(Request $request, Message $message)
     {
         if (!Gate::allows('report', $message)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Non autorisé'
-            ], 403);
+            return response()->json(['success' => false, 'message' => 'Non autorisé'], 403);
         }
 
         $validator = Validator::make($request->all(), [
-            'reason' => 'required|string|in:spam,harassment,inappropriate,other'
+            'reason' => 'required|string|in:spam,harassment,inappropriate,other',
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
         $message->report($request->reason);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Message signalé'
-        ]);
+        return response()->json(['success' => true, 'message' => 'Message signalé']);
     }
 }

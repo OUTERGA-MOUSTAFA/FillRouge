@@ -401,18 +401,23 @@ class User extends Authenticatable
     {
         // Premium = messages illimités
         if ($this->is_premium) {
-            return true;
+            return true; /**  *6 */
         }
+ 
+        // $dailyLimit = $this->subscription_plan === 'standard' ? 50 : 5;
+        
 
-        $dailyLimit = $this->subscription_plan === 'standard' ? 50 : 5;
+        $dailyLimit = match ($this->subscription_plan) {
+            'standard' => 15,  // 30 new contacts/day
+            'free'     => 2,   // 5 new contacts/day
+        };
 
         // Obtenir la date d'aujourd'hui
         $today = now()->toDateString();
 
         // Obtenir la dernière date de reset (gérer le cas NULL)
-        $lastReset = $this->last_message_reset_date
-            ? $this->last_message_reset_date->toDateString()
-            : null;
+        $today = now()->toDateString();
+        $lastReset = $this->last_message_reset_date?->toDateString();
 
         // Reset le compteur quotidien si nécessaire
         if ($lastReset !== $today) {
@@ -427,8 +432,8 @@ class User extends Authenticatable
 
         // Obtenir le compteur actuel (gérer le cas NULL)
         $currentCount = $this->daily_messages_count ?? 0;
-
         return $currentCount < $dailyLimit;
+        
     }
 
     /**

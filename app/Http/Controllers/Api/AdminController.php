@@ -10,6 +10,7 @@ use App\Models\Subscription;
 use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -378,11 +379,11 @@ public function pendingReports()
     {
         // Supprimer les fichiers associés
         if ($user->avatar) {
-            \Storage::delete($user->avatar);
+            Storage::delete($user->avatar);
         }
         
         if ($user->profile && $user->profile->id_document_path) {
-            \Storage::delete($user->profile->id_document_path);
+            Storage::delete($user->profile->id_document_path);
         }
         
         // Soft delete
@@ -457,7 +458,7 @@ public function pendingReports()
     {
         // Supprimer les photos
         foreach ($listing->photos as $photo) {
-            \Storage::delete($photo);
+            Storage::delete($photo);
         }
         
         $listing->delete();

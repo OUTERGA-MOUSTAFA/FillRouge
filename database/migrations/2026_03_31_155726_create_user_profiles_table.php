@@ -12,16 +12,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('user_profiles', function (Blueprint $table) {
-              $table->id();
+            $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            
+
             // Bio et description
             $table->text('bio')->nullable();
             $table->text('description')->nullable();
-            
+            $table->string('city')->nullable();
+            $table->string('neighborhood')->nullable();
+            $table->decimal('latitude', 10, 8)->nullable();
+            $table->decimal('longitude', 11, 8)->nullable();
+
             // Centres d'intérêt (JSON)
             $table->json('interests')->nullable(); // ['cooking', 'fitness', 'tech', etc.]
-            
+
             // Préférences de vie
             $table->enum('smoking', ['yes', 'no', 'occasionally'])->nullable();
             $table->enum('pets', ['yes', 'no', 'maybe'])->nullable();
@@ -29,14 +33,14 @@ return new class extends Migration
             $table->enum('cleanliness', ['relaxed', 'moderate', 'very_clean'])->nullable();
             $table->enum('social_level', ['introvert', 'ambivert', 'extrovert'])->nullable();
             $table->enum('occupation', ['student', 'employed', 'self_employed', 'unemployed', 'retired'])->nullable();
-            
+
             // Préférences de colocataire
             $table->enum('preferred_gender', ['male', 'female', 'any'])->default('any');
             $table->integer('preferred_min_age')->nullable();
             $table->integer('preferred_max_age')->nullable();
             $table->boolean('accepts_pets')->default(true);
             $table->boolean('accepts_smokers')->default(true);
-            
+
             // Vérifications
             $table->boolean('is_phone_verified')->default(false);
             $table->boolean('is_email_verified')->default(false);
@@ -46,13 +50,12 @@ return new class extends Migration
             $table->timestamp('identity_verified_at')->nullable();
             $table->boolean('is_background_checked')->default(false);
             $table->timestamp('background_checked_at')->nullable();
-            
             // Badges et vérifications
             $table->json('badges')->nullable(); // ['verified', 'premium', 'background_checked']
-            
+
             // Score de compatibilité (calculé)
             $table->float('compatibility_score')->nullable();
-            
+
             $table->timestamps();
         });
     }

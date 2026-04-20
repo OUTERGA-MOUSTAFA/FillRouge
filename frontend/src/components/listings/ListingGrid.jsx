@@ -18,7 +18,7 @@ export default function ListingGrid({ listings, loading }) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">77777777777777777777777
       {listings.map((listing) => (
         <ListingCard key={listing.id} listing={listing} featured={listing.is_featured} />
       ))}

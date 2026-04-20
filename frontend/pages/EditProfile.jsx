@@ -91,9 +91,10 @@ export default function EditProfile() {
         budget_min: formData.budget_min !== '' ? Number(formData.budget_min) : undefined,
         budget_max: formData.budget_max !== '' ? Number(formData.budget_max) : undefined,
       };
-
+      // PUT /auth/profile =>src/services/auth.js = await api.put('/auth/profile', data);
       const res = await authService.updateProfile(payload);
 
+      //POST /auth/avatar POST api.post('/auth/avatar', formData, {headers: { 'Content-Type': 'multipart/form-data' }
       if (avatar) await authService.uploadAvatar(avatar);
 
       // Sync store if setUser is available

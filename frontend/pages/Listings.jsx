@@ -4,6 +4,7 @@ import ListingCard from '../src/components/listings/ListingCard';
 import ListingFilters from '../src/components/listings/ListingFilters';
 import { listingsService } from '../src/services/listings';
 import toast from 'react-hot-toast';
+import MapComponent from '../src/components/map/MapComponent';
 
 export default function Listings() {
   const [listings, setListings] = useState([]);
