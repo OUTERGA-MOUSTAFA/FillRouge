@@ -18,7 +18,8 @@ class MessageSent implements ShouldBroadcast
 
     public function __construct(Message $message)
     {
-        $this->message = $message;
+        // $this->message = $message;
+        $this->message = $message->load('sender');
     }
     // l-Channel li ghadi n-broadcasting fiha
     public function broadcastOn()
@@ -36,13 +37,20 @@ class MessageSent implements ShouldBroadcast
         return 'message.sent';
     }
 
-    public function broadcastWith()
+    // public function broadcastWith()
+    // {
+    //     return [
+    //         'id' => $this->message->id,
+    //         'sender_id' => $this->message->sender_id,
+    //         'content' => $this->message->content,
+    //         'created_at' => $this->message->created_at,
+    //     ];
+    // }
+
+    public function broadcastWith(): array
     {
         return [
-            'id' => $this->message->id,
-            'sender_id' => $this->message->sender_id,
-            'content' => $this->message->content,
-            'created_at' => $this->message->created_at,
+            'message' => $this->message
         ];
     }
 }

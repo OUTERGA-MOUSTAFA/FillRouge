@@ -129,18 +129,23 @@ class MessageController extends Controller
         $sender = $request->user();
 
         // 2. Check policy — ONE check, correct direction
-        if (!Gate::allows('send', $receiver)) {
+        if (!Gate::inspect('send', [Message::class, $receiver])) {
             $errorMessage = match (true) {
+                $sender->id === $receiver->id
+                => 'Vous ne pouvez pas vous envoyer de message à vous-même.',
+
                 $receiver->role === 'admin'
-                    => 'Vous ne pouvez pas contacter un administrateur.',
+                => 'Vous ne pouvez pas contacter un administrateur.', 
+                $receiver->hasBlocked($sender->id) 
+            => 'Cet utilisateur vous a bloqué. Vous ne pouvez pas le contacter.',
                 $sender->role === 'semsar'
-                    => 'Vous ne pouvez répondre qu\'aux chercheurs qui vous ont contacté en premier.',
+                => 'Vous ne pouvez répondre qu\'aux chercheurs qui vous ont contacté en premier.',
                 $receiver->role !== 'semsar'
-                    => 'Vous ne pouvez contacter que des propriétaires (semsar).',
+                => 'Vous ne pouvez contacter que des propriétaires (semsar).',
                 !$sender->canSendMessage()
-                    => 'Vous avez atteint votre limite de messages aujourd\'hui. Passez à un plan supérieur.',
+                => 'Vous avez atteint votre limite de messages aujourd\'hui. Passez à un plan supérieur.',
                 default
-                    => 'Vous ne pouvez pas envoyer de message à cet utilisateur.',
+                => 'Vous ne pouvez pas envoyer de message à cet utilisateur. tester',
             };
 
             return response()->json([

@@ -4,6 +4,8 @@ namespace App\Policies;
 
 use App\Models\Message;
 use App\Models\User;
+use Illuminate\Auth\Access\Response;
+
 // use Illuminate\Support\Facades\Log as FacadesLog;
 // use Laravel\Reverb\Loggers\Log;
 
@@ -12,54 +14,105 @@ class MessagePolicy
     /**
      * Vérifier si l'utilisateur peut envoyer un message
      */
-    public function send(User $user, User $receiver): bool
+    // public function send(User $user, User $receiver): bool
+    // {
+    //     // Can't message yourself
+    //     if ($user->id === $receiver->id) {
+    //         return false;
+    //     }
+
+    //     // Can't message an admin
+    //     if ($receiver->role === 'admin') {
+    //         return false;
+    //     }
+
+    //     // Blocked check
+    //     if ($receiver->hasBlocked($user->id)) {
+    //         return false;
+    //     }
+
+    //     // Admin can message anyone
+    //     if ($user->role === 'admin') {
+    //         return true;
+    //     }
+
+    //     // Semsar can reply to chercheurs who already messaged them
+    //     // (no limit on replies — they're responding to inquiries)
+    //     if ($user->role === 'semsar') {
+    //         $alreadyContacted = \App\Models\Message::where('sender_id', $receiver->id)
+    //             ->where('receiver_id', $user->id)
+    //             ->exists();
+
+    //         if (!$alreadyContacted) {
+    //             return false; // semsar can't cold-message chercheurs
+    //         }
+
+    //         return true;
+    //     }
+
+    //     // Chercheur — check daily message limit
+    //     if ($user->role === 'chercheur') {
+    //         // Chercheur can only message semsar (not other chercheurs)
+    //         if ($receiver->role !== 'semsar') {
+    //             return false;
+    //         }
+
+    //         return $user->canSendMessage();
+    //     }
+
+    //     return false;
+    // }
+    // 1. نفس الشخص
+    public function send(User $user, User $receiver)
     {
-        // Can't message yourself
         if ($user->id === $receiver->id) {
-            return false;
+            return Response::deny("Vous ne pouvez pas vous envoyer de message.");
         }
 
-        // Can't message an admin
+        // 2. المراسلة للأدمن
         if ($receiver->role === 'admin') {
-            return false;
+            return Response::deny("Vous ne pouvez pas contacter un administrateur.");
         }
 
-        // Blocked check
+        // 3. البلوك
         if ($receiver->hasBlocked($user->id)) {
-            return false;
+            return Response::deny("Cet utilisateur vous a bloqué.");
         }
 
-        // Admin can message anyone
+        // 4. الأدمن يقدر يصيفط لأي حد
         if ($user->role === 'admin') {
-            return true;
+            return Response::allow();
         }
 
-        // Semsar can reply to chercheurs who already messaged them
-        // (no limit on replies — they're responding to inquiries)
+        // 5. قوانين السمسار
         if ($user->role === 'semsar') {
             $alreadyContacted = \App\Models\Message::where('sender_id', $receiver->id)
                 ->where('receiver_id', $user->id)
                 ->exists();
 
             if (!$alreadyContacted) {
-                return false; // semsar can't cold-message chercheurs
+                return Response::deny("Vous ne pouvez répondre qu'aux personnes qui vous ont contacté.");
             }
-
-            return true;
+            return Response::allow();
         }
 
-        // Chercheur — check daily message limit
+        // 6. قوانين الباحث (Chercheur)
         if ($user->role === 'chercheur') {
-            // Chercheur can only message semsar (not other chercheurs)
             if ($receiver->role !== 'semsar') {
-                return false;
+                return Response::deny("Vous ne pouvez contacter que des semsars.");
             }
 
-            return $user->canSendMessage();
+            if (!$user->canSendMessage()) {
+                return Response::deny("Limite de messages atteinte.");
+            }
+
+            return Response::allow();
         }
 
-        return false;
+        // الحالة الافتراضية للمنع
+        return Response::deny("Action non autorisée.");
     }
+
 
     // public function send(User $user, User $receiver): bool
     // {

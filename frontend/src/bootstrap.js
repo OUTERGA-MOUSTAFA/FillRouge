@@ -10,5 +10,5 @@ window.Echo = new Echo({
     wsPort: import.meta.env.VITE_REVERB_PORT,
     wssPort: import.meta.env.VITE_REVERB_PORT,
     forceTLS: false,
-    enabledTransports: ['ws', 'wss'],
+    enabledTransports: ['ws', 'wss'],//WebSocket protocols
 });
