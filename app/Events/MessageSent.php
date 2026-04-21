@@ -20,10 +20,15 @@ class MessageSent implements ShouldBroadcast
     {
         $this->message = $message;
     }
-
+    // l-Channel li ghadi n-broadcasting fiha
     public function broadcastOn()
     {
-        return new PresenceChannel('chat.' . $this->message->receiver_id);
+        // return new PresenceChannel('chat.' . $this->message->receiver_id);// PresenceChannel bach nchoufo chkon li online
+
+        return new PresenceChannel(
+            'chat.' . min($this->message->sender_id, $this->message->receiver_id) . '.' . // hna kankhlihem chat real time binathem 
+                max($this->message->sender_id, $this->message->receiver_id)
+        );
     }
 
     public function broadcastAs()

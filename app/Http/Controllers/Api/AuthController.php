@@ -218,7 +218,7 @@ class AuthController extends Controller
 
         Mail::send('emails.verification', ['user' => $user, 'code' => $code], function ($message) use ($user) {
             $message->to($user->email)
-                    ->subject('Vérification email - Darna');
+                    ->subject('Vérification email - Semsar');
         });
     }
 
@@ -237,7 +237,7 @@ class AuthController extends Controller
             'expires_at' => now()->addMinutes(10),
         ]);
 
-        $this->smsService->send($user->phone, "Votre code Darna: {$code}");
+        $this->smsService->send($user->phone, "Votre code Emasar: {$code}");
     }
 
     /**
@@ -357,7 +357,7 @@ class AuthController extends Controller
         
         Mail::send('emails.password-reset', ['token' => $token, 'user' => $user], function ($message) use ($user) {
             $message->to($user->email)
-                    ->subject('Réinitialisation mot de passe - Darna');
+                    ->subject('Réinitialisation mot de passe - Emasar');
         });
         
         return response()->json([

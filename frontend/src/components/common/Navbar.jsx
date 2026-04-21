@@ -291,7 +291,7 @@ export default function Navbar() {
                   <div className="h-8 w-8 bg-[#009966] rounded-lg flex items-center justify-center">
                     <span className="text-white font-extrabold text-base">D</span>
                   </div>
-                  <span className="text-lg font-bold text-gray-900 hidden sm:block">Darna</span>
+                  <span className="text-lg font-bold text-gray-900 hidden sm:block">Semsar</span>
                   {/* ✅ Use RoleBadge component, only on md+ */}
                   <span className="hidden md:block">
                     <RoleBadge role={user?.role} />

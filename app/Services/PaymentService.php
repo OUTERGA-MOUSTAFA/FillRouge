@@ -17,7 +17,7 @@ class PaymentService
         $storeKey = config('services.cmi.store_key');
         
         // Générer un ID de transaction unique
-        $orderId = 'Darna_' . uniqid();
+        $orderId = 'Semsar_' . uniqid();
         
         // Préparer les données pour le paiement
         $paymentData = [

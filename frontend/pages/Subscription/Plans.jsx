@@ -155,7 +155,7 @@ export default function SubscriptionPlans() {
         <div className="relative max-w-3xl mx-auto px-4 py-14 text-center">
           <span className="inline-flex items-center gap-1.5 bg-[#e6f7f5] text-[#009966] text-xs font-semibold px-3 py-1 rounded-full mb-4">
             <StarSolid className="h-3 w-3 text-[#00BBA7]" />
-            Darna Premium
+            Semsar Premium
           </span>
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-3">
             Trouvez votre colocataire idéal,{' '}

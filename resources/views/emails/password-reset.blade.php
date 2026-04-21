@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Réinitialisation mot de passe - Darna</title>
+    <title>Réinitialisation mot de passe - Semsar</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -26,7 +26,7 @@
     <div class="container">
         <div class="card">
             <div class="header">
-                <div class="logo">🔐 Darna</div>
+                <div class="logo">🔐 Semsar</div>
             </div>
             <div class="content">
                 <h2>Réinitialisation de votre mot de passe</h2>
@@ -42,7 +42,7 @@
                 <p>Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>
             </div>
             <div class="footer">
-                <p>&copy; {{ date('Y') }} Darna. Tous droits réservés.</p>
+                <p>&copy; {{ date('Y') }} Semsar. Tous droits réservés.</p>
             </div>
         </div>
     </div>

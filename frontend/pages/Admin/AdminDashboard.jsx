@@ -344,7 +344,7 @@ export default function AdminDashboard() {
             Documentation | Help Center | Terms & Privacy
           </p>
           <p className="text-xs text-gray-400 mt-1">
-            © 2025 Darna. All rights reserved.
+            © 2025 Semsar. All rights reserved.
           </p>
         </div>
       </div>

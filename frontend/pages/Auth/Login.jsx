@@ -52,7 +52,7 @@ export default function Login() {
             <div className="h-10 w-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
               <span className="text-white font-extrabold text-xl">D</span>
             </div>
-            <span className="text-2xl font-bold tracking-tight">Darna</span>
+            <span className="text-2xl font-bold tracking-tight">Semsar</span>
           </div>
 
           {/* Tagline centrale */}
@@ -68,7 +68,7 @@ export default function Login() {
           {/* Témoignage */}
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-5">
             <p className="text-sm text-[#e6f7f5] italic leading-relaxed mb-3">
-              "J'ai trouvé ma colocataire en moins d'une semaine grâce à Darna. L'interface est simple et les profils sont fiables."
+              "J'ai trouvé ma colocataire en moins d'une semaine grâce à Semsar. L'interface est simple et les profils sont fiables."
             </p>
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-full bg-white/30 flex items-center justify-center text-xs font-bold">S</div>
@@ -89,7 +89,7 @@ export default function Login() {
           <div className="h-9 w-9 rounded-xl bg-[#009966] flex items-center justify-center">
             <span className="text-white font-extrabold text-lg">D</span>
           </div>
-          <span className="text-xl font-bold text-gray-900">Darna</span>
+          <span className="text-xl font-bold text-gray-900">Semsar</span>
         </div>
 
         <div className="max-w-md w-full mx-auto">

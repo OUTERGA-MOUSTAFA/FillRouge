@@ -45,7 +45,6 @@ class ImageService
             Storage::disk($this->disk)->put($path, (string) $image);
 
             return Storage::disk($this->disk)->url($path);
-
         } catch (\Exception $e) {
             throw new \Exception('Upload failed: ' . $e->getMessage());
         }
@@ -75,7 +74,6 @@ class ImageService
             Storage::disk($this->disk)->put($path, (string) $image);
 
             return Storage::disk($this->disk)->url($path);
-
         } catch (\Exception $e) {
             throw new \Exception('Avatar upload failed: ' . $e->getMessage());
         }
@@ -96,7 +94,6 @@ class ImageService
             Storage::disk($this->disk)->put($path, (string) $image);
 
             return Storage::disk($this->disk)->url($path);
-
         } catch (\Exception $e) {
             throw new \Exception('Cover upload failed: ' . $e->getMessage());
         }
@@ -122,7 +119,6 @@ class ImageService
                 'original' => Storage::disk($this->disk)->url($path),
                 'thumbnail' => Storage::disk($this->disk)->url($thumbPath),
             ];
-
         } catch (\Exception $e) {
             throw new \Exception('Listing upload failed: ' . $e->getMessage());
         }
@@ -165,5 +161,68 @@ class ImageService
     {
         $extension = $file->getClientOriginalExtension() ?: 'jpg';
         return Str::uuid() . '_' . time() . '.' . $extension;
+    }
+
+    /**
+     * Delete a single image by its URL or path
+     */
+    public function delete(string $urlOrPath): bool
+    {
+        // Convert full URL to storage path if needed
+        $path = $this->extractPathFromUrl($urlOrPath);
+
+        if ($path && Storage::disk($this->disk)->exists($path)) {
+            return Storage::disk($this->disk)->delete($path);
+        }
+
+        return false;
+    }
+
+    /**
+     * Delete multiple images
+     */
+    public function deleteMultiple(array $urlsOrPaths): void
+    {
+        foreach ($urlsOrPaths as $urlOrPath) {
+            $this->delete($urlOrPath);
+        }
+    }
+
+    /**
+     * Delete a listing photo along with its thumbnail
+     */
+    public function deleteListingPhoto(string $urlOrPath): bool
+    {
+        $path = $this->extractPathFromUrl($urlOrPath);
+
+        if (!$path) return false;
+
+        // Delete thumbnail too (thumb_ prefix)
+        $directory = dirname($path);
+        $filename  = basename($path);
+        $thumbPath = $directory . '/thumb_' . $filename;
+
+        Storage::disk($this->disk)->delete($thumbPath); // silent fail if missing
+
+        return $this->delete($path);
+    }
+
+    /**
+     * Convert a full storage URL back to a relative path
+     */
+    protected function extractPathFromUrl(string $urlOrPath): ?string
+    {
+        // Already a relative path
+        if (!str_starts_with($urlOrPath, 'http')) {
+            return $urlOrPath;
+        }
+
+        // Strip the storage base URL to get the relative path
+        $baseUrl = Storage::disk($this->disk)->url('');
+        if (str_starts_with($urlOrPath, $baseUrl)) {
+            return ltrim(substr($urlOrPath, strlen($baseUrl)), '/');
+        }
+
+        return null;
     }
 }

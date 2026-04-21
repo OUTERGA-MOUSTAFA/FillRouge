@@ -358,7 +358,11 @@ class ListingController extends Controller
         if ($request->bedrooms) $query->where('bedrooms', '>=', $request->bedrooms);
 
         if ($request->amenities) {
-            $amenities = explode(',', $request->amenities);
+            // $amenities = explode(',', $request->amenities);
+            // $query->byAmenities($amenities); aslan kan sift array 
+            $amenities = is_array($request->amenities)
+                ? $request->amenities
+                : explode(',', $request->amenities);
             $query->byAmenities($amenities);
         }
 

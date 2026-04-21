@@ -77,7 +77,7 @@ export default function Home() {
       id: 1,
       title: 'Trouvez votre espace idéal',
       subtitle: 'Des milliers d\'annonces à Casablanca, Rabat et partout au Maroc',
-      image: 'https://via.placeholder.com/1920x1080/16a34a/ffffff?text=Darna+1',
+      image: 'https://via.placeholder.com/1920x1080/16a34a/ffffff?text=Semsar+1',
       button_text: 'Découvrir',
       button_link: '/listings',
     },
@@ -85,29 +85,29 @@ export default function Home() {
       id: 2,
       title: 'Colocation sécurisée',
       subtitle: 'Annonces vérifiées et profils authentifiés pour votre tranquillité',
-      image: 'https://via.placeholder.com/1920x1080/16a34a/ffffff?text=Darna+2',
+      image: 'https://via.placeholder.com/1920x1080/16a34a/ffffff?text=Semsar+2',
       button_text: 'Découvrir',
       button_link: '/listings',
     },
     {
       id: 3,
-      title: 'La communauté Darna',
+      title: 'La communauté Semsar',
       subtitle: 'Rejoignez plus de 10,000 membres à la recherche du colocataire parfait',
-      image: 'https://via.placeholder.com/1920x1080/16a34a/ffffff?text=Darna+3',
+      image: 'https://via.placeholder.com/1920x1080/16a34a/ffffff?text=Semsar+3',
       button_text: 'Découvrir',
       button_link: '/listings',
     },{
       id: 4,
-      title: 'La communauté Darna',
+      title: 'La communauté Semsar',
       subtitle: 'Rejoignez plus de 10,000 membres à la recherche du colocataire parfait',
-      image: 'https://via.placeholder.com/1920x1080/16a34a/ffffff?text=Darna+3',
+      image: 'https://via.placeholder.com/1920x1080/16a34a/ffffff?text=Semsar+3',
       button_text: 'Découvrir',
       button_link: '/listings',
     },{
       id: 5,
-      title: 'La communauté Darna',
+      title: 'La communauté Semsar',
       subtitle: 'Rejoignez plus de 10,000 membres à la recherche du colocataire parfait',
-      image: 'https://via.placeholder.com/1920x1080/16a34a/ffffff?text=Darna+3',
+      image: 'https://via.placeholder.com/1920x1080/16a34a/ffffff?text=Semsar+3',
       button_text: 'Découvrir',
       button_link: '/listings',
     },
@@ -150,7 +150,7 @@ export default function Home() {
                     className="w-full h-full object-cover"
                     loading={slide.id === sliders[0]?.id ? 'eager' : 'lazy'}
                     onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/1920x1080/16a34a/ffffff?text=Darna';
+                      e.target.src = 'https://via.placeholder.com/1920x1080/16a34a/ffffff?text=Semsar';
                     }}
                   />
                   {/* Overlay - CORRIGÉ: bg-black/40 au lieu de bg-green-400 */}
@@ -197,7 +197,7 @@ export default function Home() {
         <div className="container-custom">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Pourquoi choisir Darna ?
+              Pourquoi choisir Semsar ?
             </h2>
             <p className="text-xl text-gray-600">
               Une plateforme complète pour votre recherche de colocataire

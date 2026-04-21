@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vérification email - Darna</title>
+    <title>Vérification email - Semsar</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -72,14 +72,14 @@
     <div class="container">
         <div class="card">
             <div class="header">
-                <h1>🏠 Darna</h1>
+                <h1>🏠 Semsar</h1>
                 <p style="color: #fff; margin-top: 10px;">Votre plateforme de confiance</p>
             </div>
             
             <div class="content">
-                <h2 style="margin-top: 0;">Bienvenue sur Darna !</h2>
+                <h2 style="margin-top: 0;">Bienvenue sur Semsar !</h2>
                 <p>Bonjour <strong>{{ $user->full_name ?? 'Cher utilisateur' }}</strong>,</p>
-                <p>Merci de vous être inscrit sur Darna, la plateforme n°1 pour trouver un colocataire au Maroc.</p>
+                <p>Merci de vous être inscrit sur Semsar, la plateforme n°1 pour trouver un colocataire au Maroc.</p>
                 <p>Pour activer votre compte et commencer votre recherche, veuillez utiliser le code de vérification ci-dessous :</p>
                 
                 <div class="code">
@@ -87,17 +87,17 @@
                 </div>
                 
                 <p>Ce code est valable pendant <strong>10 minutes</strong>.</p>
-                <p>Si vous n'avez pas créé de compte sur Darna, ignorez simplement cet email.</p>
+                <p>Si vous n'avez pas créé de compte sur Semsar, ignorez simplement cet email.</p>
                 
                 <hr style="margin: 30px 0;">
                 
                 <p style="font-size: 14px; color: #666;">
-                    Besoin d'aide ? Contactez notre support : <a href="mailto:support@darna.com">support@darna.com</a>
+                    Besoin d'aide ? Contactez notre support : <a href="mailto:support@Semsar.com">support@Semsar.com</a>
                 </p>
             </div>
             
             <div class="footer">
-                <p>&copy; 2024 Darna. Tous droits réservés.</p>
+                <p>&copy; 2024 Semsar. Tous droits réservés.</p>
                 <p>
                     <a href="#" style="color: #666;">Conditions d'utilisation</a> | 
                     <a href="#" style="color: #666;">Politique de confidentialité</a>

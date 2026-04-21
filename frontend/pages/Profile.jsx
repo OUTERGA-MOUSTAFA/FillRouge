@@ -141,7 +141,7 @@ export default function Profile() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header avec dégradé */}
-      <div className="bg-gradient-to-r from-[#009966] to-[#00BBA7] text-white">
+      <div className="bg-gradient-to-r px-4 from-[#009966] to-[#00BBA7] text-white">
         <div className="container-custom py-8">
           <div className="flex flex-col md:flex-row items-center gap-6">
             {/* Avatar */}

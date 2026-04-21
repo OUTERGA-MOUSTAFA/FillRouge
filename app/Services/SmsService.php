@@ -67,7 +67,7 @@ class SmsService
             ])->post($apiUrl, [
                 'to' => $this->formatPhoneNumber($phoneNumber),
                 'message' => $message,
-                'sender' => 'DARNA',
+                'sender' => 'SEMSAR',
             ]);
             
             return $response->successful();

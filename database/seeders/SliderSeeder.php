@@ -52,7 +52,7 @@ class SliderSeeder extends Seeder
                 'order' => 2,
             ],
             [
-                'title' => 'Rejoignez la communauté Darna',
+                'title' => 'Rejoignez la communauté Semsar',
                 'subtitle' => 'Plus de 10 000 membres à la recherche du colocataire parfait',
                 'image_url' => 'https://images.unsplash.com/photo-1554995207-c18c203602cb?w=1920&h=600&fit=crop',
                 'button_text' => 'S\'inscrire',
@@ -113,7 +113,7 @@ class SliderSeeder extends Seeder
             src="data:image/svg+xml;base64,' . base64_encode('<svg width="1920" height="600" xmlns="http://www.w3.org/2000/png">
             <rect width="100%" height="100%" fill="' . $color . '"/>
             <text x="50%" y="50%" font-family="Arial" font-size="48" fill="white" text-anchor="middle" dy=".3em">
-                Darna - Colocation au Maroc
+                Semsar - Colocation au Maroc
             </text>
         </svg>') . '"
             alt="Slider Image"
