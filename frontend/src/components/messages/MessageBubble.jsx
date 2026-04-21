@@ -40,23 +40,26 @@ export default function MessageBubble({ message, isOwn }) {
               ))}
             </div>
           )}
-        </div>
 
-        {/* Time + status */}
-        <div className={`flex items-center gap-1 mt-0.5 px-1 ${isOwn ? 'justify-end' : 'justify-start'}`}>
-          {(showTime || isTemp) && (
-            <span className="text-xs text-gray-400">
+          {/* Time + status — inside the bubble, justify-between */}
+          <div className="flex items-center justify-between gap-3 mt-1.5">
+            <span
+              className={`text-xs transition-opacity duration-150 ${
+                isOwn ? 'text-green-200' : 'text-gray-400'
+              } ${showTime || isTemp ? 'opacity-100' : 'opacity-0'}`}
+            >
               {isTemp ? 'Sending...' : formatTime(message.created_at)}
             </span>
-          )}
-          {isOwn && !isTemp && (
-            <span className="text-gray-400">
-              {message.is_read
-                ? <CheckIcon className="h-3 w-3 text-[#009966]" />
-                : <ClockIcon className="h-3 w-3" />
-              }
-            </span>
-          )}
+
+            {isOwn && !isTemp && (
+              <span className={isOwn ? 'text-green-200' : 'text-gray-400'}>
+                {message.is_read
+                  ? <CheckIcon className="h-3 w-3 text-white" />
+                  : <ClockIcon className="h-3 w-3" />
+                }
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </div>
