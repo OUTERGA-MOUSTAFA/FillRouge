@@ -223,30 +223,35 @@ class User extends Authenticatable
     /**
      * Vérifier si l'utilisateur peut envoyer un message
      */
-    // public function canSendMessage()
-    // {
-    //     if ($this->is_premium) {
-    //         return true;
-    //     }
+   // app/Models/User.php
 
-    //     $dailyLimit = match ($this->subscription_plan) {
-    //         'standard' => 50,
-    //         'premium'  => PHP_INT_MAX,
-    //         default    => 20,
-    //     };
+    /**
+     * Vérifier si l'utilisateur peut envoyer un message
+     */
+    public function canSendMessage()
+    {
+        if ($this->is_premium) {
+            return true;
+        }
 
-    //     $today = now()->toDateString();
+        $dailyLimit = $this->subscription_plan === 'standard' ? 50 : 5;
+        $today = now()->toDateString();
+        $lastReset = $this->last_message_reset_date
+            ? $this->last_message_reset_date->toDateString()
+            : null;
 
-    //     if (!$this->last_message_reset_date || $this->last_message_reset_date != $today) {
-    //         $this->update([
-    //             'daily_messages_count'    => 0,
-    //             'last_message_reset_date' => $today,
-    //         ]);
-    //         return true;
-    //     }
+        if ($lastReset !== $today) {
+            $this->update([
+                'daily_messages_count' => 0,
+                'last_message_reset_date' => $today
+            ]);
+            $this->refresh();
+        }
 
-    //     return ($this->daily_messages_count ?? 0) < $dailyLimit;
-    // }
+        return ($this->daily_messages_count ?? 0) < $dailyLimit;
+    }
+
+
 
     /**
      * Vérifier si l'utilisateur peut créer une annonce
@@ -397,44 +402,44 @@ class User extends Authenticatable
     /**
      * Vérifier si l'utilisateur peut envoyer un message
      */
-    public function canSendMessage()
-    {
-        // Premium = messages illimités
-        if ($this->is_premium) {
-            return true; /**  *6 */
-        }
- 
-        // $dailyLimit = $this->subscription_plan === 'standard' ? 50 : 5;
-        
+    // public function canSendMessage()
+    // {
+    //     // Premium = messages illimités
+    //     if ($this->is_premium) {
+    //         return true;
+    //         /**  *6 */
+    //     }
 
-        $dailyLimit = match ($this->subscription_plan) {
-            'standard' => 15,  // 30 new contacts/day
-            'free'     => 2,   // 5 new contacts/day
-        };
+    //     // $dailyLimit = $this->subscription_plan === 'standard' ? 50 : 5;
 
-        // Obtenir la date d'aujourd'hui
-        $today = now()->toDateString();
 
-        // Obtenir la dernière date de reset (gérer le cas NULL)
-        $today = now()->toDateString();
-        $lastReset = $this->last_message_reset_date?->toDateString();
+    //     $dailyLimit = match ($this->subscription_plan) {
+    //         'standard' => 15,  // 30 new contacts/day
+    //         'free'     => 2,   // 5 new contacts/day
+    //     };
 
-        // Reset le compteur quotidien si nécessaire
-        if ($lastReset !== $today) {
-            $this->update([
-                'daily_messages_count' => 0,
-                'last_message_reset_date' => $today // Sauvegarder en format date string
-            ]);
+    //     // Obtenir la date d'aujourd'hui
+    //     $today = now()->toDateString();
 
-            // Rafraîchir l'instance pour avoir les nouvelles valeurs
-            $this->refresh();
-        }
+    //     // Obtenir la dernière date de reset (gérer le cas NULL)
+    //     $today = now()->toDateString();
+    //     $lastReset = $this->last_message_reset_date?->toDateString();
 
-        // Obtenir le compteur actuel (gérer le cas NULL)
-        $currentCount = $this->daily_messages_count ?? 0;
-        return $currentCount < $dailyLimit;
-        
-    }
+    //     // Reset le compteur quotidien si nécessaire
+    //     if ($lastReset !== $today) {
+    //         $this->update([
+    //             'daily_messages_count' => 0,
+    //             'last_message_reset_date' => $today // Sauvegarder en format date string
+    //         ]);
+
+    //         // Rafraîchir l'instance pour avoir les nouvelles valeurs
+    //         $this->refresh();
+    //     }
+
+    //     // Obtenir le compteur actuel (gérer le cas NULL)
+    //     $currentCount = $this->daily_messages_count ?? 0;
+    //     return $currentCount < $dailyLimit;
+    // }
 
     /**
      * Obtenir le nombre de messages restants aujourd'hui
@@ -446,7 +451,7 @@ class User extends Authenticatable
         }
 
         $dailyLimit = $this->subscription_plan === 'standard' ? 50 : 5;
-        $used = $this->daily_messages_count ?? 0; // ✅ Gérer NULL
+        $used = $this->daily_messages_count ?? 0; // Gérer NULL
 
         return max(0, $dailyLimit - $used);
     }

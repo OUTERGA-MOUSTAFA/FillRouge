@@ -149,7 +149,7 @@ export default function EditProfileDetails() {
 
       // Upload identity doc if selected
       if (identityFile) {
-        await authService.uploadIdDocument(identityFile, 'national_id');
+        await authService.uploadIdDocument(identityFile, 'cin');
       }
 
       toast.success('Profil détaillé mis à jour');

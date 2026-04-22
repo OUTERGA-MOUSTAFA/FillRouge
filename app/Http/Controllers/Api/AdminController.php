@@ -21,55 +21,55 @@ class AdminController extends Controller
     {
         // Période
         $period = $request->get('period', 'month'); // week, month, year
-        $startDate = match($period) {
+        $startDate = match ($period) {
             'week' => now()->subWeek(),
             'month' => now()->subMonth(),
             'year' => now()->subYear(),
             default => now()->subMonth(),
         };
-        
+
         // Statistiques utilisateurs
         $totalUsers = User::count();
         $newUsers = User::where('created_at', '>=', $startDate)->count();
         $verifiedUsers = User::whereNotNull('email_verified_at')->count();
         $premiumUsers = User::where('subscription_plan', 'premium')
-            ->where(function($q) {
+            ->where(function ($q) {
                 $q->whereNull('subscription_ends_at')
-                  ->orWhere('subscription_ends_at', '>', now());
+                    ->orWhere('subscription_ends_at', '>', now());
             })->count();
-        
+
         // Statistiques annonces
         $totalListings = Listing::count();
         $activeListings = Listing::where('status', 'active')->count();
         $newListings = Listing::where('created_at', '>=', $startDate)->count();
         $featuredListings = Listing::where('is_featured', true)->count();
-        
+
         // Statistiques signalements
         $pendingReports = Report::where('status', 'pending')->count();
         $resolvedReports = Report::where('status', 'resolved')->count();
-        
+
         // Statistiques messages
         $totalMessages = Message::count();
         $messagesToday = Message::whereDate('created_at', today())->count();
-        
+
         // Statistiques revenus
         $totalRevenue = Subscription::where('is_active', true)
             ->where('created_at', '>=', $startDate)
             ->sum('amount');
-        
+
         $revenueByPlan = Subscription::where('is_active', true)
             ->where('created_at', '>=', $startDate)
             ->select('plan', DB::raw('SUM(amount) as total'))
             ->groupBy('plan')
             ->get();
-        
+
         // Évolution des inscriptions (7 derniers jours)
         $usersEvolution = User::select(DB::raw('DATE(created_at) as date'), DB::raw('count(*) as count'))
             ->where('created_at', '>=', now()->subDays(7))
             ->groupBy('date')
             ->orderBy('date')
             ->get();
-        
+
         // Top villes
         $topCities = Listing::select('city', DB::raw('count(*) as count'))
             ->where('city', '!=', '')
@@ -77,7 +77,7 @@ class AdminController extends Controller
             ->orderBy('count', 'desc')
             ->limit(5)
             ->get();
-        
+
         return response()->json([
             'success' => true,
             'data' => [
@@ -100,7 +100,7 @@ class AdminController extends Controller
                 'reports' => [
                     'pending' => $pendingReports,
                     'resolved' => $resolvedReports,
-                    'resolution_rate' => ($pendingReports + $resolvedReports) > 0 ? 
+                    'resolution_rate' => ($pendingReports + $resolvedReports) > 0 ?
                         round(($resolvedReports / ($pendingReports + $resolvedReports)) * 100, 2) : 0,
                 ],
                 'messages' => [
@@ -116,23 +116,23 @@ class AdminController extends Controller
             ]
         ]);
     }
-    
+
     /**
      * Liste des utilisateurs avec filtres
      */
     public function users(Request $request)
     {
-        $query = User::with(['profile', 'subscription']);
-        
+        $query = User::with(['profile', 'subscription'])
+            ->where('role', '!=', 'admin'); // Exclure les admins
         // Filtres
         if ($request->search) {
-            $query->where(function($q) use ($request) {
+            $query->where(function ($q) use ($request) {
                 $q->where('full_name', 'LIKE', "%{$request->search}%")
-                  ->orWhere('email', 'LIKE', "%{$request->search}%")
-                  ->orWhere('phone', 'LIKE', "%{$request->search}%");
+                    ->orWhere('email', 'LIKE', "%{$request->search}%")
+                    ->orWhere('phone', 'LIKE', "%{$request->search}%");
             });
         }
-        
+
         if ($request->status === 'verified') {
             $query->whereNotNull('email_verified_at');
         } elseif ($request->status === 'unverified') {
@@ -140,129 +140,152 @@ class AdminController extends Controller
         } elseif ($request->status === 'suspended') {
             $query->whereNotNull('suspended_until')->where('suspended_until', '>', now());
         }
-        
+
         if ($request->plan) {
             $query->where('subscription_plan', $request->plan);
         }
-        
+
         if ($request->city) {
-            $query->whereHas('profile', function($q) use ($request) {
+            $query->whereHas('profile', function ($q) use ($request) {
                 $q->where('city', 'LIKE', "%{$request->city}%");
             });
         }
-        
+
         if ($request->date_from) {
             $query->whereDate('created_at', '>=', $request->date_from);
         }
-        
+
         if ($request->date_to) {
             $query->whereDate('created_at', '<=', $request->date_to);
         }
-        
-        // Tri
+
+        // Tri personnalisé : premium → standard → free, puis par date de création
+        $query->orderByRaw("
+        CASE subscription_plan 
+            WHEN 'premium' THEN 1 
+            WHEN 'standard' THEN 2 
+            WHEN 'free' THEN 3 
+            ELSE 4 
+        END
+    ");
+
+        // Tri - À FAIRE AVANT paginate()
         $sortField = $request->sort_by ?? 'created_at';
         $sortOrder = $request->sort_order ?? 'desc';
+
+        // Vérifier que le champ de tri existe dans la table users
+        $allowedSortFields = ['created_at', 'full_name', 'email', 'subscription_plan', 'updated_at'];
+        if (!in_array($sortField, $allowedSortFields)) {
+            $sortField = 'created_at';
+        }
+
         $query->orderBy($sortField, $sortOrder);
-        
-        $perPage = $request->per_page ?? 20;
+
+        // Pagination - Paramètres
+        $perPage = $request->per_page ?? 10;
+
+        // Limiter le nombre maximum par page (éviter les abus)
+        if ($perPage > 10) {
+            $perPage = 10;
+        }
+
+        // Exécuter la pagination
         $users = $query->paginate($perPage);
-        
-        // Ajouter des métadonnées
-        $users->getCollection()->transform(function($user) {
+
+        // Ajouter des métadonnées à chaque utilisateur
+        $users->getCollection()->transform(function ($user) {
             $user->is_suspended = $user->suspended_until && $user->suspended_until->isFuture();
             $user->profile_completion = $user->profile ? $user->profile->getCompletionScore() : 0;
             return $user;
         });
-        
+
         return response()->json([
             'success' => true,
             'data' => $users
         ]);
     }
-    
 
     /**
- * Récupérer les annonces récentes
- */
-public function recentListings()
-{
-    $listings = Listing::with('user')
-        ->latest()
-        ->limit(10)
-        ->get()
-        ->map(function($listing) {
-            return [
-                'id' => $listing->id,
-                'title' => $listing->title,
-                'city' => $listing->city,
-                'status' => $listing->status,
-                'created_at' => $listing->created_at,
-                'user' => $listing->user ? [
-                    'full_name' => $listing->user->full_name,
-                ] : null,
-            ];
-        });
-    
-    return response()->json([
-        'success' => true,
-        'data' => $listings
-    ]);
-}
+     * Récupérer les annonces récentes
+     */
+    public function recentListings()
+    {
+        $listings = Listing::with('user')
+            ->latest()
+            ->limit(10)
+            ->get()
+            ->map(function ($listing) {
+                return [
+                    'id' => $listing->id,
+                    'title' => $listing->title,
+                    'city' => $listing->city,
+                    'status' => $listing->status,
+                    'created_at' => $listing->created_at,
+                    'user' => $listing->user ? [
+                        'full_name' => $listing->user->full_name,
+                    ] : null,
+                ];
+            });
 
-/**
- * Récupérer les nouveaux utilisateurs
- */
-public function recentUsers()
-{
-    $users = User::latest()
-        ->limit(10)
-        ->get()
-        ->map(function($user) {
-            return [
-                'id' => $user->id,
-                'full_name' => $user->full_name,
-                'email' => $user->email,
-                'avatar' => $user->avatar,
-                'email_verified_at' => $user->email_verified_at,
-                'created_at' => $user->created_at,
-            ];
-        });
-    
-    return response()->json([
-        'success' => true,
-        'data' => $users
-    ]);
-}
+        return response()->json([
+            'success' => true,
+            'data' => $listings
+        ]);
+    }
 
-/**
- * Récupérer les signalements en attente
- */
-public function pendingReports()
-{
-    $reports = Report::with(['reportedUser', 'listing'])
-        ->where('status', 'pending')
-        ->latest()
-        ->limit(10)
-        ->get()
-        ->map(function($report) {
-            return [
-                'id' => $report->id,
-                'listing_id' => $report->listing_id,
-                'reason' => $report->reason,
-                'status' => $report->status,
-                'created_at' => $report->created_at,
-                'reportedUser' => $report->reportedUser ? [
-                    'full_name' => $report->reportedUser->full_name,
-                ] : null,
-            ];
-        });
-    
-    return response()->json([
-        'success' => true,
-        'data' => $reports
-    ]);
+    /**
+     * Récupérer les nouveaux utilisateurs
+     */
+    public function recentUsers()
+    {
+        $users = User::latest()
+            ->limit(10)
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'full_name' => $user->full_name,
+                    'email' => $user->email,
+                    'avatar' => $user->avatar,
+                    'email_verified_at' => $user->email_verified_at,
+                    'created_at' => $user->created_at,
+                ];
+            });
 
-}
+        return response()->json([
+            'success' => true,
+            'data' => $users
+        ]);
+    }
+
+    /**
+     * Récupérer les signalements en attente
+     */
+    public function pendingReports()
+    {
+        $reports = Report::with(['reportedUser', 'listing'])
+            ->where('status', 'pending')
+            ->latest()
+            ->limit(10)
+            ->get()
+            ->map(function ($report) {
+                return [
+                    'id' => $report->id,
+                    'listing_id' => $report->listing_id,
+                    'reason' => $report->reason,
+                    'status' => $report->status,
+                    'created_at' => $report->created_at,
+                    'reportedUser' => $report->reportedUser ? [
+                        'full_name' => $report->reportedUser->full_name,
+                    ] : null,
+                ];
+            });
+
+        return response()->json([
+            'success' => true,
+            'data' => $reports
+        ]);
+    }
 
     /**
      * Afficher un utilisateur spécifique
@@ -272,17 +295,17 @@ public function pendingReports()
         $user->load([
             'profile',
             'subscription',
-            'listings' => function($q) {
+            'listings' => function ($q) {
                 $q->latest()->limit(10);
             },
-            'reports' => function($q) {
+            'reports' => function ($q) {
                 $q->latest()->limit(10);
             },
-            'reviews' => function($q) {
+            'reviews' => function ($q) {
                 $q->latest()->limit(10);
             }
         ]);
-        
+
         // Statistiques utilisateur
         $user->stats = [
             'total_listings' => $user->listings()->count(),
@@ -293,13 +316,13 @@ public function pendingReports()
             'average_rating' => $user->reviews()->avg('rating') ?? 0,
             'total_reports' => $user->reports()->count(),
         ];
-        
+
         return response()->json([
             'success' => true,
             'data' => $user
         ]);
     }
-    
+
     /**
      * Suspendre un utilisateur
      */
@@ -309,18 +332,18 @@ public function pendingReports()
             'days' => 'required|integer|min:1|max:365',
             'reason' => 'nullable|string|max:500',
         ]);
-        
+
         $user->update([
             'suspended_until' => now()->addDays($request->days),
             'suspension_reason' => $request->reason,
         ]);
-        
+
         // Révoquer tous les tokens
         $user->tokens()->delete();
-        
+
         // Désactiver toutes les annonces
         $user->listings()->update(['status' => 'inactive']);
-        
+
         return response()->json([
             'success' => true,
             'message' => "Utilisateur suspendu pour {$request->days} jours",
@@ -330,7 +353,7 @@ public function pendingReports()
             ]
         ]);
     }
-    
+
     /**
      * Lever la suspension
      * unsuspendUser
@@ -341,13 +364,13 @@ public function pendingReports()
             'suspended_until' => null,
             'suspension_reason' => null,
         ]);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Suspension levée avec succès'
         ]);
     }
-    
+
     /**
      * Vérifier un utilisateur manuellement
      */
@@ -357,7 +380,7 @@ public function pendingReports()
             'email_verified_at' => now(),
             'phone_verified_at' => now(),
         ]);
-        
+
         if ($user->profile) {
             $user->profile->update([
                 'is_identity_verified' => true,
@@ -365,13 +388,13 @@ public function pendingReports()
             ]);
             $user->profile->addBadge('identity_verified');
         }
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Utilisateur vérifié avec succès'
         ]);
     }
-    
+
     /**
      * Supprimer un utilisateur
      */
@@ -381,76 +404,76 @@ public function pendingReports()
         if ($user->avatar) {
             Storage::delete($user->avatar);
         }
-        
+
         if ($user->profile && $user->profile->id_document_path) {
             Storage::delete($user->profile->id_document_path);
         }
-        
+
         // Soft delete
         $user->delete();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Utilisateur supprimé'
         ]);
     }
-    
+
     /**
      * Liste des annonces (admin)
      */
     public function listings(Request $request)
     {
         $query = Listing::with(['user', 'user.profile']);
-        
+
         // Filtres
         if ($request->search) {
-            $query->where(function($q) use ($request) {
+            $query->where(function ($q) use ($request) {
                 $q->where('title', 'LIKE', "%{$request->search}%")
-                  ->orWhere('description', 'LIKE', "%{$request->search}%")
-                  ->orWhere('city', 'LIKE', "%{$request->search}%");
+                    ->orWhere('description', 'LIKE', "%{$request->search}%")
+                    ->orWhere('city', 'LIKE', "%{$request->search}%");
             });
         }
-        
+
         if ($request->status) {
             $query->where('status', $request->status);
         }
-        
+
         if ($request->type) {
             $query->where('type', $request->type);
         }
-        
+
         if ($request->city) {
             $query->where('city', 'LIKE', "%{$request->city}%");
         }
-        
+
         if ($request->min_price) {
             $query->where('price', '>=', $request->min_price);
         }
-        
+
         if ($request->max_price) {
             $query->where('price', '<=', $request->max_price);
         }
-        
+
         if ($request->reported_only) {
-            $query->whereHas('reports', function($q) {
+            $query->whereHas('reports', function ($q) {
                 $q->where('status', 'pending');
             });
         }
-        
+
         // Tri
         $sortField = $request->sort_by ?? 'created_at';
         $sortOrder = $request->sort_order ?? 'desc';
         $query->orderBy($sortField, $sortOrder);
-        
+
         $perPage = $request->per_page ?? 20;
         $listings = $query->paginate($perPage);
-        
+
         return response()->json([
             'success' => true,
             'data' => $listings
         ]);
     }
-    
+
     /**
      * Supprimer une annonce (admin)
      */
@@ -460,26 +483,26 @@ public function pendingReports()
         foreach ($listing->photos as $photo) {
             Storage::delete($photo);
         }
-        
+
         $listing->delete();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Annonce supprimée'
         ]);
     }
-    
+
     /**
      * Liste des signalements
      */
     public function reports(Request $request)
     {
         $query = Report::with(['reporter', 'reportedUser', 'listing', 'message']);
-        
+
         if ($request->status) {
             $query->where('status', $request->status);
         }
-        
+
         if ($request->type === 'user') {
             $query->whereNotNull('reported_user_id');
         } elseif ($request->type === 'listing') {
@@ -487,20 +510,20 @@ public function pendingReports()
         } elseif ($request->type === 'message') {
             $query->whereNotNull('message_id');
         }
-        
+
         if ($request->reason) {
             $query->where('reason', $request->reason);
         }
-        
+
         $perPage = $request->per_page ?? 20;
         $reports = $query->orderBy('created_at', 'desc')->paginate($perPage);
-        
+
         return response()->json([
             'success' => true,
             'data' => $reports
         ]);
     }
-    
+
     /**
      * Résoudre un signalement
      */
@@ -510,9 +533,9 @@ public function pendingReports()
             'action' => 'required|in:ignore,warning,suspend_user,delete_listing,delete_message',
             'note' => 'nullable|string|max:500',
         ]);
-        
+
         $adminId = $request->user()->id;
-        
+
         switch ($request->action) {
             case 'ignore':
                 $report->update([
@@ -522,7 +545,7 @@ public function pendingReports()
                     'resolution_note' => $request->note,
                 ]);
                 break;
-                
+
             case 'warning':
                 $report->update([
                     'status' => 'resolved',
@@ -532,7 +555,7 @@ public function pendingReports()
                 ]);
                 // Envoyer un avertissement à l'utilisateur
                 break;
-                
+
             case 'suspend_user':
                 if ($report->reported_user_id) {
                     $report->reportedUser->update([
@@ -547,7 +570,7 @@ public function pendingReports()
                     'resolution_note' => $request->note,
                 ]);
                 break;
-                
+
             case 'delete_listing':
                 if ($report->listing_id) {
                     $report->listing->delete();
@@ -559,7 +582,7 @@ public function pendingReports()
                     'resolution_note' => $request->note,
                 ]);
                 break;
-                
+
             case 'delete_message':
                 if ($report->message_id) {
                     $report->message->delete();
@@ -572,14 +595,14 @@ public function pendingReports()
                 ]);
                 break;
         }
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Signalement traité',
             'data' => $report
         ]);
     }
-    
+
     /**
      * Statistiques avancées pour rapports
      */
@@ -587,7 +610,7 @@ public function pendingReports()
     {
         $startDate = $request->start_date ? now()->parse($request->start_date) : now()->subMonth();
         $endDate = $request->end_date ? now()->parse($request->end_date) : now();
-        
+
         // Taux de conversion
         $conversionRate = [
             'registration_to_verified' => $this->calculateConversionRate(
@@ -599,16 +622,16 @@ public function pendingReports()
                 User::where('subscription_plan', 'premium')->where('created_at', '>=', $startDate)->count()
             ),
         ];
-        
+
         // Rétention utilisateurs
         $retention = [];
         for ($i = 1; $i <= 12; $i++) {
             $monthStart = now()->subMonths($i)->startOfMonth();
             $monthEnd = now()->subMonths($i)->endOfMonth();
-            
+
             $newUsers = User::whereBetween('created_at', [$monthStart, $monthEnd])->count();
             $activeUsers = User::whereBetween('last_seen_at', [$monthStart, $monthEnd])->count();
-            
+
             $retention[] = [
                 'month' => $monthStart->format('M Y'),
                 'new_users' => $newUsers,
@@ -616,7 +639,7 @@ public function pendingReports()
                 'retention_rate' => $newUsers > 0 ? round(($activeUsers / $newUsers) * 100, 2) : 0,
             ];
         }
-        
+
         return response()->json([
             'success' => true,
             'data' => [
@@ -629,7 +652,7 @@ public function pendingReports()
             ]
         ]);
     }
-    
+
     private function calculateConversionRate($total, $converted)
     {
         if ($total == 0) return 0;

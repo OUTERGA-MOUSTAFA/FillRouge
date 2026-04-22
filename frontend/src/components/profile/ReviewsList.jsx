@@ -79,7 +79,7 @@ export default function ReviewsList({ userId }) {
                   />
                 ) : (
                   <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                    <span className="text-xs text-gray-500">{review.reviewer?.full_name?.[0]}</span>
+                    <span className="text-xs text-gray-500">{review.reviewer?.full_name?.[0]}yughhjhgjhgjhgghjgg</span>
                   </div>
                 )}
                 <span className="font-medium text-gray-900">{review.reviewer?.full_name}</span>

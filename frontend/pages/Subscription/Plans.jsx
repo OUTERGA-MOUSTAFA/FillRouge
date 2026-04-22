@@ -94,7 +94,7 @@ const PLAN_STYLES = {
 };
 
 export default function SubscriptionPlans() {
-  const [plans, setPlans] = useState(DEFAULT_PLANS); // Utiliser DEFAULT_PLANS comme fallback
+  const [plans, setPlans] = useState(DEFAULT_PLANS); // DEFAULT_PLANS comme fallback
   const [currentSubscription, setCurrentSubscription] = useState(null);
   const [viewMode, setViewMode] = useState('cards');
   const [loading, setLoading] = useState(true);
@@ -229,7 +229,7 @@ export default function SubscriptionPlans() {
 
         {/* Vue CARTES */}
         {viewMode === 'cards' && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 ">
             {Object.keys(plans).map((key, i) => (
               <PlanCard
                 key={key}

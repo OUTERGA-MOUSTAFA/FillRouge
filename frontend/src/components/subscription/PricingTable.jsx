@@ -1,6 +1,6 @@
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/solid';
 
-export default function PricingTable({ plans, currentPlan, onSelect }) {
+export default function PricingTable({ currentPlan, onSelect }) {
   const features = [
     { name: 'Profil', free: true, standard: true, premium: true },
     { name: 'Annonces publiées', free: '2 max', standard: '10', premium: 'Illimité' },

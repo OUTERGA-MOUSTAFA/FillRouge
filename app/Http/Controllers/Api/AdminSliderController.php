@@ -13,7 +13,8 @@ class AdminSliderController extends Controller
 {
     public function index()
     {
-        $sliders = Slider::ordered()->get();
+        $sliders = Slider::ordered()->get();// ordered means Scope on slider model => function scopeOrdered($query)
+                                            // 3la hsab position f db
         return response()->json(['success' => true, 'data' => $sliders]);
     }
     

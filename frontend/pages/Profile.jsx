@@ -53,6 +53,13 @@ export default function Profile() {
     window.location.href = '/login';
   };
 
+  const isPremium = profile?.subscription_plan === 'premium' || profile?.is_premium;
+  const subscriptionEndsAt = profile?.subscription_ends_at;
+  const daysLeft = subscriptionEndsAt 
+    ? Math.ceil((new Date(subscriptionEndsAt) - new Date()) / (1000 * 60 * 60 * 24))
+    : 0;
+
+
   const getCompletionPercentage = () => {
     if (!profile?.profile) return 0;
     let score = 0;
@@ -138,22 +145,26 @@ export default function Profile() {
     reading: 'Lecture', art: 'Art', gaming: 'Jeux vidéo', outdoors: 'Plein air'
   };
 
-  return (
+   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Header avec dégradé */}
+      {/* Header avec dégradé - Version améliorée avec badge premium */}
       <div className="bg-gradient-to-r px-4 from-[#009966] to-[#00BBA7] text-white">
         <div className="container-custom py-8">
           <div className="flex flex-col md:flex-row items-center gap-6">
-            {/* Avatar */}
+            {/* Avatar avec anneau premium */}
             <div className="relative">
               {profile.avatar ? (
                 <img
                   src={profile.avatar}
                   alt={profile.full_name}
-                  className="h-28 w-28 rounded-full object-cover border-4 border-white shadow-lg"
+                  className={`h-28 w-28 rounded-full object-cover border-4 shadow-lg ${
+                    isPremium ? 'border-amber-400 ring-4 ring-amber-300/50' : 'border-white'
+                  }`}
                 />
               ) : (
-                <div className="h-28 w-28 rounded-full bg-white/20 flex items-center justify-center border-4 border-white shadow-lg">
+                <div className={`h-28 w-28 rounded-full bg-white/20 flex items-center justify-center shadow-lg ${
+                  isPremium ? 'border-4 border-amber-400 ring-4 ring-amber-300/50' : 'border-4 border-white'
+                }`}>
                   <span className="text-4xl text-white font-bold">{getInitials(profile.full_name)}</span>
                 </div>
               )}
@@ -163,17 +174,34 @@ export default function Profile() {
               >
                 <PencilIcon className="h-4 w-4 text-[#009966]" />
               </Link>
+              
+              {/* Badge premium sur l'avatar */}
+              {isPremium && (
+                <div className="absolute -top-2 -right-2 bg-gradient-to-r from-amber-400 to-amber-500 rounded-full p-1.5 shadow-lg">
+                  <SparklesIcon className="h-4 w-4 text-white" />
+                </div>
+              )}
             </div>
 
             {/* Infos utilisateur */}
             <div className="flex-1 text-center md:text-left">
-              <h1 className="text-2xl font-bold">{profile.full_name}</h1>
+              <div className="flex items-center gap-2 justify-center md:justify-start">
+                <h1 className="text-2xl font-bold">{profile.full_name}</h1>
+                {isPremium && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-400 text-gray-800 rounded-full text-xs font-bold shadow-sm">
+                    <SparklesIcon className="h-3.5 w-3.5" />
+                    PREMIUM
+                  </span>
+                )}
+              </div>
               <p className="text-white/80">{profile.email}</p>
               {profile.phone && (
                 <p className="text-white/70 text-sm flex items-center justify-center md:justify-start gap-1 mt-1">
                   <PhoneIcon className="h-4 w-4" /> {profile.phone}
                 </p>
               )}
+              
+              {/* Badges */}
               <div className="flex flex-wrap gap-2 mt-3 justify-center md:justify-start">
                 {profile.email_verified_at && (
                   <span className="inline-flex items-center gap-1 px-2 py-1 bg-white/20 rounded-full text-xs">
@@ -185,12 +213,26 @@ export default function Profile() {
                     <ShieldCheckIcon className="h-3 w-3" /> Identité vérifiée
                   </span>
                 )}
-                {profile.is_premium && (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-400 text-gray-800 rounded-full text-xs font-semibold">
-                    ⭐ Premium
+                
+                {/* Badge premium amélioré */}
+                {isPremium && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-amber-400 text-gray-800 rounded-full text-xs font-semibold shadow-sm">
+                    <SparklesIcon className="h-3 w-3" />
+                    Premium
                   </span>
                 )}
               </div>
+              
+              {/* Info abonnement premium */}
+              {isPremium && subscriptionEndsAt && daysLeft > 0 && (
+                <p className="text-white/70 text-xs mt-2 flex items-center justify-center md:justify-start gap-1">
+                  <CalendarIcon className="h-3 w-3" />
+                  Abonnement valable jusqu'au {new Date(subscriptionEndsAt).toLocaleDateString('fr-FR')}
+                  {daysLeft <= 7 && (
+                    <span className="text-amber-200 font-medium ml-1">({daysLeft} jours restants)</span>
+                  )}
+                </p>
+              )}
             </div>
 
             {/* Actions */}
@@ -211,6 +253,31 @@ export default function Profile() {
           </div>
         </div>
       </div>
+
+      {/* Section des avantages premium (si l'utilisateur est premium) */}
+      {isPremium && (
+        <div className="bg-gradient-to-r from-amber-50 to-amber-100 border-b border-amber-200">
+          <div className="container-custom py-3">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-3">
+                <SparklesIcon className="h-5 w-5 text-amber-500" />
+                <span className="text-sm text-amber-800 font-medium">
+                  ✨ Vous bénéficiez du statut Premium !
+                </span>
+                <span className="text-xs text-amber-600">
+                  Messages illimités • Annonces illimitées • Profil mis en avant
+                </span>
+              </div>
+              <Link
+                to="/subscription/plans"
+                className="text-xs text-amber-700 hover:text-amber-900 font-medium underline"
+              >
+                Gérer mon abonnement →
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Barre de progression du profil */}
       <div className="bg-white border-b shadow-sm">
@@ -540,9 +607,9 @@ export default function Profile() {
                   {(profile.profile?.preferred_min_age || profile.profile?.preferred_max_age) && (
                     <div className="flex justify-between py-2 border-b">
                       <span className="text-gray-500">Tranche d'âge préférée</span>
-                      <span className="font-medium">
-                        {profile.profile.preferred_min_age || '18'} - {profile.profile.preferred_max_age || '100'} ans
-                      </span>
+                      {/* <span className="font-medium">
+                        {profile.profile.preferred_min_age || '18'} - {now() - profile.birth_date || '100'} ans
+                      </span> */}
                     </div>
                   )}
                 </div>

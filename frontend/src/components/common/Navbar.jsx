@@ -11,7 +11,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import NotificationBell from './NotificationBell';
 import toast from 'react-hot-toast';
-
+import { SparklesIcon } from '@heroicons/react/24/solid'; // ou outline
 // ─── Nav items per role ───────────────────────────────────────────────────────
 
 const getNavItems = (user) => {
@@ -140,8 +140,13 @@ function LanguageSelector() {
 
 // ─── User menu ────────────────────────────────────────────────────────────────
 
+// Dans Navbar.jsx, modifions le UserMenu component
+
 function UserMenu({ user, onLogout }) {
   const menuItems = getUserMenuItems(user?.role);
+  
+  // Vérifier si l'utilisateur est premium
+  const isPremium = user?.subscription_plan === 'premium' || user?.is_premium;
 
   return (
     <Menu as="div" className="relative">
@@ -163,9 +168,12 @@ function UserMenu({ user, onLogout }) {
           {user?.full_name?.split(' ')[0]}
         </span>
         <ChevronDownIcon className="h-3.5 w-3.5 text-gray-400 hidden md:block" />
-        {user?.is_premium && (
-          <span className="hidden md:inline-flex items-center gap-0.5 px-2 py-0.5 text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200 rounded-full">
-            ✦ Premium
+        
+        {/* Badge Premium amélioré */}
+        {isPremium && (
+          <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold bg-gradient-to-r from-amber-400 to-amber-500 text-white shadow-sm rounded-full">
+            <SparklesIcon className="h-3 w-3" />
+            Premium
           </span>
         )}
       </Menu.Button>
@@ -180,11 +188,25 @@ function UserMenu({ user, onLogout }) {
         leaveTo="opacity-0 translate-y-1 scale-95"
       >
         <Menu.Items className="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-2xl bg-white shadow-xl ring-1 ring-gray-100 focus:outline-none overflow-hidden py-1.5">
-          {/* Header */}
+          {/* Header avec badge premium */}
           <div className="px-4 py-3 border-b border-gray-50 mb-1">
-            <p className="text-sm font-semibold text-gray-900 truncate">{user?.full_name}</p>
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-gray-900 truncate">{user?.full_name}</p>
+              {isPremium && (
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-bold bg-amber-100 text-amber-700 rounded-full">
+                  ⭐ PREMIUM
+                </span>
+              )}
+            </div>
             <p className="text-xs text-gray-400 truncate">{user?.email}</p>
-            <RoleBadge role={user?.role} className="mt-1.5" />
+            <div className="flex items-center gap-2 mt-1.5">
+              <RoleBadge role={user?.role} />
+              {isPremium && (
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-semibold bg-gradient-to-r from-amber-400 to-amber-500 text-white rounded-full">
+                  ✦ Premium
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Menu items */}
@@ -220,6 +242,8 @@ function UserMenu({ user, onLogout }) {
     </Menu>
   );
 }
+
+
 
 // ─── Guest menu ───────────────────────────────────────────────────────────────
 
@@ -292,7 +316,7 @@ export default function Navbar() {
                     <span className="text-white font-extrabold text-base">D</span>
                   </div>
                   <span className="text-lg font-bold text-gray-900 hidden sm:block">Semsar</span>
-                  {/* ✅ Use RoleBadge component, only on md+ */}
+                  {/*  Use RoleBadge component, only on md+ */}
                   <span className="hidden md:block">
                     <RoleBadge role={user?.role} />
                   </span>
