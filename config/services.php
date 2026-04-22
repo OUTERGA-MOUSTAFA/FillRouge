@@ -59,6 +59,26 @@ return [
         'webhook' => [
             'secret' => env('STRIPE_WEBHOOK_SECRET'),
         ],
+        'plans' => [
+            'standard' => [
+                'name' => 'Standard',
+                'price_id' => 'price_1TOlveF3pzj3NXxdJ9i53Cia', // À créer dans Stripe
+                // 'amount' => 99,
+                // 'interval' => 'month',
+            ],
+            'premium' => [
+                'name' => 'Premium',
+                'price_id' => 'price_1TOlweF3pzj3NXxd3j4t26KM',
+                // 'amount' => 199,
+                // 'interval' => 'month',// kaynin f strip
+            ],
+        ],
+        // 'cmi' => [
+        //     'merchant_id' => env('CMI_MERCHANT_ID'),
+        //     'store_key' => env('CMI_STORE_KEY'),
+        //     'return_url' => env('APP_URL') . '/payment/callback',
+        //     'gateway_url' => env('CMI_GATEWAY_URL', 'https://payment.cmi.co.ma/fim/est3Dgate'),
+        // ],
     ],
 
 ];

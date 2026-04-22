@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Stripe\Checkout\Session;
 
 class PaymentService
 {
@@ -15,10 +16,10 @@ class PaymentService
         // Configuration CMI
         $merchantId = config('services.cmi.merchant_id');
         $storeKey = config('services.cmi.store_key');
-        
+
         // Générer un ID de transaction unique
         $orderId = 'Semsar_' . uniqid();
-        
+
         // Préparer les données pour le paiement
         $paymentData = [
             'MerchantId' => $merchantId,
@@ -33,15 +34,15 @@ class PaymentService
             'CustomerPhone' => $userData['phone'],
             'ReturnUrl' => config('services.cmi.return_url'),
         ];
-        
+
         // Signature HMAC
         $hashStr = $this->generateCMIHash($paymentData, $storeKey);
         $paymentData['Hash'] = $hashStr;
-        
+
         try {
             // Appel à l'API CMI
             $response = Http::asForm()->post('https://cmi-gateway.com/api/payment', $paymentData);
-            
+
             if ($response->successful()) {
                 return [
                     'success' => true,
@@ -50,22 +51,21 @@ class PaymentService
                     'status' => $response->json('Status'),
                 ];
             }
-            
+
             return [
                 'success' => false,
                 'error' => $response->json('ErrorMessage') ?? 'Erreur de paiement',
             ];
-            
         } catch (\Exception $e) {
             Log::error('CMI Payment Error: ' . $e->getMessage());
-            
+
             return [
                 'success' => false,
                 'error' => 'Erreur de connexion au service de paiement',
             ];
         }
     }
-    
+
     /**
      * Traitement de paiement via Stripe
      */
@@ -84,48 +84,60 @@ class PaymentService
                     'user_email' => $user->email,
                 ],
             ]);
-            
+
             return [
                 'success' => true,
                 'client_secret' => $paymentIntent->client_secret,
                 'status' => $paymentIntent->status,
                 'transaction_id' => $paymentIntent->id,
             ];
-            
         } catch (\Exception $e) {
             Log::error('Stripe Payment Error: ' . $e->getMessage());
-            
+
             return [
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
         }
     }
-    
+
     private function generateCMIHash($data, $storeKey)
     {
         $hashStr = '';
         ksort($data);
-        
+
         foreach ($data as $key => $value) {
             if ($key !== 'Hash' && $value !== '') {
                 $hashStr .= strlen($value) . $value;
             }
         }
-        
+
         return hash_hmac('sha256', $hashStr, $storeKey);
     }
-    
+
     /**
      * Vérifier le statut d'un paiement
      */
     public function checkPaymentStatus($transactionId)
     {
-        // Implémentation selon le fournisseur
-        return [
-            'status' => 'completed',
-            'amount' => null,
-            'currency' => 'MAD',
-        ];
+        $sessionId = $request->session_id;
+
+        try {
+            $session = Session::retrieve($sessionId);
+            // Implémentation selon le fournisseur
+            return [
+                // 'status' => 'completed',
+                // 'amount' => null,
+                // 'currency' => 'MAD',
+                'status' => $session->payment_status,
+                'customer' => $session->customer,
+                'subscription' => $session->subscription
+            ];
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la vérification'
+            ], 500);
+        }
     }
 }

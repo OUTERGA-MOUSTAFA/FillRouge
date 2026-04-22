@@ -400,7 +400,6 @@ class UserController extends Controller
         }
 
         // Filtre par âge — on calcule la date de naissance correspondante
-        // Ex: min_age=25 → birth_date <= aujourd'hui - 25 ans
         if ($request->min_age) {
             $query->where('birth_date', '<=', now()->subYears($request->min_age)->format('Y-m-d'));
         }

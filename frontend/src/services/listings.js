@@ -19,7 +19,9 @@ export const listingsService = {
   },
 
   update: async (id, data) => {
-    const response = await api.put(`/listings/${id}`, data);
+    const response = await api.put(`/listings/${id}`, data,{
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
     return response.data;
   },
 

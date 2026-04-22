@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { subscriptionService } from '../../src/services/subscription';  // ← chemin corrigé
+import { subscriptionService } from '../../src/services/subscription';
 import toast from 'react-hot-toast';
 
 export default function SubscriptionCheckout() {
@@ -8,7 +8,7 @@ export default function SubscriptionCheckout() {
   const navigate = useNavigate();
   const { plan } = location.state || {};
   const [loading, setLoading] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('stripe');
+  const [paymentMethod, setPaymentMethod] = useState('cmi'); // Changé à 'cmi' par défaut
   const [cardDetails, setCardDetails] = useState({
     number: '',
     expiry: '',
@@ -31,9 +31,14 @@ export default function SubscriptionCheckout() {
         card_cvv: cardDetails.cvc,
       };
       
-      await subscriptionService.checkout(plan, paymentMethod, paymentDetails);
-      toast.success('Abonnement activé avec succès');
-      navigate('/subscription/plans');
+      const response = await subscriptionService.checkout(plan, paymentMethod, paymentDetails);
+      
+      if (response?.success) {
+        toast.success('Abonnement activé avec succès');
+        navigate('/subscription/plans');
+      } else {
+        toast.error(response?.message || 'Erreur lors du paiement');
+      }
     } catch (error) {
       const message = error.response?.data?.message || 'Erreur lors du paiement';
       toast.error(message);
@@ -46,8 +51,8 @@ export default function SubscriptionCheckout() {
   const planPrices = { standard: 99, premium: 199 };
 
   return (
-    <div className="container-custom py-12 max-w-2xl">
-      <div className="card p-8">
+    <div className="container mx-auto py-12 max-w-2xl px-4">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Finaliser l'abonnement</h1>
         <p className="text-gray-600 mb-6">
           Vous allez souscrire au plan {planNames[plan]} à {planPrices[plan]} MAD/mois
@@ -62,10 +67,10 @@ export default function SubscriptionCheckout() {
               <button
                 type="button"
                 onClick={() => setPaymentMethod('stripe')}
-                className={`flex-1 p-3 border rounded-lg text-center transition-colors ${
+                className={`flex-1 p-3 border rounded-xl text-center transition-all ${
                   paymentMethod === 'stripe'
-                    ? 'border-[#00BBA7] bg-[#e6f7f5]'
-                    : 'border-gray-300 hover:border-gray-400'
+                    ? 'border-[#009966] bg-[#e6f7f5] ring-2 ring-[#009966]/20'
+                    : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
                 💳 Carte bancaire
@@ -73,10 +78,10 @@ export default function SubscriptionCheckout() {
               <button
                 type="button"
                 onClick={() => setPaymentMethod('cmi')}
-                className={`flex-1 p-3 border rounded-lg text-center transition-colors ${
+                className={`flex-1 p-3 border rounded-xl text-center transition-all ${
                   paymentMethod === 'cmi'
-                    ? 'border-[#00BBA7] bg-[#e6f7f5]'
-                    : 'border-gray-300 hover:border-gray-400'
+                    ? 'border-[#009966] bg-[#e6f7f5] ring-2 ring-[#009966]/20'
+                    : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
                 🏦 CMI (Maroc)
@@ -94,7 +99,7 @@ export default function SubscriptionCheckout() {
                 required
                 value={cardDetails.number}
                 onChange={(e) => setCardDetails({ ...cardDetails, number: e.target.value })}
-                className="input mt-1"
+                className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#009966] focus:border-transparent"
                 placeholder="4242 4242 4242 4242"
               />
             </div>
@@ -109,7 +114,7 @@ export default function SubscriptionCheckout() {
                   required
                   value={cardDetails.expiry}
                   onChange={(e) => setCardDetails({ ...cardDetails, expiry: e.target.value })}
-                  className="input mt-1"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#009966] focus:border-transparent"
                   placeholder="MM/YY"
                 />
               </div>
@@ -122,14 +127,14 @@ export default function SubscriptionCheckout() {
                   required
                   value={cardDetails.cvc}
                   onChange={(e) => setCardDetails({ ...cardDetails, cvc: e.target.value })}
-                  className="input mt-1"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#009966] focus:border-transparent"
                   placeholder="123"
                 />
               </div>
             </div>
           </div>
           
-          <div className="border-t pt-6">
+          <div className="border-t border-gray-100 pt-6">
             <div className="flex justify-between mb-4">
               <span className="text-gray-600">Total</span>
               <span className="text-xl font-bold text-gray-900">{planPrices[plan]} MAD</span>
@@ -137,9 +142,9 @@ export default function SubscriptionCheckout() {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full"
+              className="w-full bg-[#009966] text-white py-3 rounded-xl font-semibold hover:bg-[#00734d] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Traitement...' : `Payer ${planPrices[plan]} MAD`}
+              {loading ? 'Traitement en cours...' : `Payer ${planPrices[plan]} MAD`}
             </button>
           </div>
         </form>

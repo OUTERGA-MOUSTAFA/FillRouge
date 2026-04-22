@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+// use App\Services\MatchingService;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -13,9 +14,12 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Register any application services.
      */
-    public function register(): void
+    
+    public function register()
     {
-        //
+        // $this->app->singleton('matching.service', function ($app) {
+        //     return new MatchingService();
+        // });
     }
 
     /**

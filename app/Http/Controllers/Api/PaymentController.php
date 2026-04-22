@@ -44,8 +44,8 @@ class PaymentController extends Controller
             ],
             'standard' => [
                 'name' => 'Standard',
-                'price' => 100,
-                'price_mad' => '100 MAD/mois',
+                'price' => 99,
+                'price_mad' => '99 MAD/mois',
                 'features' => [
                     'Tout ce qui est dans Gratuit',
                     '10 annonces maximum',
@@ -66,8 +66,8 @@ class PaymentController extends Controller
             ],
             'premium' => [
                 'name' => 'Premium',
-                'price' => 200,
-                'price_mad' => '200 MAD/mois',
+                'price' => 199,
+                'price_mad' => '199 MAD/mois',
                 'features' => [
                     'Tout ce qui est dans Standard',
                     'Annonces illimitées',
@@ -79,8 +79,8 @@ class PaymentController extends Controller
                     'Statistiques avancées',
                 ],
                 'limitations' => [
-                    'max_ads' => -1, // Illimité
-                    'max_messages_per_day' => -1, // Illimité
+                    'max_ads' => -1,
+                    'max_messages_per_day' => -1,
                     'featured_profile' => true,
                     'advanced_filters' => true,
                     'priority_support' => true,
@@ -88,32 +88,32 @@ class PaymentController extends Controller
                 ]
             ]
         ];
-        
+
         return response()->json([
             'success' => true,
             'data' => $plans
         ]);
     }
-    
+
     /**
      * Abonnement actuel de l'utilisateur
      */
     public function current(Request $request)
     {
         $user = $request->user();
-        
+
         $subscription = Subscription::where('user_id', $user->id)
             ->where('is_active', true)
             ->where('ends_at', '>', now())
             ->latest()
             ->first();
-        
+
         $remainingDays = 0;
         if ($subscription && $subscription->ends_at) {
             $remainingDays = now()->diffInDays($subscription->ends_at, false);
             if ($remainingDays < 0) $remainingDays = 0;
         }
-        
+
         return response()->json([
             'success' => true,
             'data' => [
@@ -129,37 +129,33 @@ class PaymentController extends Controller
             ]
         ]);
     }
-    
+
     /**
-     * Initier un paiement
+     * Initier un paiement - VERSION TEST (sans intégration paiement réelle)
      */
     public function checkout(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'plan' => 'required|in:standard,premium',
             'payment_method' => 'required|in:stripe,cmi,cih',
-            'payment_method_id' => 'required_if:payment_method,stripe|string',
-            'card_number' => 'required_if:payment_method,cmi,cih|string',
-            'card_expiry' => 'required_if:payment_method,cmi,cih|string',
-            'card_cvv' => 'required_if:payment_method,cmi,cih|string',
             'auto_renew' => 'boolean',
         ]);
-        
+
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'errors' => $validator->errors()
             ], 422);
         }
-        
+
         $user = $request->user();
-        
+
         // Vérifier si l'utilisateur n'a pas déjà un abonnement actif
         $existingSubscription = Subscription::where('user_id', $user->id)
             ->where('is_active', true)
             ->where('ends_at', '>', now())
             ->first();
-            
+
         if ($existingSubscription) {
             return response()->json([
                 'success' => false,
@@ -170,43 +166,17 @@ class PaymentController extends Controller
                 ]
             ], 400);
         }
-        
+
         // Prix selon le plan
         $amount = $request->plan === 'standard' ? 99 : 199;
-        
-        // Traiter le paiement
-        $paymentResult = null;
-        
-        if ($request->payment_method === 'stripe') {
-            $paymentResult = $this->paymentService->processStripePayment(
-                $amount,
-                $request->payment_method_id,
-                $user
-            );
-        } elseif ($request->payment_method === 'cmi') {
-            $paymentResult = $this->paymentService->processCMIPayment(
-                $amount,
-                [
-                    'number' => $request->card_number,
-                    'expiry' => $request->card_expiry,
-                    'cvv' => $request->card_cvv,
-                ],
-                [
-                    'email' => $user->email,
-                    'name' => $user->full_name,
-                    'phone' => $user->phone,
-                ]
-            );
-        }
-        
-        if (!$paymentResult || !$paymentResult['success']) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Le paiement a échoué',
-                'error' => $paymentResult['error'] ?? 'Erreur inconnue'
-            ], 400);
-        }
-        
+
+        //  SIMULATION DE PAIEMENT RÉUSSI (pour les tests)
+        $paymentResult = [
+            'success' => true,
+            'transaction_id' => 'test_' . uniqid(),
+            'status' => 'completed'
+        ];
+
         // Créer l'abonnement
         $subscription = Subscription::create([
             'user_id' => $user->id,
@@ -219,10 +189,10 @@ class PaymentController extends Controller
             'is_active' => true,
             'auto_renew' => $request->auto_renew ?? false,
         ]);
-        
+
         // Activer l'abonnement
         $subscription->activate();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Abonnement activé avec succès',
@@ -232,28 +202,28 @@ class PaymentController extends Controller
             ]
         ]);
     }
-    
+
     /**
      * Annuler l'abonnement
      */
     public function cancel(Request $request)
     {
         $user = $request->user();
-        
+
         $subscription = Subscription::where('user_id', $user->id)
             ->where('is_active', true)
             ->where('ends_at', '>', now())
             ->first();
-            
+
         if (!$subscription) {
             return response()->json([
                 'success' => false,
                 'message' => 'Aucun abonnement actif trouvé'
             ], 404);
         }
-        
+
         $subscription->cancel();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Abonnement annulé. Vous pourrez utiliser les fonctionnalités premium jusqu\'au ' . $subscription->ends_at->format('d/m/Y'),
@@ -263,40 +233,32 @@ class PaymentController extends Controller
             ]
         ]);
     }
-    
+
     /**
      * Webhook Stripe/CMI
-     * 
      */
     public function webhook(Request $request)
     {
         $payload = $request->all();
-        
-        // Vérifier la signature selon le provider
         $provider = $payload['provider'] ?? 'stripe';
-        
-        // Traiter le webhook
         $event = $payload['event'] ?? null;
-        
+
         switch ($event) {
             case 'payment.succeeded':
                 $paymentId = $payload['payment_id'];
-                // Mettre à jour le statut du paiement
                 break;
-                
             case 'subscription.renewed':
                 $subscriptionId = $payload['subscription_id'];
                 $subscription = Subscription::find($subscriptionId);
                 if ($subscription && $subscription->auto_renew) {
-                    $newSubscription = $subscription->renew();
+                    // Logique de renouvellement
                 }
                 break;
-                
             case 'payment.failed':
                 // Notifier l'utilisateur
                 break;
         }
-        
+
         return response()->json(['status' => 'ok']);
     }
 }

@@ -225,7 +225,6 @@ function ReviewModal({ listing, onClose, onSubmit }) {
 
 // ─── Rent modal ────────────────────────────────────────────────────────────────
 function RentModal({ listing, onClose }) {
-  const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     move_in_date: '',
     duration: '1_month',
@@ -418,7 +417,7 @@ Pouvez-vous me confirmer la disponibilité ?`;
                 </div>
                 <div className="border-t border-gray-100 pt-2 flex justify-between font-bold text-gray-900">
                   <span>Total initial</span>
-                  <span className="text-[#009966]">{total.toLocaleString()} MAD</span>
+                  <span className="text-[#009966]">{total} MAD</span>
                 </div>
               </div>
               <p className="text-xs text-gray-400 mt-3 leading-relaxed">Aucun paiement n'est traité avant l'acceptation de l'hôte.</p>

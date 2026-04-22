@@ -44,7 +44,7 @@ export default function EditListing() {
   const [imagePreview, setImagePreview] = useState([]);
 
   const villes = [
-    'Casablanca', 'Rabat', 'Marrakech', 'Fès', 'Tanger', 
+    'Casablanca', 'Rabat', 'Marrakech', 'Fès', 'Tanger',
     'Agadir', 'Meknès', 'Oujda', 'Tétouan', 'Essaouira'
   ];
 
@@ -56,36 +56,44 @@ export default function EditListing() {
     try {
       setLoading(true);
       const response = await listingsService.getById(id);
-      
-      // Vérifier que l'utilisateur est le propriétaire
+
       if (response.data.user_id !== user?.id && user?.role !== 'admin') {
         toast.error('Vous n\'êtes pas autorisé à modifier cette annonce');
         navigate('/MyListings');
         return;
       }
-      
+
       const listing = response.data;
+
+      // Parse amenities array from DB into individual boolean flags
+      const amenities = listing.amenities ?? [];
+
       setFormData({
         title: listing.title || '',
         description: listing.description || '',
         price: listing.price || '',
-        room_type: listing.room_type || 'private',
+        room_type: listing.type || 'private',   // DB: "type"
         city: listing.city || '',
         address: listing.address || '',
-        available_from: listing.available_from ? listing.available_from.split('T')[0] : '',
+        available_from: listing.available_from
+          ? listing.available_from.split('T')[0]
+          : '',
         duration: listing.duration || 'short',
         max_tenants: listing.max_tenants || 1,
-        is_furnished: listing.is_furnished || false,
-        has_wifi: listing.has_wifi || false,
-        has_kitchen: listing.has_kitchen || false,
-        has_heating: listing.has_heating || false,
-        has_air_conditioning: listing.has_air_conditioning || false,
-        has_parking: listing.has_parking || false,
-        has_balcony: listing.has_balcony || false,
+        is_furnished: listing.furnished ?? false,        // DB: "furnished"
+        has_wifi: amenities.includes('wifi'),
+        has_kitchen: amenities.includes('kitchen'),
+        has_heating: amenities.includes('heating'),
+        has_air_conditioning: amenities.includes('air_conditioning'),
+        has_parking: amenities.includes('parking'),
+        has_balcony: amenities.includes('balcony'),
         images: [],
       });
-      
-      setExistingImages(listing.images || []);
+
+      // DB "photos" is the array of image URLs, "main_photo" is the cover
+      const photos = listing.photos ?? [];
+      setExistingImages(photos);
+
     } catch (error) {
       console.error('Erreur:', error);
       toast.error('Erreur lors du chargement de l\'annonce');
@@ -109,19 +117,19 @@ export default function EditListing() {
       toast.error('Maximum 10 images par annonce');
       return;
     }
-    
+
     files.forEach(file => {
       if (file.size > 5 * 1024 * 1024) {
         toast.error(`L'image ${file.name} dépasse 5 Mo`);
         return;
       }
     });
-    
+
     setFormData(prev => ({
       ...prev,
       images: [...prev.images, ...files]
     }));
-    
+
     const newPreviews = files.map(file => URL.createObjectURL(file));
     setImagePreview(prev => [...prev, ...newPreviews]);
   };
@@ -143,7 +151,7 @@ export default function EditListing() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.title.trim()) {
       toast.error('Le titre est requis');
       return;
@@ -160,14 +168,14 @@ export default function EditListing() {
       toast.error('La ville est requise');
       return;
     }
-    
+
     if (existingImages.length === 0 && formData.images.length === 0) {
       toast.error('Au moins une image est requise');
       return;
     }
-    
+
     setSubmitting(true);
-    
+
     try {
       const submitData = new FormData();
       submitData.append('title', formData.title);
@@ -187,15 +195,15 @@ export default function EditListing() {
       submitData.append('has_parking', formData.has_parking);
       submitData.append('has_balcony', formData.has_balcony);
       submitData.append('_method', 'PUT');
-      
+
       formData.images.forEach(image => {
         submitData.append('images[]', image);
       });
-      
+
       imagesToDelete.forEach(imagePath => {
         submitData.append('deleted_images[]', imagePath);
       });
-      
+
       await listingsService.update(id, submitData);
       toast.success('Annonce modifiée avec succès');
       navigate('/MyListings');
@@ -394,7 +402,7 @@ export default function EditListing() {
             </label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
-                { name: 'is_furnished', label: 'Meublé' },
+                { name: 'is_furnished', label: 'Meublé / Furnished' },
                 { name: 'has_wifi', label: 'Wi-Fi' },
                 { name: 'has_kitchen', label: 'Cuisine équipée' },
                 { name: 'has_heating', label: 'Chauffage' },
@@ -466,7 +474,7 @@ export default function EditListing() {
                 <span className="text-xs text-gray-400">JPG, PNG, WebP - Max 5MB</span>
               </label>
             </div>
-            
+
             {/* Aperçu des nouvelles images */}
             {imagePreview.length > 0 && (
               <div className="grid grid-cols-3 md:grid-cols-5 gap-3 mt-3">

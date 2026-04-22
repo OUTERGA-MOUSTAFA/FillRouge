@@ -8,6 +8,7 @@ use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class ListingController extends Controller
 {
@@ -197,7 +198,6 @@ class ListingController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Récupérer d'abord le listing
         $listing = Listing::find($id);
 
         if (!$listing) {
@@ -207,7 +207,6 @@ class ListingController extends Controller
             ], 404);
         }
 
-        // Vérifier l'autorisation ListingPolicy Admin ola Semsar
         if (!Gate::allows('update', $listing)) {
             return response()->json([
                 'success' => false,
@@ -216,32 +215,108 @@ class ListingController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'title' => 'sometimes|string|max:255',
-            'description' => 'sometimes|string',
-            'price' => 'sometimes|numeric|min:0',
-            'city' => 'sometimes|string|max:255',
-            'neighborhood' => 'nullable|string',
-            'address' => 'nullable|string',
-            'bedrooms' => 'nullable|integer',
-            'bathrooms' => 'nullable|integer',
-            'furnished' => 'boolean',
-            'amenities' => 'nullable|array',
-            'house_rules' => 'nullable|array',
+            'title'               => 'sometimes|string|max:255',
+            'description'         => 'sometimes|string',
+            'price'               => 'sometimes|numeric|min:0',
+            'city'                => 'sometimes|string|max:255',
+            'address'             => 'nullable|string|max:255',
+            'available_from'      => 'nullable|date',
+            'room_type'           => 'sometimes|string|in:private,shared,entire',
+            'duration'            => 'sometimes|string|in:short,medium,long',
+            'max_tenants'         => 'nullable|integer|min:1|max:10',
+            'is_furnished'        => 'boolean',
+            'has_wifi'            => 'boolean',
+            'has_kitchen'         => 'boolean',
+            'has_heating'         => 'boolean',
+            'has_air_conditioning' => 'boolean',
+            'has_parking'         => 'boolean',
+            'has_balcony'         => 'boolean',
+            'images'              => 'nullable|array',
+            'images.*'            => 'image|mimes:jpeg,png,jpg,webp|max:5120',
+            'deleted_images'      => 'nullable|array',
+            'deleted_images.*'    => 'string',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors()
             ], 422);
         }
 
-        $listing->update($validator->validated());
+        // Build amenities array from individual boolean fields
+        $amenities = [];
+        $amenityFields = [
+            'has_wifi',
+            'has_kitchen',
+            'has_heating',
+            'has_air_conditioning',
+            'has_parking',
+            'has_balcony'
+        ];
+        foreach ($amenityFields as $field) {
+            if ($request->boolean($field)) {
+                // e.g. "has_wifi" → "wifi"
+                $amenities[] = str_replace('has_', '', $field);
+            }
+        }
+
+        // Handle deleted images
+        $currentPhotos = $listing->photos ?? [];
+        if ($request->has('deleted_images') && is_array($request->deleted_images)) {
+            foreach ($request->deleted_images as $pathToDelete) {
+                // Remove from storage
+                $relativePath = str_replace('/storage/', '', $pathToDelete);
+                if (Storage::disk('public')->exists($relativePath)) {
+                    Storage::disk('public')->delete($relativePath);
+                }
+                // Remove from current photos array
+                $currentPhotos = array_filter(
+                    $currentPhotos,
+                    fn($photo) => $photo !== $pathToDelete
+                );
+            }
+            $currentPhotos = array_values($currentPhotos); // re-index
+        }
+
+        // Handle new image uploads
+        if ($request->hasFile('images')) {
+            // Guard: total photos must not exceed 10
+            $slotsAvailable = 10 - count($currentPhotos);
+            $newFiles = array_slice($request->file('images'), 0, $slotsAvailable);
+
+            foreach ($newFiles as $image) {
+                $path = $image->store('listings', 'public');
+                $currentPhotos[] = Storage::url($path); // "/storage/listings/xxx.jpg"
+            }
+        }
+
+        // Validate at least 1 photo remains
+        if (empty($currentPhotos)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Au moins une image est requise.'
+            ], 422);
+        }
+
+        $listing->update([
+            'title'          => $request->input('title', $listing->title),
+            'description'    => $request->input('description', $listing->description),
+            'price'          => $request->input('price', $listing->price),
+            'city'           => $request->input('city', $listing->city),
+            'address'        => $request->input('address', $listing->address),
+            'available_from' => $request->input('available_from', $listing->available_from),
+            'type'           => $request->input('room_type', $listing->type),
+            'furnished'      => $request->boolean('is_furnished'),
+            'amenities'      => $amenities,
+            'photos'         => $currentPhotos,
+            'main_photo'     => $currentPhotos[0] ?? null,
+        ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Annonce mise à jour',
-            'data' => $listing
+            'message' => 'Annonce mise à jour avec succès',
+            'data'    => $listing->fresh()
         ]);
     }
 

@@ -17,12 +17,18 @@ use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
 // ========== ROUTES PUBLIQUES ==========
+
+// Webhook (sans auth)
+Route::post('/subscription/webhook', [PaymentController::class, 'webhook'])->withoutMiddleware('auth:sanctum');
+
 Route::prefix('auth')->group(function () {
 
     Route::get('/csrf-token', function () {
         return response()->json(['csrf_token' => csrf_token()]);
     });
 
+    // Webhook (pas besoin de middleware auth)
+    // Route::post('/stripe/webhook', [StripeController::class, 'handleWebhook']);
 
     // Route publique pour le frontend
     Route::get('/sliders', [SliderController::class, 'index']);
@@ -30,7 +36,7 @@ Route::prefix('auth')->group(function () {
     // Profils publics
     Route::get('/users/{user}', [UserController::class, 'show']);
     Route::get('/users/{user}/reviews', [ReviewController::class, 'userReviews']); // ← Ajouter
-    
+
     // OAuth
     Route::get('/auth/google/redirect', [SocialAuthController::class, 'redirectToGoogle']);
     Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
@@ -94,6 +100,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/search/users', [UserController::class, 'search']);
     Route::get('/search/listings', [ListingController::class, 'search']);
 
+    // Stripe routes
+    // Route::post('/stripe/create-checkout-session', [StripeController::class, 'createCheckoutSession']);
+    // Route::get('/stripe/check-payment-status', [StripeController::class, 'checkPaymentStatus']);
+    // Route::post('/stripe/cancel-subscription', [StripeController::class, 'cancelSubscription']);
+    // Route::get('/stripe/customer-portal', [StripeController::class, 'getCustomerPortal']);
+
+
     // Annonces
     Route::post('/listings', [ListingController::class, 'store']);
     Route::get('/MyListings', [ListingController::class, 'myListings']);
@@ -122,13 +135,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/reviews/{user}', [ReviewController::class, 'store']);
     Route::put('/reviews/{review}', [ReviewController::class, 'update']);
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy']);
-    
+
     // Paiements
     Route::post('/subscription/checkout', [PaymentController::class, 'checkout']);
     Route::get('/subscription/plans', [PaymentController::class, 'plans']);
     Route::get('/subscription/current', [PaymentController::class, 'current']);
     Route::post('/subscription/cancel', [PaymentController::class, 'cancel']);
-    Route::post('/subscription/webhook', [PaymentController::class, 'webhook'])->withoutMiddleware('auth:sanctum');
+    Route::post('/subscription/check-status', [PaymentController::class, 'checkPaymentStatus']);
 
     // Notifications
     Route::get('/notifications', [NotificationController::class, 'index']);
@@ -157,7 +170,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
 
     Route::get('/listings', [AdminController::class, 'listings']);
     Route::delete('/listings/{listing}', [AdminController::class, 'deleteListing']);
-     Route::get('/recent-listings', [AdminController::class, 'recentListings']);
+    Route::get('/recent-listings', [AdminController::class, 'recentListings']);
     Route::get('/recent-users', [AdminController::class, 'recentUsers']);
     Route::get('/pending-reports', [AdminController::class, 'pendingReports']);
 
