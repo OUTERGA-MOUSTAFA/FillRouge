@@ -4,7 +4,7 @@ import { useAuthStore } from '../src/store/authStore';
 import { authService } from '../src/services/auth';
 import ReviewsList from '../src/components/profile/ReviewsList';
 import {
-  UserIcon,
+  UserIcon, BoltIcon,
   PhoneIcon,
   CalendarIcon,
   BriefcaseIcon,
@@ -25,7 +25,7 @@ import {
 import toast from 'react-hot-toast';
 
 export default function Profile() {
-  const { user, setUser, logout } = useAuthStore();
+  const { setUser, logout } = useAuthStore();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('info');
@@ -53,9 +53,8 @@ export default function Profile() {
     window.location.href = '/login';
   };
 
-  const isPremium = profile?.subscription_plan === 'premium' || profile?.is_premium;
   const subscriptionEndsAt = profile?.subscription_ends_at;
-  const daysLeft = subscriptionEndsAt 
+  const daysLeft = subscriptionEndsAt
     ? Math.ceil((new Date(subscriptionEndsAt) - new Date()) / (1000 * 60 * 60 * 24))
     : 0;
 
@@ -145,26 +144,76 @@ export default function Profile() {
     reading: 'Lecture', art: 'Art', gaming: 'Jeux vidéo', outdoors: 'Plein air'
   };
 
-   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Header avec dégradé - Version améliorée avec badge premium */}
-      <div className="bg-gradient-to-r px-4 from-[#009966] to-[#00BBA7] text-white">
+
+  const isPremium = profile?.subscription_plan === 'premium' || profile?.is_premium;
+  const isStandard = profile?.subscription_plan === 'standard';
+  const subscriptionPlan = profile?.subscription_plan;
+
+  // const isPremium = profile?.subscription_plan === 'premium' || profile?.is_premium;
+  // Configuration des couleurs selon le plan
+  const getPlanConfig = () => {
+    if (isPremium) {
+      return {
+        name: 'Premium',
+        color: 'amber',
+        gradient: 'from-amber-400 to-amber-500',
+        bgLight: 'bg-amber-50',
+        textLight: 'text-amber-700',
+        borderLight: 'border-amber-200',
+        icon: <SparklesIcon className="h-5 w-5" />,
+        features: ['Messages illimités', 'Annonces illimitées', 'Profil mis en avant', 'Support VIP']
+      };
+    }
+    if (isStandard) {
+      return {
+        name: 'Standard',
+        color: 'teal',
+        gradient: 'from-teal-400 to-teal-500',
+        bgLight: 'bg-teal-50',
+        textLight: 'text-teal-700',
+        borderLight: 'border-teal-200',
+        icon: <BoltIcon className="h-5 w-5" />,
+        features: ['50 messages/jour', '10 annonces max', 'Profil mis en avant', 'Support prioritaire']
+      };
+    }
+    return {
+      name: 'Gratuit',
+      color: 'gray',
+      gradient: 'from-gray-400 to-gray-500',
+      bgLight: 'bg-gray-50',
+      textLight: 'text-gray-600',
+      borderLight: 'border-gray-200',
+      icon: <UserIcon className="h-5 w-5" />,
+      features: ['5 messages/jour', '2 annonces max', 'Profil basique']
+    };
+  };
+
+  const planConfig = getPlanConfig();
+  return (
+    <div className="min-h-screen px-4 w-full bg-gradient-to-br from-gray-50 to-gray-200">
+      {/* Header avec dégradé selon le plan */}
+      <div className={`bg-gradient-to-r px-4 ${isPremium ? 'from-[#009966] to-[#00BBA7]' :
+        isStandard ? 'from-teal-600 to-teal-500' :
+          'from-[#009966] to-[#00BBA7]'
+        } text-white`}>
         <div className="container-custom py-8">
           <div className="flex flex-col md:flex-row items-center gap-6">
-            {/* Avatar avec anneau premium */}
+            {/* Avatar avec anneau selon le plan */}
             <div className="relative">
               {profile.avatar ? (
                 <img
                   src={profile.avatar}
                   alt={profile.full_name}
-                  className={`h-28 w-28 rounded-full object-cover border-4 shadow-lg ${
-                    isPremium ? 'border-amber-400 ring-4 ring-amber-300/50' : 'border-white'
-                  }`}
+                  className={`h-28 w-28 rounded-full object-cover border-4 shadow-lg ${isPremium ? 'border-amber-400 ring-4 ring-amber-300/50' :
+                    isStandard ? 'border-teal-400 ring-4 ring-teal-300/50' :
+                      'border-white'
+                    }`}
                 />
               ) : (
-                <div className={`h-28 w-28 rounded-full bg-white/20 flex items-center justify-center shadow-lg ${
-                  isPremium ? 'border-4 border-amber-400 ring-4 ring-amber-300/50' : 'border-4 border-white'
-                }`}>
+                <div className={`h-28 w-28 rounded-full bg-white/20 flex items-center justify-center shadow-lg ${isPremium ? 'border-4 border-amber-400 ring-4 ring-amber-300/50' :
+                  isStandard ? 'border-4 border-teal-400 ring-4 ring-teal-300/50' :
+                    'border-4 border-white'
+                  }`}>
                   <span className="text-4xl text-white font-bold">{getInitials(profile.full_name)}</span>
                 </div>
               )}
@@ -174,11 +223,16 @@ export default function Profile() {
               >
                 <PencilIcon className="h-4 w-4 text-[#009966]" />
               </Link>
-              
-              {/* Badge premium sur l'avatar */}
+
+              {/* Badge sur l'avatar */}
               {isPremium && (
                 <div className="absolute -top-2 -right-2 bg-gradient-to-r from-amber-400 to-amber-500 rounded-full p-1.5 shadow-lg">
                   <SparklesIcon className="h-4 w-4 text-white" />
+                </div>
+              )}
+              {isStandard && !isPremium && (
+                <div className="absolute -top-2 -right-2 bg-gradient-to-r from-teal-400 to-teal-500 rounded-full p-1.5 shadow-lg">
+                  <BoltIcon className="h-4 w-4 text-white" />
                 </div>
               )}
             </div>
@@ -187,10 +241,18 @@ export default function Profile() {
             <div className="flex-1 text-center md:text-left">
               <div className="flex items-center gap-2 justify-center md:justify-start">
                 <h1 className="text-2xl font-bold">{profile.full_name}</h1>
+
+                {/* Badge selon le plan */}
                 {isPremium && (
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-400 text-gray-800 rounded-full text-xs font-bold shadow-sm">
                     <SparklesIcon className="h-3.5 w-3.5" />
                     PREMIUM
+                  </span>
+                )}
+                {isStandard && !isPremium && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-teal-400 text-white rounded-full text-xs font-bold shadow-sm">
+                    <BoltIcon className="h-3.5 w-3.5" />
+                    STANDARD
                   </span>
                 )}
               </div>
@@ -200,7 +262,7 @@ export default function Profile() {
                   <PhoneIcon className="h-4 w-4" /> {profile.phone}
                 </p>
               )}
-              
+
               {/* Badges */}
               <div className="flex flex-wrap gap-2 mt-3 justify-center md:justify-start">
                 {profile.email_verified_at && (
@@ -213,23 +275,32 @@ export default function Profile() {
                     <ShieldCheckIcon className="h-3 w-3" /> Identité vérifiée
                   </span>
                 )}
-                
-                {/* Badge premium amélioré */}
+
+                {/* Badge plan */}
                 {isPremium && (
                   <span className="inline-flex items-center gap-1 px-2 py-1 bg-amber-400 text-gray-800 rounded-full text-xs font-semibold shadow-sm">
                     <SparklesIcon className="h-3 w-3" />
                     Premium
                   </span>
                 )}
+                {isStandard && !isPremium && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-teal-400 text-white rounded-full text-xs font-semibold shadow-sm">
+                    <BoltIcon className="h-3 w-3" />
+                    Standard
+                  </span>
+                )}
               </div>
-              
-              {/* Info abonnement premium */}
-              {isPremium && subscriptionEndsAt && daysLeft > 0 && (
+
+              {/* Info abonnement */}
+              {subscriptionPlan !== 'free' && subscriptionEndsAt && daysLeft > 0 && (
                 <p className="text-white/70 text-xs mt-2 flex items-center justify-center md:justify-start gap-1">
                   <CalendarIcon className="h-3 w-3" />
-                  Abonnement valable jusqu'au {new Date(subscriptionEndsAt).toLocaleDateString('fr-FR')}
+                  Abonnement {planConfig.name} valable jusqu'au {new Date(subscriptionEndsAt).toLocaleDateString('fr-FR')}
                   {daysLeft <= 7 && (
-                    <span className="text-amber-200 font-medium ml-1">({daysLeft} jours restants)</span>
+                    <span className={`font-medium ml-1 ${isPremium ? 'text-amber-200' : 'text-teal-200'
+                      }`}>
+                      ({daysLeft} jours restants)
+                    </span>
                   )}
                 </p>
               )}
@@ -254,25 +325,56 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Section des avantages premium (si l'utilisateur est premium) */}
-      {isPremium && (
-        <div className="bg-gradient-to-r from-amber-50 to-amber-100 border-b border-amber-200">
-          <div className="container-custom py-3">
+      {/* Section des avantages selon le plan */}
+      {subscriptionPlan !== 'free' && (
+        <div className={`bg-gradient-to-r ${isPremium ? 'from-amber-50 to-amber-100 border-amber-200' : 'from-teal-50 to-teal-100 border-teal-200'
+          } border-b`}>
+          <div className="container-custom p-4">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex items-center gap-3">
-                <SparklesIcon className="h-5 w-5 text-amber-500" />
-                <span className="text-sm text-amber-800 font-medium">
-                  ✨ Vous bénéficiez du statut Premium !
+                {planConfig.icon}
+                <span className={`text-sm font-medium ${isPremium ? 'text-amber-800' : 'text-teal-800'
+                  }`}>
+                  ✨ Vous bénéficiez du plan {planConfig.name} !
                 </span>
-                <span className="text-xs text-amber-600">
-                  Messages illimités • Annonces illimitées • Profil mis en avant
-                </span>
+                <div className="flex gap-2 text-xs">
+                  {planConfig.features.map((feature, idx) => (
+                    <span key={idx} className={`${isPremium ? 'text-amber-600' : 'text-teal-600'
+                      }`}>
+                      • {feature}
+                    </span>
+                  ))}
+                </div>
               </div>
               <Link
                 to="/subscription/plans"
-                className="text-xs text-amber-700 hover:text-amber-900 font-medium underline"
+                className={`text-xs font-medium underline ${isPremium ? 'text-amber-700 hover:text-amber-900' : 'text-teal-700 hover:text-teal-900'
+                  }`}
               >
-                Gérer mon abonnement →
+                {subscriptionPlan === 'standard' ? 'Passer à Premium →' : 'Gérer mon abonnement →'}
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Si l'utilisateur est standard, ajouter une invitation à passer premium */}
+      {isStandard && !isPremium && (
+        <div className="container-custom py-4">
+          <div className="bg-gradient-to-r from-amber-50 to-amber-100 rounded-xl p-4 border border-amber-200">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-3">
+                <SparklesIcon className="h-8 w-8 text-amber-500" />
+                <div>
+                  <p className="font-semibold text-amber-800">Passez à Premium pour encore plus d'avantages !</p>
+                  <p className="text-sm text-amber-600">Messages illimités, annonces illimitées, badge exclusif et support VIP</p>
+                </div>
+              </div>
+              <Link
+                to="/subscription/plans"
+                className="px-4 py-2 bg-amber-500 text-white rounded-lg font-semibold text-sm hover:bg-amber-600 transition-colors"
+              >
+                Upgrade to Premium →
               </Link>
             </div>
           </div>
@@ -315,55 +417,50 @@ export default function Profile() {
               <nav className="space-y-1">
                 <button
                   onClick={() => setActiveTab('info')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                    activeTab === 'info'
-                      ? 'bg-[#00BBA7]/10 text-[#009966] font-medium'
-                      : 'text-gray-600 hover:bg-gray-50'
-                  }`}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeTab === 'info'
+                    ? 'bg-[#00BBA7]/10 text-[#009966] font-medium'
+                    : 'text-gray-600 hover:bg-gray-50'
+                    }`}
                 >
                   <UserIcon className="h-5 w-5" />
                   <span>Informations</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('interests')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                    activeTab === 'interests'
-                      ? 'bg-[#00BBA7]/10 text-[#009966] font-medium'
-                      : 'text-gray-600 hover:bg-gray-50'
-                  }`}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeTab === 'interests'
+                    ? 'bg-[#00BBA7]/10 text-[#009966] font-medium'
+                    : 'text-gray-600 hover:bg-gray-50'
+                    }`}
                 >
                   <HeartIcon className="h-5 w-5" />
                   <span>Centres d'intérêt</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('lifestyle')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                    activeTab === 'lifestyle'
-                      ? 'bg-[#00BBA7]/10 text-[#009966] font-medium'
-                      : 'text-gray-600 hover:bg-gray-50'
-                  }`}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeTab === 'lifestyle'
+                    ? 'bg-[#00BBA7]/10 text-[#009966] font-medium'
+                    : 'text-gray-600 hover:bg-gray-50'
+                    }`}
                 >
                   <SparklesIcon className="h-5 w-5" />
                   <span>Mode de vie</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('preferences')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                    activeTab === 'preferences'
-                      ? 'bg-[#00BBA7]/10 text-[#009966] font-medium'
-                      : 'text-gray-600 hover:bg-gray-50'
-                  }`}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeTab === 'preferences'
+                    ? 'bg-[#00BBA7]/10 text-[#009966] font-medium'
+                    : 'text-gray-600 hover:bg-gray-50'
+                    }`}
                 >
                   <UserGroupIcon className="h-5 w-5" />
                   <span>Préférences</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('security')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                    activeTab === 'security'
-                      ? 'bg-[#00BBA7]/10 text-[#009966] font-medium'
-                      : 'text-gray-600 hover:bg-gray-50'
-                  }`}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeTab === 'security'
+                    ? 'bg-[#00BBA7]/10 text-[#009966] font-medium'
+                    : 'text-gray-600 hover:bg-gray-50'
+                    }`}
                 >
                   <ShieldCheckIcon className="h-5 w-5" />
                   <span>Sécurité</span>
@@ -588,7 +685,7 @@ export default function Profile() {
                       <span className="text-gray-500">Genre préféré</span>
                       <span className="font-medium">
                         {profile.profile.preferred_gender === 'male' ? 'Homme' :
-                         profile.profile.preferred_gender === 'female' ? 'Femme' : 'Peu importe'}
+                          profile.profile.preferred_gender === 'female' ? 'Femme' : 'Peu importe'}
                       </span>
                     </div>
                   )}

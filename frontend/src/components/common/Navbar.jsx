@@ -1,7 +1,7 @@
 import { Fragment, useState, useEffect } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import {
-  Bars3Icon, XMarkIcon,
+  Bars3Icon, XMarkIcon,BoltIcon,
   HomeIcon, DocumentTextIcon, ChatBubbleLeftRightIcon,
   HeartIcon, ShieldCheckIcon, UsersIcon, FlagIcon,
   CurrencyDollarIcon, ChevronDownIcon, PlusIcon,
@@ -142,11 +142,37 @@ function LanguageSelector() {
 
 // Dans Navbar.jsx, modifions le UserMenu component
 
+// Dans Navbar.jsx, modifions le UserMenu component
+
 function UserMenu({ user, onLogout }) {
   const menuItems = getUserMenuItems(user?.role);
   
-  // Vérifier si l'utilisateur est premium
+  // Vérifier le plan d'abonnement
   const isPremium = user?.subscription_plan === 'premium' || user?.is_premium;
+  const isStandard = user?.subscription_plan === 'standard';
+
+  // Configuration des badges selon le plan
+  const getBadgeConfig = () => {
+    if (isPremium) {
+      return {
+        label: 'Premium',
+        icon: <SparklesIcon className="h-3 w-3" />,
+        className: 'bg-gradient-to-r from-amber-400 to-amber-500 text-white shadow-sm',
+        emoji: '⭐'
+      };
+    }
+    if (isStandard) {
+      return {
+        label: 'Standard',
+        icon: <BoltIcon className="h-3 w-3" />,
+        className: 'bg-gradient-to-r from-teal-400 to-teal-500 text-white shadow-sm',
+        emoji: '💎'
+      };
+    }
+    return null;
+  };
+
+  const badgeConfig = getBadgeConfig();
 
   return (
     <Menu as="div" className="relative">
@@ -155,11 +181,17 @@ function UserMenu({ user, onLogout }) {
           <img
             src={user.avatar}
             alt={user.full_name}
-            className="h-8 w-8 rounded-full object-cover ring-2 ring-[#ccefeb]"
+            className={`h-8 w-8 rounded-full object-cover ring-2 ${
+              isPremium ? 'ring-amber-400' : isStandard ? 'ring-teal-400' : 'ring-[#ccefeb]'
+            }`}
           />
         ) : (
-          <div className="h-8 w-8 rounded-full bg-[#ccefeb] flex items-center justify-center">
-            <span className="text-[#00734d] font-bold text-sm">
+          <div className={`h-8 w-8 rounded-full flex items-center justify-center ${
+            isPremium ? 'bg-amber-100' : isStandard ? 'bg-teal-100' : 'bg-[#ccefeb]'
+          }`}>
+            <span className={`font-bold text-sm ${
+              isPremium ? 'text-amber-700' : isStandard ? 'text-teal-700' : 'text-[#00734d]'
+            }`}>
               {user?.full_name?.[0]?.toUpperCase() ?? '?'}
             </span>
           </div>
@@ -169,11 +201,11 @@ function UserMenu({ user, onLogout }) {
         </span>
         <ChevronDownIcon className="h-3.5 w-3.5 text-gray-400 hidden md:block" />
         
-        {/* Badge Premium amélioré */}
-        {isPremium && (
-          <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold bg-gradient-to-r from-amber-400 to-amber-500 text-white shadow-sm rounded-full">
-            <SparklesIcon className="h-3 w-3" />
-            Premium
+        {/* Badge selon le plan */}
+        {badgeConfig && (
+          <span className={`hidden md:inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold rounded-full ${badgeConfig.className}`}>
+            {badgeConfig.icon}
+            {badgeConfig.label}
           </span>
         )}
       </Menu.Button>
@@ -188,22 +220,24 @@ function UserMenu({ user, onLogout }) {
         leaveTo="opacity-0 translate-y-1 scale-95"
       >
         <Menu.Items className="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-2xl bg-white shadow-xl ring-1 ring-gray-100 focus:outline-none overflow-hidden py-1.5">
-          {/* Header avec badge premium */}
+          {/* Header avec badge */}
           <div className="px-4 py-3 border-b border-gray-50 mb-1">
             <div className="flex items-center justify-between">
               <p className="text-sm font-semibold text-gray-900 truncate">{user?.full_name}</p>
-              {isPremium && (
-                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-bold bg-amber-100 text-amber-700 rounded-full">
-                  ⭐ PREMIUM
+              {badgeConfig && (
+                <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-bold rounded-full ${
+                  isPremium ? 'bg-amber-100 text-amber-700' : 'bg-teal-100 text-teal-700'
+                }`}>
+                  {badgeConfig.emoji} {badgeConfig.label}
                 </span>
               )}
             </div>
             <p className="text-xs text-gray-400 truncate">{user?.email}</p>
             <div className="flex items-center gap-2 mt-1.5">
               <RoleBadge role={user?.role} />
-              {isPremium && (
-                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-semibold bg-gradient-to-r from-amber-400 to-amber-500 text-white rounded-full">
-                  ✦ Premium
+              {badgeConfig && (
+                <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-semibold rounded-full ${badgeConfig.className}`}>
+                  {badgeConfig.emoji} {badgeConfig.label}
                 </span>
               )}
             </div>
