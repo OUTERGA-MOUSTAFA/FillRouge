@@ -14,6 +14,8 @@ export default function PricingTable({ currentPlan, onSelect }) {
     { name: 'Background check', free: false, standard: false, premium: '1 gratuit/an' },
   ];
 
+  console.log("plan");
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full">

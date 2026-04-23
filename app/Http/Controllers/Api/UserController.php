@@ -82,6 +82,15 @@ class UserController extends Controller
             ], 422); // 422 = données invalides
         }
 
+        // $result = $this->imageService->upload($request->file('avatar'), 'avatars');
+        // if ($user->avatar_public_id) {
+        //     $this->imageService->delete($user->avatar_public_id);
+        //     $user->update([
+        //         'avatar'            => $result['url'],       // URL Cloudinary
+        //         'avatar_public_id'  => $result['public_id']  // à stocker pour suppression ultérieure
+        //     ]);
+        // }
+
         // validated() retourne seulement les champs qui ont passé la validation
         // Évite d'injecter des champs non autorisés (ex: role, is_admin...)
         $user->update($validator->validated());
@@ -179,21 +188,32 @@ class UserController extends Controller
 
         $user = $request->user();
 
-        // Supprimer l'ancienne photo pour ne pas remplir le stockage inutilement
-        if ($user->avatar) {
-            $this->imageService->delete($user->avatar);
-        }
-
+        
+        
         // imageService->upload() redimensionne et compresse l'image avant de la sauvegarder
         // Retourne l'URL image
-        $url = $this->imageService->upload($request->file('avatar'), 'avatars');
+        // $url = $this->imageService->upload($request->file('avatar'), 'avatars');
+        // $user->update(['avatar' => $url]);
 
-        $user->update(['avatar' => $url]);
+        // pour ne pas remplir le stockage inutilement
+        // Supprimer l'ancien avatar sur Cloudinary via son public_id
+        if ($user->avatar_public_id) {
+            $this->imageService->delete($user->avatar_public_id);
+        }
+
+        // Upload du nouvel avatar
+        $result = $this->imageService->upload($request->file('avatar'), 'avatars');
+
+        // Mise à jour de l'utilisateur avec l'URL et le public_id
+        $user->update([
+            'avatar'           => $result['url'],
+            'avatar_public_id' => $result['public_id'],
+        ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Photo de profil mise à jour',
-            'data'    => ['avatar' => $url],
+            'data'    => ['avatar' => $result['url']],
         ]);
     }
 

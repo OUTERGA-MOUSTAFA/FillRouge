@@ -29,7 +29,7 @@ const PLAN_STYLES = {
 
 export function PlanCard({ planKey, plan, isCurrent, onSelect, featured = false, delay = 0 }) {
   const styles = PLAN_STYLES[planKey] ?? PLAN_STYLES.free;
-
+console.log("plan",plan);
   return (
     <div
       style={{ animationDelay: `${delay}ms` }}

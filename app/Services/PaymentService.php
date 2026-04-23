@@ -18,7 +18,7 @@ class PaymentService
         $storeKey = config('services.cmi.store_key');
 
         // Générer un ID de transaction unique
-        $orderId = 'Semsar_' . uniqid();
+        $orderId = 'Semsar_' . uniqid();// uuid
 
         // Préparer les données pour le paiement
         $paymentData = [
@@ -120,10 +120,9 @@ class PaymentService
      */
     public function checkPaymentStatus($transactionId)
     {
-        $sessionId = $request->session_id;
 
         try {
-            $session = Session::retrieve($sessionId);
+            $session = Session::retrieve($transactionId);
             // Implémentation selon le fournisseur
             return [
                 // 'status' => 'completed',

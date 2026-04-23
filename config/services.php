@@ -35,7 +35,7 @@ return [
         ],
     ],
 
-    'background_check' => [
+    'background_check' => [// pour les etronges apré digital signature
         'provider' => env('BACKGROUND_CHECK_PROVIDER', 'checkr'),
         'api_key' => env('BACKGROUND_CHECK_API_KEY'),
         'api_secret' => env('BACKGROUND_CHECK_API_SECRET'),

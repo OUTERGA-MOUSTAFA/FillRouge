@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
+// use Illuminate\Support\Facades\Storage;
 
 class Slider extends Model
 {
@@ -26,18 +26,18 @@ class Slider extends Model
     ];
 
     // Access a l'URL complète de l'image
-     public function getImageUrlAttribute()
-    {
-        if ($this->image_path) {
-            // Vérifier si le fichier existe dans le storage
-            if (Storage::disk('public')->exists($this->image_path)) {
-                return Storage::url($this->image_path);
-            }
-        }
+    //  public function getImageUrlAttribute()
+    // {
+    //     if ($this->image_path) {
+    //         // Vérifier si le fichier existe dans le storage
+    //         if (Storage::disk('public')->exists($this->image_path)) {
+    //             return Storage::url($this->image_path);
+    //         }
+    //     }
         
-        // Image par défaut si l'image n'existe pas
-        return asset('images/default-slider.jpg');
-    }
+    //     // Image par défaut si l'image n'existe pas
+    //     return asset('images/default-slider.jpg');
+    // }
 
     public function scopeActive($query)
     {

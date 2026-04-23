@@ -147,17 +147,30 @@ class ListingController extends Controller
         $photos = [];
         $mainPhoto = null;
 
+        // if ($request->hasFile('photos')) {
+        //     foreach ($request->file('photos') as $index => $photo) {
+        //         $path = $this->imageService->upload($photo, 'listings');
+        //         $photos[] = $path;
+
+        //         if ($index === 0) {
+        //             $mainPhoto = $path;
+        //         }
+        //     }
+        // }
+
         if ($request->hasFile('photos')) {
             foreach ($request->file('photos') as $index => $photo) {
-                $path = $this->imageService->upload($photo, 'listings');
-                $photos[] = $path;
-
+                $uploaded = $this->imageService->upload($photo, 'listings');
+                $photos[] = [
+                    'url'       => $uploaded['url'],
+                    'public_id' => $uploaded['public_id'],
+                ];
                 if ($index === 0) {
-                    $mainPhoto = $path;
+                    $mainPhoto = $uploaded['url']; // ou l’objet entier si vous préférez
                 }
             }
         }
-
+        // Lors de la création :
         $listing = Listing::create([
             'user_id' => $user->id,
             'type' => $request->type,
@@ -177,8 +190,8 @@ class ListingController extends Controller
             'furnished' => $request->furnished ?? false,
             'amenities' => $request->amenities,
             'house_rules' => $request->house_rules,
-            'photos' => $photos,
             'main_photo' => $mainPhoto,
+            'photos'    => $photos,        // tableau d’objets
             'status' => 'active',
         ]);
 
@@ -263,21 +276,37 @@ class ListingController extends Controller
 
         // Handle deleted images
         $currentPhotos = $listing->photos ?? [];
-        if ($request->has('deleted_images') && is_array($request->deleted_images)) {
-            foreach ($request->deleted_images as $pathToDelete) {
-                // Remove from storage
-                $relativePath = str_replace('/storage/', '', $pathToDelete);
-                if (Storage::disk('public')->exists($relativePath)) {
-                    Storage::disk('public')->delete($relativePath);
+        // if ($request->has('deleted_images') && is_array($request->deleted_images)) {
+        //     foreach ($request->deleted_images as $pathToDelete) {
+        //         // Remove from storage
+        //         $relativePath = str_replace('/storage/', '', $pathToDelete);
+        //         if (Storage::disk('public')->exists($relativePath)) {
+        //             Storage::disk('public')->delete($relativePath);
+        //         }
+        //         // Remove from current photos array
+        //         $currentPhotos = array_filter(
+        //             $currentPhotos,
+        //             fn($photo) => $photo !== $pathToDelete
+        //         );
+        //     }
+        //     $currentPhotos = array_values($currentPhotos); // re-index
+        // }
+        if ($request->has('deleted_images')) {
+            foreach ($request->deleted_images as $photoData) {
+                // On attend un public_id (vous pouvez aussi passer l'objet complet)
+                $publicId = is_array($photoData) ? $photoData['public_id'] : $photoData;
+                // Supprimer li kayn f Cloudinary
+                if ($publicId) {
+                    $this->imageService->delete($publicId);
                 }
-                // Remove from current photos array
-                $currentPhotos = array_filter(
-                    $currentPhotos,
-                    fn($photo) => $photo !== $pathToDelete
-                );
+                // Retirer du tableau existant
+                $currentPhotos = array_filter($currentPhotos, function ($p) use ($publicId) {
+                    return $p['public_id'] !== $publicId;
+                });
             }
-            $currentPhotos = array_values($currentPhotos); // re-index
+            $currentPhotos = array_values($currentPhotos);
         }
+
 
         // Handle new image uploads
         if ($request->hasFile('images')) {
@@ -285,9 +314,18 @@ class ListingController extends Controller
             $slotsAvailable = 10 - count($currentPhotos);
             $newFiles = array_slice($request->file('images'), 0, $slotsAvailable);
 
+            // foreach ($newFiles as $image) {
+            //     $path = $image->store('listings', 'public');
+            //     $currentPhotos[] = Storage::url($path); // "/storage/listings/xxx.jpg"
+            // }
+
+            // nouvelle images li ghadi t seft l cloud
             foreach ($newFiles as $image) {
-                $path = $image->store('listings', 'public');
-                $currentPhotos[] = Storage::url($path); // "/storage/listings/xxx.jpg"
+                $uploaded = $this->imageService->upload($image, 'listings');
+                $currentPhotos[] = [
+                    'url'       => $uploaded['url'],
+                    'public_id' => $uploaded['public_id'],
+                ];
             }
         }
 
@@ -310,7 +348,8 @@ class ListingController extends Controller
             'furnished'      => $request->boolean('is_furnished'),
             'amenities'      => $amenities,
             'photos'         => $currentPhotos,
-            'main_photo'     => $currentPhotos[0] ?? null,
+            // 'main_photo'     => $currentPhotos[0] ?? null,
+            'main_photo' => $currentPhotos[0]['url'] ?? null,
         ]);
 
         return response()->json([
@@ -333,8 +372,14 @@ class ListingController extends Controller
             ], 403);
         }
 
+        // foreach ($listing->photos as $photo) {
+        //     $this->imageService->delete($photo);
+        // }
         foreach ($listing->photos as $photo) {
-            $this->imageService->delete($photo);
+            // $photo est maintenant un tableau ['url', 'public_id']
+            if (!empty($photo['public_id'])) {
+                $this->imageService->delete($photo['public_id']);
+            }
         }
 
         $listing->delete();

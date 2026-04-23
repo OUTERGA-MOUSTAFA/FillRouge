@@ -13,6 +13,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('subtitle')->nullable();
             $table->string('image_path');
+            $table->text('image_url');
             $table->string('button_text')->nullable();
             $table->string('button_link')->nullable();
             $table->integer('order')->default(0);

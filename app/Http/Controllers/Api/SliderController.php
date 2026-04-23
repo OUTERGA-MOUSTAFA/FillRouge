@@ -26,10 +26,10 @@ class SliderController extends Controller
                 ]);
 
                 return [
-                    'id' => $slider->id,
-                    'title' => $slider->title,
-                    'subtitle' => $slider->subtitle,
-                    'image' => $slider->image_url,
+                    'id'          => $slider->id,
+                    'title'       => $slider->title,
+                    'subtitle'    => $slider->subtitle,
+                    'image'       => $slider->image_url,  // URL Cloudinary déjà prête
                     'button_text' => $slider->button_text,
                     'button_link' => $slider->button_link,
                 ];
@@ -39,6 +39,5 @@ class SliderController extends Controller
             'data' => $sliders
         ]);
     }
-
 
 }

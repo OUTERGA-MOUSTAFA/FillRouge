@@ -21,7 +21,7 @@ return new class extends Migration
             $table->timestamp('phone_verified_at')->nullable();
             $table->string('password');
             $table->string('avatar')->nullable();
-
+            $table->string('avatar_public_id')->nullable();
             $table->json('preferred_languages')->nullable(); // ['ar', 'fr', 'en', 'es']
             $table->enum('sleep_schedule', ['early_bird', 'night_owl'])->nullable();
             $table->boolean('has_pets')->default(false);

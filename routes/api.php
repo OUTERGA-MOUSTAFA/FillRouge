@@ -21,6 +21,11 @@ use Illuminate\Support\Facades\Route;
 // Webhook (sans auth)
 Route::post('/subscription/webhook', [PaymentController::class, 'webhook'])->withoutMiddleware('auth:sanctum');
 
+// Route::post('/test-upload', function (\Illuminate\Http\Request $request, \App\Services\ImageService $cloudinary) {
+//     $image = $cloudinary->uploadWithThumbnail($request->file('image'));
+//     return response()->json($image);
+// });
+
 Route::prefix('auth')->group(function () {
 
     Route::get('/csrf-token', function () {
