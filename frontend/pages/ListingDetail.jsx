@@ -68,12 +68,24 @@ function StarRating({ value, onChange, size = 'md' }) {
     </div>
   );
 }
+// pour extraire l’URL d’une photo
+const getPhotoUrl = (photo) => {
+  if (!photo) return null;
+  if (typeof photo === 'string') return photo;
+  if (typeof photo === 'object' && photo.url) return photo.url;
+  return null;
+};
+
 
 // ─── Photo gallery ─────────────────────────────────────────────────────────────
 function PhotoGallery({ photos, mainPhoto, title }) {
   const [selected, setSelected] = useState(0);
   const [lightbox, setLightbox] = useState(false);
-  const allPhotos = photos?.length ? photos : mainPhoto ? [mainPhoto] : [];
+  // const allPhotos = photos?.length ? photos : mainPhoto ? [mainPhoto] : [];
+  const allPhotos = (() => {
+    const raw = photos?.length ? photos : mainPhoto ? [mainPhoto] : [];
+    return raw.map(getPhotoUrl).filter(Boolean); // Convertit chaque élément en URL
+  })();
 
   if (!allPhotos.length) {
     return (
@@ -111,9 +123,8 @@ function PhotoGallery({ photos, mainPhoto, title }) {
               <button
                 key={i}
                 onClick={(e) => { e.stopPropagation(); setSelected(i); }}
-                className={`h-14 w-20 rounded-lg overflow-hidden border-2 transition-all shrink-0 ${
-                  selected === i ? 'border-white scale-105 shadow-lg' : 'border-white/40 opacity-70 hover:opacity-100'
-                }`}
+                className={`h-14 w-20 rounded-lg overflow-hidden border-2 transition-all shrink-0 ${selected === i ? 'border-white scale-105 shadow-lg' : 'border-white/40 opacity-70 hover:opacity-100'
+                  }`}
               >
                 <img src={p} alt="" className="w-full h-full object-cover" />
               </button>
@@ -296,7 +307,7 @@ Pouvez-vous me confirmer la disponibilité ?`;
             {/* Listing preview */}
             <div className="flex gap-3 p-3 bg-gradient-to-r from-[#009966]/5 to-transparent border border-[#009966]/10 rounded-xl">
               {(listing.main_photo || listing.photos?.[0]) && (
-                <img src={listing.main_photo || listing.photos[0]} className="h-16 w-20 rounded-lg object-cover shrink-0" alt="" />
+                <img src={getPhotoUrl(listing.main_photo) || getPhotoUrl(listing.photos?.[0])} className="h-16 w-20 rounded-lg object-cover shrink-0" alt="" />
               )}
               <div className="min-w-0">
                 <p className="font-semibold text-gray-900 text-sm truncate">{listing.title}</p>
@@ -348,11 +359,10 @@ Pouvez-vous me confirmer la disponibilité ?`;
                   {DURATIONS.map(d => (
                     <button key={d.value} type="button"
                       onClick={() => setForm(p => ({ ...p, duration: d.value }))}
-                      className={`py-2 px-3 rounded-lg text-sm border transition-all font-medium ${
-                        form.duration === d.value
-                          ? 'bg-[#009966] text-white border-[#009966] shadow-sm'
-                          : 'bg-white text-gray-600 border-gray-200 hover:border-[#009966]/50'
-                      }`}
+                      className={`py-2 px-3 rounded-lg text-sm border transition-all font-medium ${form.duration === d.value
+                        ? 'bg-[#009966] text-white border-[#009966] shadow-sm'
+                        : 'bg-white text-gray-600 border-gray-200 hover:border-[#009966]/50'
+                        }`}
                     >{d.label}</button>
                   ))}
                 </div>
@@ -453,7 +463,7 @@ export default function ListingDetail() {
   const [favorited, setFavorited] = useState(false);
 
   const isOwner = user && listing && user.id === listing.user_id;
-  
+
   const isChercheur = user?.role === 'chercheur';
 
   useEffect(() => { fetchListing(); window.scrollTo(0, 0); }, [id]);
@@ -601,7 +611,7 @@ export default function ListingDetail() {
                 {listing.is_featured && listing.featured_until && (
                   <InfoRow icon="⭐" label="Mis en avant jusqu'au" value={new Date(listing.featured_until).toLocaleDateString('fr-FR')} />
                 )}
-                
+
                 <InfoRow icon="🕒" label="Publiée le" value={listing.created_at ? new Date(listing.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : null} />
                 {/* {listing.updated_at !== listing.created_at && (
                   <InfoRow icon="✏️" label="Mise à jour le" value={listing.updated_at ? new Date(listing.updated_at).toLocaleDateString('fr-FR') : null} />
@@ -815,20 +825,19 @@ export default function ListingDetail() {
                     <HomeIcon className="h-4 w-4" /> Demande de location
                   </button>
                 )}
-                {!user && (
+                {/* {!user && (
                   <Link
                     to="/login"
                     className="w-full flex items-center justify-center gap-2 py-3 bg-[#009966] text-white rounded-xl font-semibold text-sm hover:bg-[#00734d] transition-colors"
                   >
                     Se connecter pour contacter
                   </Link>
-                )}
+                )} */}
                 {!isOwner && (
                   <button
                     onClick={() => setFavorited(f => !f)}
-                    className={`w-full flex items-center justify-center gap-2 py-2.5 border rounded-xl text-sm font-medium transition-all ${
-                      favorited ? 'border-red-300 text-red-500 bg-red-50' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                    }`}
+                    className={`w-full flex items-center justify-center gap-2 py-2.5 border rounded-xl text-sm font-medium transition-all ${favorited ? 'border-red-300 text-red-500 bg-red-50' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                      }`}
                   >
                     <HeartIcon className={`h-4 w-4 ${favorited ? 'fill-red-500 text-red-500' : ''}`} />
                     {favorited ? 'Sauvegardé' : 'Ajouter aux favoris'}

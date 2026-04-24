@@ -67,9 +67,6 @@ class AdminSliderController extends Controller
             'is_active' => true,
         ]);
 
-        $image_path = $upload['public_id'];
-        $image_url = $upload['original'];
-
         return response()->json([
             'success' => true,
             'message' => 'Slider créé avec succès',
@@ -120,7 +117,7 @@ class AdminSliderController extends Controller
             $slider->image_url = $upload['original'];
         }
 
-        $slider->update($request->only([
+        $slider->fill($request->only([
             'title',
             'subtitle',
             'button_text',
@@ -128,6 +125,8 @@ class AdminSliderController extends Controller
             'order',
             'is_active'
         ]));
+
+        $slider->save();
 
         return response()->json([
             'success' => true,

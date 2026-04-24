@@ -52,6 +52,15 @@ export default function EditListing() {
     fetchListing();
   }, [id]);
 
+
+  const getPhotoUrl = (photo) => {
+    if (!photo) return null;
+    if (typeof photo === 'string') return photo;
+    if (typeof photo === 'object' && photo.url) return photo.url;
+    return null;
+  };
+
+
   const fetchListing = async () => {
     try {
       setLoading(true);
@@ -200,8 +209,12 @@ export default function EditListing() {
         submitData.append('images[]', image);
       });
 
-      imagesToDelete.forEach(imagePath => {
-        submitData.append('deleted_images[]', imagePath);
+      imagesToDelete.forEach(image => {
+        // Extraire le public_id si c'est un objet Cloudinary, sinon utiliser tel quel
+        const publicId = (typeof image === 'object' && image.public_id)
+          ? image.public_id
+          : image;
+        submitData.append('deleted_images[]', publicId);
       });
 
       await listingsService.update(id, submitData);
@@ -434,7 +447,7 @@ export default function EditListing() {
                 {existingImages.map((image, index) => (
                   <div key={index} className="relative group">
                     <img
-                      src={image}
+                      src={getPhotoUrl(image)}
                       alt={`Image ${index + 1}`}
                       className="h-24 w-full object-cover rounded-lg"
                     />

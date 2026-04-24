@@ -125,7 +125,7 @@ export default function Home() {
   }
 
   return (
-    <div>
+    <div className=''>
       {/* ========== CAROUSEL SECTION ========== */}
       {sliders.length > 0 && (
         <section className="relative">

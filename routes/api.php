@@ -52,9 +52,9 @@ Route::prefix('auth')->group(function () {
     //    admin role in termenal
     // php artisan tinker
     // $user = new App\Models\User();
-    // $user->full_name = "Admin Name";
-    // $user->email = "admin@example.com";
-    // $user->password = Hash::make('password123');
+    // $user->full_name = "Admin";
+    // $user->email = "admin@email.com";
+    // $user->password = Hash::make('12345678');
     // $user->role = 'admin';
     // $user->save();
 

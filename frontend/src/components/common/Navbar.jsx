@@ -73,7 +73,7 @@ const getUserMenuItems = (role) => {
 
 const ROLE_META = {
   admin:    { emoji: '👑', label: 'Administrateur', cls: 'bg-red-50 text-red-600 border-red-100' },
-  semsar:   { emoji: '🏠', label: 'Propriétaire',   cls: 'bg-blue-50 text-blue-600 border-blue-100' },
+  semsar:   { emoji: '🏠', label: 'Semsar',   cls: 'bg-blue-50 text-blue-600 border-blue-100' },
   chercheur:{ emoji: '🔍', label: 'Chercheur',      cls: 'bg-purple-50 text-purple-600 border-purple-100' },
 };
 
@@ -337,7 +337,7 @@ export default function Navbar() {
           : 'bg-white/95 backdrop-blur-sm border-b border-gray-100'
       }`}
     >
-      {/* ✅ Fix: destructure `close` to programmatically close mobile menu */}
+      {/* destructure `close` to programmatically close mobile menu */}
       {({ open, close }) => (
         <>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -346,8 +346,8 @@ export default function Navbar() {
               {/* Logo + Desktop nav */}
               <div className="flex items-center gap-6">
                 <Link to="/" className="flex items-center gap-2 shrink-0" onClick={close}>
-                  <div className="h-8 w-8 bg-[#009966] rounded-lg flex items-center justify-center">
-                    <span className="text-white font-extrabold text-base">D</span>
+                  <div className="h-8 w-8 bg-[#04c584] rounded-lg flex items-center justify-center">
+                    <span className="text-white font-extrabold text-base">S</span>
                   </div>
                   <span className="text-lg font-bold text-gray-900 hidden sm:block">Semsar</span>
                   {/*  Use RoleBadge component, only on md+ */}

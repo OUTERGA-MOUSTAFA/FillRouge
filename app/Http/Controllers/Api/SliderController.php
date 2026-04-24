@@ -17,14 +17,13 @@ class SliderController extends Controller
             ->get()
             ->map(function ($slider) {
                 
-                $exists = Storage::disk('public')->exists($slider->image_path);
-                Log::info('Image check:', [
-                    'slider_id' => $slider->id,
-                    'image_path' => $slider->image_path,
-                    'exists' => $exists,
-                    'full_url' => $exists ? Storage::url($slider->image_path) : null
-                ]);
-
+                // $exists = Storage::disk('public')->exists($slider->image_path);
+                // Log::info('Image check:', [
+                //     'slider_id' => $slider->id,
+                //     'image_path' => $slider->image_path,
+                //     'exists' => $exists,
+                //     'full_url' => $exists ? Storage::url($slider->image_path) : null
+                // ]);
                 return [
                     'id'          => $slider->id,
                     'title'       => $slider->title,

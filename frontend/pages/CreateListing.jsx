@@ -494,7 +494,7 @@ export default function CreateListing() {
                 disabled={loading}
                 className="flex-1 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Publication en cours..." : "✅ Publier l'annonce"}
+                {loading ? "Publication en cours..." : "Publier l'annonce"}
               </button>
             )}
           </div>

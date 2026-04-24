@@ -18,12 +18,12 @@ const EMPTY_FORM = {
 };
 
 export default function AdminSliders() {
-  const [sliders, setSliders]           = useState([]);
-  const [loading, setLoading]           = useState(true);
-  const [saving, setSaving]             = useState(false);
-  const [modalOpen, setModalOpen]       = useState(false);
+  const [sliders, setSliders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [editingSlider, setEditingSlider] = useState(null);
-  const [formData, setFormData]         = useState(EMPTY_FORM);
+  const [formData, setFormData] = useState(EMPTY_FORM);
   const [imagePreview, setImagePreview] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null); // id being confirmed
   const fileInputRef = useRef(null);
@@ -48,18 +48,23 @@ export default function AdminSliders() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.title.trim()) { toast.error('Le titre est requis'); return; }
-    if (!editingSlider && !formData.image) { toast.error('Une image est requise'); return; }
+    // if (!editingSlider && !formData.image) { toast.error('Une image est requise'); return; }
+    if (!editingSlider && !formData.image) {
+      console.log('Blocage envoi : pas d\'image');
+      toast.error('Une image est requise');
+      return;
+    }
 
     setSaving(true);
     try {
       const fd = new FormData();
-      fd.append('title',       formData.title);
-      fd.append('subtitle',    formData.subtitle ?? '');
+      fd.append('title', formData.title);
+      fd.append('subtitle', formData.subtitle ?? '');
       fd.append('button_text', formData.button_text ?? 'Découvrir');
       fd.append('button_link', formData.button_link ?? '/listings');
-      fd.append('order',       formData.order ?? 0);
+      fd.append('order', formData.order ?? 0);
       if (formData.image) fd.append('image', formData.image);
-      if (editingSlider)  fd.append('_method', 'PUT'); // Laravel method spoofing for multipart
+      if (editingSlider) fd.append('_method', 'PUT'); // Laravel method spoofing for multipart
 
       if (editingSlider) {
         await slidersService.update(editingSlider.id, fd);
@@ -99,13 +104,13 @@ export default function AdminSliders() {
   };
 
   const handleReorder = async (id, direction) => {
-    const index    = sliders.findIndex(s => s.id === id);
+    const index = sliders.findIndex(s => s.id === id);
     const newIndex = direction === 'up' ? index - 1 : index + 1;
     if (newIndex < 0 || newIndex >= sliders.length) return;
 
     const reordered = [...sliders];
     [reordered[index], reordered[newIndex]] = [reordered[newIndex], reordered[index]];
-    setSliders(reordered); // optimistic
+    setSliders(reordered); // optimistic iken khir hhhh
 
     try {
       await Promise.all(
@@ -125,12 +130,12 @@ export default function AdminSliders() {
     if (slider) {
       setEditingSlider(slider);
       setFormData({
-        title:       slider.title       ?? '',
-        subtitle:    slider.subtitle    ?? '',
-        image:       null,
+        title: slider.title ?? '',
+        subtitle: slider.subtitle ?? '',
+        image: null,
         button_text: slider.button_text ?? 'Découvrir',
         button_link: slider.button_link ?? '/listings',
-        order:       slider.order       ?? 0,
+        order: slider.order ?? 0,
       });
       // image_url comes from the backend's Storage::url()
       setImagePreview(slider.image_url ?? slider.image ?? null);
@@ -168,7 +173,7 @@ export default function AdminSliders() {
   }
 
   return (
-    <div className="p-6 md:p-8 max-w-6xl mx-auto">
+    <div className="p-6 md:p-8  max-w-6xl bg-amber-300 mx-auto">
 
       {/* ── Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
@@ -280,11 +285,10 @@ export default function AdminSliders() {
 
                   {/* Status */}
                   <td className="px-5 py-4">
-                    <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${
-                      slider.is_active
-                        ? 'bg-emerald-50 text-emerald-700'
-                        : 'bg-gray-100 text-gray-500'
-                    }`}>
+                    <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${slider.is_active
+                      ? 'bg-emerald-50 text-emerald-700'
+                      : 'bg-gray-100 text-gray-500'
+                      }`}>
                       <span className={`w-1.5 h-1.5 rounded-full ${slider.is_active ? 'bg-emerald-500' : 'bg-gray-400'}`} />
                       {slider.is_active ? 'Actif' : 'Inactif'}
                     </span>
@@ -431,7 +435,8 @@ export default function AdminSliders() {
                     </button>
                   </div>
                 ) : (
-                  <button
+                  /* Image upload button (always enabled) */
+                  < button
                     type="button"
                     onClick={() => fileInputRef.current.click()}
                     className="w-full border-2 border-dashed border-gray-200 rounded-xl py-8 flex flex-col items-center gap-2 hover:border-emerald-300 hover:bg-emerald-50/20 transition"
@@ -490,16 +495,17 @@ export default function AdminSliders() {
                 </button>
                 <button
                   type="submit"
-                  disabled={saving}
-                  className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold transition disabled:opacity-60"
+                  disabled={saving || (!editingSlider && !formData.image)}
+                  className="flex-1 py-2.5 rounded-xl bg-emerald-600 ..."
                 >
                   {saving ? 'Enregistrement...' : editingSlider ? 'Mettre à jour' : 'Créer le slider'}
                 </button>
               </div>
             </form>
           </div>
-        </div>
-      )}
-    </div>
+        </div >
+      )
+      }
+    </div >
   );
 }
