@@ -104,27 +104,69 @@ export default function SubscriptionPlans() {
     fetchData();
   }, []);
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      // Récupérer les plans depuis l'API
-      const plansResponse = await subscriptionService.getPlans();
-      if (plansResponse?.success && plansResponse?.data) {
-        setPlans(plansResponse.data);
-      }
-      
-      // Récupérer l'abonnement actuel
-      const currentResponse = await subscriptionService.getCurrent();
-      if (currentResponse?.success && currentResponse?.data) {
-        setCurrentSubscription(currentResponse.data);
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      toast.error(error.response?.data?.message || 'Erreur chargement des plans');
-    } finally {
-      setLoading(false);
+  // const fetchData = async () => {
+  //   setLoading(true);
+  //   try {
+  //     // Récupérer les plans depuis l'API
+  //     const plansResponse = await subscriptionService.getPlans();
+  //     if (plansResponse?.success && plansResponse?.data) {
+  //       setPlans(plansResponse.data);// Remplace tout l’objet plans
+  //     }
+
+  //     // Récupérer l'abonnement actuel
+  //     const currentResponse = await subscriptionService.getCurrent();
+  //     if (currentResponse?.success && currentResponse?.data) {
+  //       setCurrentSubscription(currentResponse.data);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching data:', error);
+  //     toast.error(error.response?.data?.message || 'Erreur chargement des plans');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+ const fetchData = async () => {
+  setLoading(true);
+  try {
+    const plansResponse = await subscriptionService.getPlans();
+    const currentResponse = await subscriptionService.getCurrent();
+
+    const merged = { ...DEFAULT_PLANS };
+
+    if (plansResponse?.success && plansResponse?.data) {
+      Object.keys(plansResponse.data).forEach(key => {
+        const apiPlan = plansResponse.data[key];
+        const defaultPlan = DEFAULT_PLANS[key] || {};
+
+        merged[key] = {
+          ...defaultPlan,
+          label: apiPlan.name || defaultPlan.label || key,
+          price: apiPlan.price ?? defaultPlan.price,
+          tagline: defaultPlan.tagline,
+          icon: defaultPlan.icon,
+          badge: defaultPlan.badge,
+          features: apiPlan.features
+            ? apiPlan.features.map(text => ({ text, included: true }))
+            : defaultPlan.features,
+        };
+      });
     }
-  };
+
+    console.log('merged', merged); // ← temporaire
+    setPlans(merged);
+
+    if (currentResponse?.success && currentResponse?.data) {
+      setCurrentSubscription(currentResponse.data);
+    }
+  } catch (error) {
+    console.error(error);
+    toast.error(error.response?.data?.message || 'Erreur chargement des plans');
+    setPlans(DEFAULT_PLANS);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleSelectPlan = (planKey) => {
     if (planKey === 'free') {
@@ -170,21 +212,19 @@ export default function SubscriptionPlans() {
           <div className="inline-flex mt-8 bg-gray-100 rounded-xl p-1 gap-1">
             <button
               onClick={() => setViewMode('cards')}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                viewMode === 'cards'
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${viewMode === 'cards'
                   ? 'bg-white text-[#009966] shadow-sm'
                   : 'text-gray-500 hover:text-gray-700'
-              }`}
+                }`}
             >
               <Squares2X2Icon className="h-4 w-4" /> Cartes
             </button>
             <button
               onClick={() => setViewMode('table')}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                viewMode === 'table'
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${viewMode === 'table'
                   ? 'bg-white text-[#009966] shadow-sm'
                   : 'text-gray-500 hover:text-gray-700'
-              }`}
+                }`}
             >
               <TableCellsIcon className="h-4 w-4" /> Tableau comparatif
             </button>
@@ -292,11 +332,10 @@ function PlanCard({ planKey, plan, isCurrent, onSelect, featured, delay }) {
         {plan.features?.map((f, i) => (
           <div key={i} className="flex items-center gap-2.5">
             <div className={`h-5 w-5 rounded-full flex items-center justify-center shrink-0
-              ${f.included ? 'bg-[#e6f7f5]' : 'bg-gray-50'}`}>
+        ${f.included ? 'bg-[#e6f7f5]' : 'bg-gray-50'}`}>
               {f.included
                 ? <CheckIcon className="h-3 w-3 text-[#009966] stroke-[2.5]" />
-                : <span className="h-1.5 w-1.5 rounded-full bg-gray-300 block" />
-              }
+                : <span className="h-1.5 w-1.5 rounded-full bg-gray-300 block" />}
             </div>
             <span className={`text-sm ${f.included ? 'text-gray-700' : 'text-gray-400 line-through'}`}>
               {f.text}
@@ -315,7 +354,7 @@ function PlanCard({ planKey, plan, isCurrent, onSelect, featured, delay }) {
             onClick={onSelect}
             className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${styles.btn}`}
           >
-            {planKey === 'free' ? 'Commencer gratuitement' : `Choisir ${plan.label}`}
+            {planKey === 'free' ? '' : `Choisir ${plan.label}`}
             {planKey !== 'free' && <ArrowRightIcon className="h-4 w-4" />}
           </button>
         )}

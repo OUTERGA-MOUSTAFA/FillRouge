@@ -358,7 +358,7 @@ export default function Profile() {
         </div>
       )}
 
-      {/* Si l'utilisateur est standard, ajouter une invitation à passer premium */}
+      {/* Si l'utilisateur est standard, ajouter une invitation à passer premium
       {isStandard && !isPremium && (
         <div className="container-custom py-4">
           <div className="bg-gradient-to-r from-amber-50 to-amber-100 rounded-xl p-4 border border-amber-200">
@@ -379,7 +379,7 @@ export default function Profile() {
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Barre de progression du profil */}
       <div className="bg-white border-b shadow-sm">

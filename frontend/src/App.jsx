@@ -34,7 +34,7 @@ const ForgotPassword = lazy(() => import('../pages/Auth/ForgotPassword'));
 const ResetPassword = lazy(() => import('../pages/Auth/ResetPassword'));
 
 // Subscription Pages
-const SubscriptionPlans = lazy(() => import('../pages/Subscription/Plans'));
+const SubscriptionPlans = lazy(() => import('../pages/Subscription/SubscriptionPlans'));
 const SubscriptionCheckout = lazy(() => import('../pages/Subscription/Checkout'));
 
 // Admin Pages

@@ -825,14 +825,14 @@ export default function ListingDetail() {
                     <HomeIcon className="h-4 w-4" /> Demande de location
                   </button>
                 )}
-                {/* {!user && (
+                {!user && (
                   <Link
                     to="/login"
                     className="w-full flex items-center justify-center gap-2 py-3 bg-[#009966] text-white rounded-xl font-semibold text-sm hover:bg-[#00734d] transition-colors"
                   >
                     Se connecter pour contacter
                   </Link>
-                )} */}
+                )}
                 {!isOwner && (
                   <button
                     onClick={() => setFavorited(f => !f)}
