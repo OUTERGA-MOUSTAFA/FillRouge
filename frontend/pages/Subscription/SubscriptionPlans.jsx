@@ -126,47 +126,74 @@ export default function SubscriptionPlans() {
   //   }
   // };
 
- const fetchData = async () => {
-  setLoading(true);
-  try {
-    const plansResponse = await subscriptionService.getPlans();
-    const currentResponse = await subscriptionService.getCurrent();
+  const fetchData = async () => {
+    // Active l’indicateur de chargement (spinner) pendant l'appel API
+    setLoading(true);
+    try {
+      // Récupère les plans d’abonnement depuis le backend
+      const plansResponse = await subscriptionService.getPlans();
+      //  Récupère l’abonnement actuel de l’utilisateur
+      const currentResponse = await subscriptionService.getCurrent();
 
-    const merged = { ...DEFAULT_PLANS };
+      // Copie des données par défaut de l’interface (DEFAULT_PLANS)
+      //    Ces données garantissent l’affichage même si l’API échoue
+      const merged = { ...DEFAULT_PLANS };
 
-    if (plansResponse?.success && plansResponse?.data) {
-      Object.keys(plansResponse.data).forEach(key => {
-        const apiPlan = plansResponse.data[key];
-        const defaultPlan = DEFAULT_PLANS[key] || {};
+      // Si l’API a répondu avec succès et contient des données
+      if (plansResponse?.success && plansResponse?.data) {
+        // 🔑 Parcourt chaque type de plan (free, standard, premium)
+        Object.keys(plansResponse.data).forEach(key => {
+          // Données du plan envoyées par l’API
+          const apiPlan = plansResponse.data[key];
+          // Données par défaut pour ce plan (peut être undefined)
+          const defaultPlan = DEFAULT_PLANS[key] || {};
 
-        merged[key] = {
-          ...defaultPlan,
-          label: apiPlan.name || defaultPlan.label || key,
-          price: apiPlan.price ?? defaultPlan.price,
-          tagline: defaultPlan.tagline,
-          icon: defaultPlan.icon,
-          badge: defaultPlan.badge,
-          features: apiPlan.features
-            ? apiPlan.features.map(text => ({ text, included: true }))
-            : defaultPlan.features,
-        };
-      });
+          // Fusionne les valeurs API avec les valeurs par défaut
+          merged[key] = {
+            // Garde les champs par défaut (icônes, style, badge…)
+            ...defaultPlan,
+            // Utilise `name` de l’API comme `label`, sinon celui par défaut, sinon la clé
+            label: apiPlan.name || defaultPlan.label || key,
+            // Prix (utilise celui de l’API si présent, sinon celui par défaut)
+            price: apiPlan.price ?? defaultPlan.price,
+            // Slogan affiché sous le nom du plan (gardé depuis l’interface)
+            tagline: defaultPlan.tagline,
+            // Icône React (composant JSX) gardée depuis l’interface
+            icon: defaultPlan.icon,
+            // Texte du badge (ex: "Populaire") gardé depuis l’interface
+            badge: defaultPlan.badge,
+            // Liste des fonctionnalités
+            features: apiPlan.features
+              ? // Si l’API renvoie un tableau de chaînes,
+              // on le transforme en objets { text, included: true }
+              apiPlan.features.map(text => ({ text, included: true }))
+              : // Sinon, on garde les fonctionnalités par défaut (avec leurs icônes)
+              defaultPlan.features,
+          };
+        });
+      }
+
+      //  Affiche le résultat dans la console (pour déboguer)
+      console.log('merged', merged);
+      //  Met à jour l’état React avec les plans fusionnés
+      setPlans(merged);
+
+      //  Si l’abonnement actuel a bien été récupéré, on le stocke
+      if (currentResponse?.success && currentResponse?.data) {
+        setCurrentSubscription(currentResponse.data);
+      }
+    } catch (error) {
+      // En cas d’erreur réseau ou autre, log l’erreur dans la console
+      console.error(error);
+      // Affiche un message d’erreur via un toast
+      toast.error(error.response?.data?.message || 'Erreur chargement des plans');
+      //  En dernier recours, utilise les données par défaut pour ne pas casser l’UI
+      setPlans(DEFAULT_PLANS);
+    } finally {
+      //  Désactive l’indicateur de chargement dans tous les cas
+      setLoading(false);
     }
-
-    console.log('merged', merged); // ← temporaire
-    setPlans(merged);
-
-    if (currentResponse?.success && currentResponse?.data) {
-      setCurrentSubscription(currentResponse.data);
-    }
-  } catch (error) {
-    console.error(error);
-    toast.error(error.response?.data?.message || 'Erreur chargement des plans');
-    setPlans(DEFAULT_PLANS);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const handleSelectPlan = (planKey) => {
     if (planKey === 'free') {
@@ -186,6 +213,26 @@ export default function SubscriptionPlans() {
   }
 
   const currentPlan = currentSubscription?.current_plan ?? 'free';
+
+  {/* ───── Helper (à placer hors du JSX, dans le composant) ───── */ }
+  const formatRemainingTime = (decimalDays) => {
+    const totalDays = parseFloat(decimalDays);
+    if (isNaN(totalDays)) return '—';
+
+    const days = Math.floor(totalDays);
+    const remainingHours = (totalDays - days) * 24;
+    const hours = Math.round(remainingHours);
+
+    if (days === 0) {
+      return hours === 1 ? '1 heure' : `${hours} heures`;
+    }
+
+    if (hours === 0) {
+      return days === 1 ? '1 jour' : `${days} jours`;
+    }
+
+    return `${days} jour${days > 1 ? 's' : ''} et ${hours} heure${hours > 1 ? 's' : ''}`;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -213,8 +260,8 @@ export default function SubscriptionPlans() {
             <button
               onClick={() => setViewMode('cards')}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${viewMode === 'cards'
-                  ? 'bg-white text-[#009966] shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                ? 'bg-white text-[#009966] shadow-sm'
+                : 'text-gray-500 hover:text-gray-700'
                 }`}
             >
               <Squares2X2Icon className="h-4 w-4" /> Cartes
@@ -222,8 +269,8 @@ export default function SubscriptionPlans() {
             <button
               onClick={() => setViewMode('table')}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${viewMode === 'table'
-                  ? 'bg-white text-[#009966] shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                ? 'bg-white text-[#009966] shadow-sm'
+                : 'text-gray-500 hover:text-gray-700'
                 }`}
             >
               <TableCellsIcon className="h-4 w-4" /> Tableau comparatif
@@ -250,7 +297,9 @@ export default function SubscriptionPlans() {
                   </span>
                   {currentSubscription?.remaining_days > 0 && (
                     <> — expire dans{' '}
-                      <span className="font-medium">{currentSubscription.remaining_days} jours</span>
+                      <span className="font-medium">
+                        {formatRemainingTime(currentSubscription.remaining_days)}
+                      </span>
                     </>
                   )}
                 </p>
