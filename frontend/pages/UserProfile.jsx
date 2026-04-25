@@ -115,7 +115,9 @@ export default function UserProfile() {
     try {
       const response = await usersService.getCompatibility(id);
       setCompatibility(response.data?.data ?? response.data);
-    } catch (){}
+    } catch (error) {
+      console.log('Compat error', error);
+    }
   };
 
   if (loading) return (

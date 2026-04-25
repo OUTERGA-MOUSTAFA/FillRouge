@@ -41,7 +41,7 @@ const amenitiesList = [
 const listingTypes = [
   { id: "room", name: "Chambre", icon: HomeIcon, description: "Chambre individuelle dans un appartement/maison" },
   { id: "apartment", name: "Appartement", icon: BuildingOffice2Icon, description: "Appartement entier" },
-  { id: "house", name: "Maison", icon: HomeModernIcon, description: "Maison entière" },
+  { id: "looking_for_roommate", name: "Maison", icon: HomeModernIcon, description: "Maison entière" },
   // { id: "studio", name: "Studio", icon: HomeIcon, description: "Studio meublé" },
 ];
 
