@@ -6,8 +6,9 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Stripe\Checkout\Session;
 
-class PaymentService
+class PaymentService // service de gestion des abonnements
 {
+
     /**
      * Traitement de paiement via CMI (Centre Monétique Interbancaire)
      */

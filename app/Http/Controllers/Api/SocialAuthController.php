@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\SocialAccount;
 use App\Services\OAuthService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -25,7 +24,8 @@ class SocialAuthController extends Controller
     public function redirectToGoogle()
     {
         $url = $this->oauthService->getGoogleAuthUrl();
-        return redirect($url);
+    // react redirect($url);
+    return response()->json(['url' => $url]);
     }
 
     /**
@@ -61,6 +61,7 @@ class SocialAuthController extends Controller
      */
     public function handleFacebookCallback(Request $request)
     {
+        // react will send code in request
         $code = $request->get('code');
         
         try {
@@ -78,7 +79,7 @@ class SocialAuthController extends Controller
     private function handleSocialLogin($userData, $provider)
     {
         // Chercher un compte social existant
-        $socialAccount = SocialAccount::where('provider', $provider)
+        $socialAccount = User::where('provider', $provider)
             ->where('provider_id', $userData['id'])
             ->first();
             
@@ -104,7 +105,7 @@ class SocialAuthController extends Controller
             }
             
             // Créer le compte social
-            SocialAccount::create([
+            User::create([
                 'user_id' => $user->id,
                 'provider' => $provider,
                 'provider_id' => $userData['id'],
