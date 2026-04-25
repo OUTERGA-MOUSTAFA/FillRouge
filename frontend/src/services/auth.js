@@ -5,7 +5,7 @@ export const authService = {
     // Récupérer le token CSRF
     getCsrfToken: async () => {
         const response = await axios.get('http://localhost:8000/api/csrf-token', {
-            withCredentials: true,
+            // withCredentials: true,
         });
         return response.data;
     },
