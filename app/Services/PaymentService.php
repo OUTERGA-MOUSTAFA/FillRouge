@@ -57,7 +57,7 @@ class PaymentService
                 'error' => $response->json('ErrorMessage') ?? 'Erreur de paiement',
             ];
         } catch (\Exception $e) {
-            Log::error('CMI Payment Error: ' . $e->getMessage());
+            Log::error('CMI Payment Error: ' . $e->getMessage());// les logs système
 
             return [
                 'success' => false,

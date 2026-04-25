@@ -6,8 +6,6 @@ use App\Models\Message;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-// use Illuminate\Support\Facades\Log as FacadesLog;
-// use Laravel\Reverb\Loggers\Log;
 
 class MessagePolicy
 {

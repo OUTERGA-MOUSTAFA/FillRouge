@@ -103,7 +103,7 @@ class BackgroundCheckService
                 'error' => 'Failed to check status'
             ];
         } catch (\Exception $e) {
-            Log::error('Background check status error: ' . $e->getMessage());
+            Log::error('Background check status error: ' . $e->getMessage()); //les logs système
             
             return [
                 'success' => false,
