@@ -11,6 +11,7 @@ import { StarIcon as StarSolid } from '@heroicons/react/24/solid';
 import { usersService } from '../src/services/users';
 import { useAuthStore } from '../src/store/authStore';
 import ReviewsList from '../src/components/profile/ReviewsList';
+import AddReview from '../src/components/profile/AddReview';
 import toast from 'react-hot-toast';
 
 /* ── tiny helpers ─────────────────────────────────────── */
@@ -91,6 +92,7 @@ export default function UserProfile() {
   const [compatibility, setCompatibility] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('about');
+  const [reviewModal, setReviewModal] = useState(false);
   const { user } = useAuthStore();
   const isOwnProfile = user?.id === parseInt(id);
 
@@ -115,9 +117,7 @@ export default function UserProfile() {
     try {
       const response = await usersService.getCompatibility(id);
       setCompatibility(response.data?.data ?? response.data);
-    } catch (error) {
-      console.log('Compat error', error);
-    }
+    } catch {}
   };
 
   if (loading) return (
@@ -255,6 +255,13 @@ export default function UserProfile() {
                     <ChatBubbleLeftRightIcon className="h-4 w-4" />
                     Message
                   </Link>
+                  <button
+                    onClick={() => setReviewModal(true)}
+                    className="p-2.5 rounded-xl border border-[#99dfd7] bg-[#e6f7f5] hover:bg-[#ccefeb] transition-colors group"
+                    title="Laisser un avis"
+                  >
+                    <StarIcon className="h-4 w-4 text-[#00BBA7]" />
+                  </button>
                   <button className="p-2.5 rounded-xl border border-gray-200 hover:bg-red-50 hover:border-red-200 transition-colors group">
                     <HeartIcon className="h-4 w-4 text-gray-400 group-hover:text-red-400 transition-colors" />
                   </button>
@@ -447,12 +454,38 @@ export default function UserProfile() {
 
           {/* Tab: Reviews */}
           {activeTab === 'reviews' && (
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <ReviewsList userId={profile.id} />
+            <div className="space-y-4">
+              {/* Add review CTA */}
+              {!isOwnProfile && user && (
+                <button
+                  onClick={() => setReviewModal(true)}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl border-2 border-dashed border-[#99dfd7] text-[#00BBA7] hover:bg-[#e6f7f5] hover:border-[#00BBA7] transition-all text-sm font-semibold"
+                >
+                  <StarIcon className="h-4 w-4" />
+                  Laisser un avis à {profile.full_name?.split(' ')[0]}
+                </button>
+              )}
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <ReviewsList userId={profile.id} />
+              </div>
             </div>
           )}
         </div>
       </div>
+
+      {/* ── Review Modal ── */}
+      {reviewModal && (
+        <AddReview
+          targetUser={profile}
+          currentUser={user}
+          listings={profile.listings ?? []}
+          onClose={() => setReviewModal(false)}
+          onSuccess={() => {
+            setActiveTab('reviews');
+            fetchProfile();
+          }}
+        />
+      )}
     </div>
   );
 }

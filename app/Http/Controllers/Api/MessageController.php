@@ -120,7 +120,7 @@ class MessageController extends Controller
 
     public function send(Request $request, $userId)
     {
-        // 1. Find receiver
+        // Find receiver
         $receiver = User::find($userId);
         if (!$receiver) {
             return response()->json(['success' => false, 'message' => 'Utilisateur non trouvé'], 404);
@@ -128,7 +128,7 @@ class MessageController extends Controller
 
         $sender = $request->user();
 
-        // 2. Check policy — ONE check, correct direction
+        // Check policy — ONE check, correct direction
         if (!Gate::inspect('send', [Message::class, $receiver])) {
             $errorMessage = match (true) {
                 $sender->id === $receiver->id

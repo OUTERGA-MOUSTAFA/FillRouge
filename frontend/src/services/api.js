@@ -2,14 +2,16 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL, //|| 'http://localhost:8000/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
+   //withCredentials: true,// csrf protection backend send xsrf_token front back send x-xcsrf_token
   headers: {
-    withCredentials: true,// csrf protection backend send xsrf_token front back send x-xcsrf_token
+   
     // 'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
 });
 
+// injection bearer token
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -18,6 +20,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// handle 401
 api.interceptors.response.use(
   (response) => response,
   (error) => {

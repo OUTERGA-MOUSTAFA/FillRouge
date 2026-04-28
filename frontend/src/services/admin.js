@@ -2,10 +2,21 @@ import api from './api';
 
 export const adminService = {
   // Dashboard
+  // getStats: async (period = 'month') => {
+  //   const response = await api.get('/admin/stats', { params: { period } });
+  //   return response.data;
+  // },
   getStats: async (period = 'month') => {
-    const response = await api.get('/admin/stats', { params: { period } });
+  try {
+    const response = await api.get('/admin/stats', {
+      params: { period }
+    });
     return response.data;
-  },
+  } catch (error) {
+    console.log('Admin stats error:', error.response?.data);
+    throw error;
+  }
+},
 
   getAdvancedStats: async (startDate, endDate) => {
     const response = await api.get('/admin/stats/advanced', { params: { start_date: startDate, end_date: endDate } });

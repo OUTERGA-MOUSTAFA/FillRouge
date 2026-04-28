@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-class AdminController extends Controller
+class AdminController extends Controller // extand men controller o Middlewares kayntkelf b protection
 {
     /**
      * Dashboard - Statistiques clés

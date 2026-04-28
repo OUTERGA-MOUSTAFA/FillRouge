@@ -3,24 +3,29 @@ import api from './api';
 
 export const authService = {
     // Récupérer le token CSRF
-    getCsrfToken: async () => {
-        const response = await axios.get('http://localhost:8000/api/csrf-token', {
-            // withCredentials: true,
-        });
-        return response.data;
-    },
+  getCsrfToken: async () => {
+    const response = await axios.get('http://localhost:8000/api/csrf-token', {
+      withCredentials: true,
+    });
+    return response.data;
+  },
 
     register: async (data) => {
+
         const response = await api.post('/auth/register', data);
         return response.data;
     },
 
     login: async (email, password) => {
+        // await authService.getCsrfToken();
+
         const response = await api.post('/auth/login', { email, password });
         return response.data;
     },
 
     verify2FA: async (twoFactorToken, code) => {
+        // await authService.getCsrfToken();
+
         const response = await api.post('/auth/verify-2fa', {
             two_factor_token: twoFactorToken,
             code
@@ -43,7 +48,7 @@ export const authService = {
         return response.data;
     },
 
-    
+
 
     uploadAvatar: async (file) => {
         const formData = new FormData();

@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
-class NotificationService
+class NotificationService//Envoi notifications
 {
     // SmsService supprimé — à ajouter plus tard quand SMS sera implémenté
 

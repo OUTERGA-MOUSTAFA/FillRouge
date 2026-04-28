@@ -45,7 +45,8 @@ class UserController extends Controller
         $user->profile_completion = $user->profile
             ? $user->profile->getCompletionScore()
             : 0; // pourcentage de complétion du profil (0-100)
-        $user->average_rating     = $user->reviews()->avg('rating') ?? 0;
+        // $user->average_rating     = $user->reviews()->avg('rating') ?? 0;// kadir an other select 3la avg dyal rating
+        $user = $request->user()->loadAvg('reviews', 'rating');
 
         return response()->json([
             'success' => true,

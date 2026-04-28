@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use App\Models\Matching;
 
-class MatchingService
+class MatchingService //Calcul compatibilité
 {
     /**
      * Calculer le score de compatibilité entre deux utilisateurs

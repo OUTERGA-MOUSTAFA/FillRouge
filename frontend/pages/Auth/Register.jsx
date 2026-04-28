@@ -94,6 +94,29 @@ export default function Register() {
     return true;
   };
 
+
+  // Exemple avec l'API gratuite "email-verifier" (https://github.com/umuterturk/email-verifier)
+  async function verifierEmailReel(email) {
+    const url = `https://rapid-email-verifier.fly.dev/api/validate?email=${encodeURIComponent(email)}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.status === "VALID") {
+        // L'email est valide et peut être utilisé
+        return { valide: true, raison: "L'email est valide et délivrable." };
+      } else if (data.status === "INVALID_EMAIL") {
+        return { valide: false, raison: "L'email n'existe pas ou n'est pas délivrable." };
+      } else {
+        return { valide: false, raison: `L'email a été rejeté pour la raison: ${data.reason}` };
+      }
+    } catch (error) {
+      console.error("Erreur lors de la vérification:", error);
+      return { valide: false, raison: "Impossible de vérifier l'email pour le moment." };
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -230,11 +253,10 @@ export default function Register() {
                 <div className="grid grid-cols-2 gap-3">
                   {[{ value: 'chercheur', label: 'Chercheur' }, { value: 'semsar', label: 'Semsar' }].map(r => (
                     <label key={r.value}
-                      className={`flex items-center justify-center gap-2 p-3 rounded-xl border-2 cursor-pointer transition-all text-sm font-medium ${
-                        formData.role === r.value
+                      className={`flex items-center justify-center gap-2 p-3 rounded-xl border-2 cursor-pointer transition-all text-sm font-medium ${formData.role === r.value
                           ? 'border-[#009966] bg-[#009966]/5 text-[#009966]'
                           : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                      }`}>
+                        }`}>
                       <input type="radio" name="role" value={r.value} onChange={handleChange} className="hidden" />
                       {r.label}
                     </label>
@@ -268,17 +290,15 @@ export default function Register() {
               <div className="flex flex-wrap gap-2">
                 {LANGUAGES_OPTIONS.map(lang => (
                   <label key={lang}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 cursor-pointer text-sm transition-all ${
-                      formData.languages.includes(lang)
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 cursor-pointer text-sm transition-all ${formData.languages.includes(lang)
                         ? 'border-[#009966] bg-[#009966]/5 text-[#009966]'
                         : 'border-gray-200 text-gray-600'
-                    }`}>
+                      }`}>
                     <input type="checkbox" className="hidden"
                       checked={formData.languages.includes(lang)}
                       onChange={() => handleLanguageToggle(lang)} />
-                    <span className={`w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 ${
-                      formData.languages.includes(lang) ? 'border-[#009966] bg-[#009966]' : 'border-gray-300'
-                    }`}>
+                    <span className={`w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 ${formData.languages.includes(lang) ? 'border-[#009966] bg-[#009966]' : 'border-gray-300'
+                      }`}>
                       {formData.languages.includes(lang) && <span className="text-white text-xs">✓</span>}
                     </span>
                     {lang}
@@ -305,11 +325,10 @@ export default function Register() {
                     key={value}
                     type="button"
                     onClick={() => handleInterestToggle(value)}
-                    className={`px-4 py-2 rounded-full border-2 text-sm transition-all ${
-                      formData.interests.includes(value)
+                    className={`px-4 py-2 rounded-full border-2 text-sm transition-all ${formData.interests.includes(value)
                         ? 'border-[#009966] bg-[#009966]/5 text-[#009966] font-medium'
                         : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                    }`}>
+                      }`}>
                     {label}
                   </button>
                 ))}
@@ -323,17 +342,15 @@ export default function Register() {
                   <div className="space-y-2">
                     {SCHEDULE_OPTIONS.map(opt => (
                       <label key={opt.value}
-                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border-2 cursor-pointer text-sm transition-all ${
-                          formData.schedule === opt.value
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border-2 cursor-pointer text-sm transition-all ${formData.schedule === opt.value
                             ? 'border-[#009966] bg-[#009966]/5'
                             : 'border-gray-200'
-                        }`}>
+                          }`}>
                         <input type="radio" name="schedule" value={opt.value}
                           checked={formData.schedule === opt.value}
                           onChange={handleChange} className="hidden" />
-                        <span className={`w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${
-                          formData.schedule === opt.value ? 'border-[#009966]' : 'border-gray-300'
-                        }`}>
+                        <span className={`w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${formData.schedule === opt.value ? 'border-[#009966]' : 'border-gray-300'
+                          }`}>
                           {formData.schedule === opt.value && (
                             <span className="w-2 h-2 rounded-full bg-[#009966] block" />
                           )}
@@ -349,13 +366,12 @@ export default function Register() {
                   <div className="grid grid-cols-2 gap-2">
                     {[{ label: 'Oui', value: true }, { label: 'Non', value: false }].map(opt => (
                       <label key={String(opt.value)}
-                        className={`flex items-center justify-center py-3 rounded-xl border-2 cursor-pointer text-sm font-medium transition-all ${
-                          formData.pets === opt.value
+                        className={`flex items-center justify-center py-3 rounded-xl border-2 cursor-pointer text-sm font-medium transition-all ${formData.pets === opt.value
                             ? opt.value
                               ? 'border-[#009966] bg-[#009966]/5 text-[#009966]'
                               : 'border-[#009966] bg-[#009966] text-white'
                             : 'border-gray-200 text-gray-600'
-                        }`}>
+                          }`}>
                         <input type="radio" name="pets" className="hidden"
                           checked={formData.pets === opt.value}
                           onChange={() => setFormData(p => ({ ...p, pets: opt.value }))} />
