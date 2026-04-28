@@ -268,11 +268,20 @@ class ImageService
     protected $cloudName;
     protected $uploadPreset;
 
+    // public function __construct()
+    // {
+    //     $this->cloudName = env('CLOUDINARY_CLOUD_NAME');
+    //     $this->uploadPreset = env('CLOUDINARY_UPLOAD_PRESET');
+    // }
+
     public function __construct()
     {
-        $this->cloudName = env('CLOUDINARY_CLOUD_NAME');
-        $this->uploadPreset = env('CLOUDINARY_UPLOAD_PRESET');
+        //config/services.php
+        $this->cloudName = config('services.cloudinary.cloud_name');
+        $this->uploadPreset = config('services.cloudinary.upload_preset');
     }
+
+
 
     /**
      * Upload image (main)
@@ -310,7 +319,6 @@ class ImageService
                 'url' => $response['secure_url'],
                 'public_id' => $response['public_id'],
             ];
-
         } catch (\Exception $e) {
             throw new \Exception('Upload failed: ' . $e->getMessage());
         }
@@ -346,6 +354,9 @@ class ImageService
         try {
             $timestamp = time();
 
+            $apiKey = config('services.cloudinary.api_key');
+            $apiSecret = config('services.cloudinary.api_secret');
+
             $signature = sha1("public_id={$publicId}&timestamp={$timestamp}" . env('CLOUDINARY_API_SECRET'));
 
             $response = Http::post("https://api.cloudinary.com/v1_1/{$this->cloudName}/image/destroy", [
@@ -356,10 +367,8 @@ class ImageService
             ]);
 
             return $response['result'] === 'ok';
-
         } catch (\Exception $e) {
             return false;
         }
     }
-
 }

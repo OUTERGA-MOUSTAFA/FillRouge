@@ -125,7 +125,7 @@ export default function Home() {
   }
 
   return (
-    <div className=''>
+    <div className='bg-amber-300'>
       {/* ========== CAROUSEL SECTION ========== */}
       {sliders.length > 0 && (
         <section className="relative">

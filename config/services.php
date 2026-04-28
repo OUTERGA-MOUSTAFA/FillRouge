@@ -35,7 +35,7 @@ return [
         ],
     ],
 
-    'background_check' => [// pour les etronges apré digital signature
+    'background_check' => [ // pour les etronges apré digital signature
         'provider' => env('BACKGROUND_CHECK_PROVIDER', 'checkr'),
         'api_key' => env('BACKGROUND_CHECK_API_KEY'),
         'api_secret' => env('BACKGROUND_CHECK_API_SECRET'),
@@ -79,6 +79,14 @@ return [
         //     'return_url' => env('APP_URL') . '/payment/callback',
         //     'gateway_url' => env('CMI_GATEWAY_URL', 'https://payment.cmi.co.ma/fim/est3Dgate'),
         // ],
+    ],
+
+
+    'cloudinary' => [
+        'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+        'api_key'    => env('CLOUDINARY_API_KEY'),
+        'api_secret' => env('CLOUDINARY_API_SECRET'),
+        'upload_preset' => env('CLOUDINARY_UPLOAD_PRESET'),
     ],
 
 ];

@@ -157,7 +157,7 @@ export default function EditProfileDetails() {
     } catch (error) {
       if (error.response?.status === 422) {
         setErrors(error.response.data?.errors ?? {});
-        toast.error('Veuillez corriger les erreurs');
+        toast.error('Veuillez corriger les erreurs ou bien changé photo');
       } else {
         toast.error(error.response?.data?.message || 'Erreur lors de la mise à jour');
       }

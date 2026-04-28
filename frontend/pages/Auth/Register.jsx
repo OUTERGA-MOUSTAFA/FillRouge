@@ -29,8 +29,7 @@ const SCHEDULE_OPTIONS = [
 export default function Register() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [avatar, setAvatar] = useState(null);
-  const [avatarPreview, setAvatarPreview] = useState(null);
+  
   const [showPassword, setShowPassword] = useState(false);
   const [step, setStep] = useState(1);
 
@@ -72,15 +71,6 @@ export default function Register() {
         ? prev.languages.filter(l => l !== lang)
         : [...prev.languages, lang]
     }));
-  };
-
-  const handleAvatarUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) { toast.error('Max 5 Mo'); return; }
-      setAvatar(file);
-      setAvatarPreview(URL.createObjectURL(file));
-    }
   };
 
   const validateStep1 = () => {
@@ -138,7 +128,7 @@ export default function Register() {
       const res = await authService.register(payload);
       if (res.token) {
         localStorage.setItem('token', res.token);
-        if (avatar) await authService.uploadAvatar(avatar);
+        // if (avatar) await authService.uploadAvatar(avatar);
         toast.success('Compte créé avec succès');
         navigate('/onboarding');
       } else {
@@ -175,29 +165,7 @@ export default function Register() {
 
         {step === 1 && (
           <div className="space-y-5">
-            <Section icon="👤" title="Informations de base">
-
-              {/* Avatar */}
-              <div className="flex justify-center mb-2">
-                <div className="relative">
-                  <label className="cursor-pointer">
-                    <div className="h-20 w-20 rounded-full border-2 border-dashed border-gray-300 bg-gray-100 flex items-center justify-center overflow-hidden">
-                      {avatarPreview
-                        ? <img src={avatarPreview} alt="avatar" className="h-full w-full object-cover" />
-                        : <span className="text-2xl">📷</span>}
-                    </div>
-                    <input type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
-                  </label>
-                  {avatarPreview && (
-                    <button type="button"
-                      onClick={() => { setAvatar(null); setAvatarPreview(null); }}
-                      className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                      ✕
-                    </button>
-                  )}
-                </div>
-              </div>
-
+            <Section title="Informations de base">
               <FieldGroup label="Nom complet">
                 <Input name="full_name" placeholder="Ahmed Benali" value={formData.full_name} onChange={handleChange} />
               </FieldGroup>

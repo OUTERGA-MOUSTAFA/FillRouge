@@ -59,7 +59,7 @@ function App() {
     // <div className="min-h-screen bg-gray-50">
     //   <Navbar />
     //   <main>
-    <div className="min-h-screen bg-gray-500 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
       <main className="flex-1">
         <Suspense fallback={<LoadingSpinner />}>
