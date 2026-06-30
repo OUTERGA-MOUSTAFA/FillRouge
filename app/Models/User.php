@@ -75,7 +75,7 @@ class User extends Authenticatable
     // Accesseur
     public function getIsAdminAttribute()
     {
-        return $this->role === 'admin' || $this->email === 'Semsar@email.com';
+        return $this->role === 'admin';
     }
 
     // is admin

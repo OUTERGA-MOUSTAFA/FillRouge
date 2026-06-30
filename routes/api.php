@@ -48,7 +48,7 @@ Route::prefix('auth')->group(function () {
     Route::get('/auth/facebook/redirect', [SocialAuthController::class, 'redirectToFacebook']);
     Route::get('/auth/facebook/callback', [SocialAuthController::class, 'handleFacebookCallback']);
 
-    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:10,1');
     //    admin role in termenal
     // php artisan tinker
     // $user = new App\Models\User();
@@ -65,12 +65,12 @@ Route::prefix('auth')->group(function () {
         });
     }
 
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
-    Route::post('/verify-email', [AuthController::class, 'verifyEmail']);
-    Route::post('/verify-phone', [AuthController::class, 'verifyPhone']);
-    Route::post('/resend-verification', [AuthController::class, 'resendVerification']);
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:6,1');
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:5,1');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:6,1');
+    Route::post('/verify-email', [AuthController::class, 'verifyEmail'])->middleware('throttle:10,1');
+    Route::post('/verify-phone', [AuthController::class, 'verifyPhone'])->middleware('throttle:10,1');
+    Route::post('/resend-verification', [AuthController::class, 'resendVerification'])->middleware('throttle:3,1');
 });
 
 // Annonces publiques
