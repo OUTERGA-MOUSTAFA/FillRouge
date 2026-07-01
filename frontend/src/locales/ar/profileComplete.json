@@ -1,0 +1,85 @@
+{
+  "profileComplete": {
+    "title": "تفاصيل الملف الشخصي",
+    "subtitle": "ساعد الآخرين على التعرّف عليك بشكل أفضل",
+    "savingShort": "حفظ…",
+    "save": "حفظ",
+    "aboutSection": "نبذة",
+    "bioLabel": "تعريف مختصر",
+    "bioPlaceholder": "صِف نفسك في بضع كلمات…",
+    "descriptionLabel": "وصف مفصّل",
+    "descriptionPlaceholder": "تحدّث عن عاداتك وتوقعاتك ونمط حياتك…",
+    "occupationLabel": "الوضع المهني",
+    "selectOption": "اختر",
+    "occupation": {
+      "student": "طالب(ة)",
+      "employed": "موظف(ة)",
+      "self_employed": "عمل حر",
+      "unemployed": "بدون عمل",
+      "retired": "متقاعد(ة)"
+    },
+    "interestsSection": "الاهتمامات",
+    "interest": {
+      "cooking": "الطبخ",
+      "fitness": "الرياضة",
+      "tech": "التقنية",
+      "travel": "السفر",
+      "study": "الدراسة",
+      "remote_work": "العمل عن بُعد",
+      "music": "الموسيقى",
+      "sports": "الرياضة",
+      "reading": "القراءة",
+      "art": "الفن",
+      "gaming": "ألعاب الفيديو",
+      "outdoors": "الأنشطة الخارجية"
+    },
+    "lifestyleSection": "نمط الحياة",
+    "smokingLabel": "التدخين",
+    "smoking": {
+      "no": "غير مدخّن",
+      "occasionally": "أحيانًا",
+      "yes": "مدخّن"
+    },
+    "petsLabel": "الحيوانات الأليفة",
+    "no": "لا",
+    "maybe": "ربما",
+    "yes": "نعم",
+    "sleepLabel": "جدول النوم",
+    "sleep": {
+      "early_bird": "ينام مبكرًا",
+      "flexible": "عادي / مرن",
+      "night_owl": "يسهر"
+    },
+    "cleanlinessLabel": "مستوى النظافة",
+    "cleanliness": {
+      "relaxed": "مرتاح",
+      "moderate": "معتدل",
+      "very_clean": "نظيف جدًا"
+    },
+    "socialLabel": "المستوى الاجتماعي",
+    "social": {
+      "introvert": "انطوائي",
+      "ambivert": "وسطي",
+      "extrovert": "اجتماعي"
+    },
+    "preferencesSection": "تفضيلات شريك السكن",
+    "preferredGenderLabel": "الجنس المفضّل",
+    "male": "ذكر",
+    "female": "أنثى",
+    "any": "لا يهم",
+    "acceptsPetsLabel": "يقبل الحيوانات الأليفة",
+    "acceptsSmokersLabel": "يقبل المدخّنين",
+    "preferredAgeRange": "الفئة العمرية المفضّلة",
+    "minAgePlaceholder": "العمر الأدنى (18)",
+    "maxAgePlaceholder": "العمر الأقصى (100)",
+    "identitySection": "التحقق من الهوية",
+    "uploadIdHint": "أرفق بطاقة التعريف الوطنية أو جواز السفر",
+    "identityDisclaimer": "لن تُستخدم مستنداتك إلا لأغراض التحقق السرّي.",
+    "saving": "جارٍ الحفظ…",
+    "saveDetails": "حفظ التفاصيل",
+    "cancel": "إلغاء",
+    "toastUpdated": "تم تحديث تفاصيل الملف الشخصي",
+    "toastFixErrors": "يرجى تصحيح الأخطاء أو تغيير الصورة",
+    "errorUpdate": "حدث خطأ أثناء التحديث"
+  }
+}

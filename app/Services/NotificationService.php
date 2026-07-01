@@ -188,4 +188,26 @@ class NotificationService//Envoi notifications
             ]
         );
     }
+
+    /**
+     * Réponse à une demande de location (pour le chercheur)
+     * Appelée quand le semsar accepte/refuse via le chat
+     */
+    public function demandResponded(User $chercheur, User $semsar, $listing, bool $accepted): Notification
+    {
+        $titre = $listing->title ?? 'l\'annonce';
+
+        return $this->send(
+            $chercheur,
+            'message',
+            $accepted ? 'Demande de location acceptée' : 'Demande de location refusée',
+            ($accepted ? '✅ ' : '❌ ') . $semsar->full_name
+                . ($accepted ? ' a accepté' : ' a refusé')
+                . ' votre demande pour : ' . $titre,
+            [
+                'sender_id'  => $semsar->id,
+                'listing_id' => $listing->id ?? null,
+            ]
+        );
+    }
 }

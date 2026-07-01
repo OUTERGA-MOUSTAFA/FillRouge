@@ -1,0 +1,17 @@
+{
+  "filters": {
+    "title": "تصفية",
+    "city": "المدينة",
+    "allCities": "جميع المدن",
+    "budget": "الميزانية (درهم/شهر): {{min}} - {{max}}",
+    "min": "الأدنى",
+    "max": "الأقصى",
+    "housingType": "نوع السكن",
+    "room": "غرفة",
+    "apartment": "شقة",
+    "lookingForRoommate": "البحث عن شريك سكن",
+    "amenities": "المرافق",
+    "reset": "إعادة تعيين",
+    "apply": "تطبيق"
+  }
+}

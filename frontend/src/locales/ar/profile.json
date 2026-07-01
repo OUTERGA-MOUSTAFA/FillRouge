@@ -1,0 +1,285 @@
+{
+  "profile": {
+    "me": {
+      "load_error": "خطأ في تحميل الملف الشخصي",
+      "logout_success": "تم تسجيل الخروج بنجاح",
+      "smoking": {
+        "no": "غير مدخّن",
+        "occasionally": "أحياناً",
+        "yes": "مدخّن"
+      },
+      "pets": {
+        "no": "لا",
+        "maybe": "ربما",
+        "yes": "نعم"
+      },
+      "sleep": {
+        "early_bird": "صباحي",
+        "flexible": "مرن",
+        "night_owl": "ليلي"
+      },
+      "cleanliness": {
+        "relaxed": "مرتاح",
+        "moderate": "معتدل",
+        "very_clean": "نظيف جداً"
+      },
+      "social": {
+        "introvert": "انطوائي",
+        "ambivert": "متوازن",
+        "extrovert": "منفتح"
+      },
+      "gender": {
+        "male": "رجل",
+        "female": "امرأة",
+        "other": "آخر",
+        "any": "لا يهم"
+      },
+      "interests": {
+        "cooking": "الطبخ",
+        "fitness": "اللياقة",
+        "tech": "التقنية",
+        "travel": "السفر",
+        "study": "الدراسة",
+        "remote_work": "العمل عن بُعد",
+        "music": "الموسيقى",
+        "sports": "الرياضة",
+        "reading": "القراءة",
+        "art": "الفن",
+        "gaming": "ألعاب الفيديو",
+        "outdoors": "الأنشطة الخارجية"
+      },
+      "plan": {
+        "premium": "بريميوم",
+        "standard": "ستاندرد",
+        "free": "مجاني"
+      },
+      "features": {
+        "unlimited_messages": "رسائل غير محدودة",
+        "unlimited_listings": "إعلانات غير محدودة",
+        "featured_profile": "ملف مميَّز",
+        "vip_support": "دعم VIP",
+        "messages_50_day": "50 رسالة/يوم",
+        "listings_10_max": "10 إعلانات كحد أقصى",
+        "priority_support": "دعم ذو أولوية",
+        "messages_5_day": "5 رسائل/يوم",
+        "listings_2_max": "إعلانان كحد أقصى",
+        "basic_profile": "ملف أساسي"
+      },
+      "email_verified": "البريد الإلكتروني موثَّق",
+      "identity_verified": "الهوية موثقة",
+      "subscription_valid": "اشتراك {{plan}} صالح حتى {{date}}",
+      "days_left": "(باقي {{count}} يوم)",
+      "edit": "تعديل",
+      "logout": "تسجيل الخروج",
+      "plan_benefit": "أنت تستفيد من خطة {{plan}} !",
+      "upgrade_premium": "الترقية إلى بريميوم →",
+      "manage_subscription": "إدارة اشتراكي →",
+      "completion": "اكتمال الملف الشخصي",
+      "complete_profile": "أكمل ملفي الشخصي",
+      "tabs": {
+        "info": "المعلومات",
+        "interests": "الاهتمامات",
+        "lifestyle": "نمط الحياة",
+        "preferences": "التفضيلات",
+        "security": "الأمان"
+      },
+      "member_since": "عضو منذ",
+      "na": "غير متوفر",
+      "listings": "الإعلانات",
+      "reviews": "التقييمات",
+      "average_rating": "متوسط التقييم",
+      "about": "نبذة",
+      "personal_info": "المعلومات الشخصية",
+      "full_name": "الاسم الكامل",
+      "gender_label": "الجنس",
+      "birth_date": "تاريخ الميلاد",
+      "profession": "المهنة",
+      "city": "المدينة",
+      "neighborhood": "الحي",
+      "budget": "الميزانية",
+      "monthly_budget": "الميزانية الشهرية",
+      "budget_range": "{{min}} - {{max}} درهم",
+      "budget_from": "ابتداءً من {{min}} درهم",
+      "budget_up_to": "حتى {{max}} درهم",
+      "interests_title": "الاهتمامات",
+      "no_interests": "لا توجد اهتمامات مُدخلة",
+      "lifestyle_title": "نمط الحياة",
+      "tobacco": "التدخين",
+      "pets_label": "الحيوانات الأليفة",
+      "sleep_label": "النوم",
+      "cleanliness_label": "النظافة",
+      "social_label": "المستوى الاجتماعي",
+      "no_lifestyle": "لا توجد تفضيلات حياتية مُدخلة",
+      "roommate_prefs": "تفضيلات شريك السكن",
+      "preferred_gender": "الجنس المفضّل",
+      "accepts_pets": "يقبل الحيوانات الأليفة",
+      "accepts_smokers": "يقبل المدخنين",
+      "yes": "نعم",
+      "no": "لا",
+      "preferred_age_range": "الفئة العمرية المفضّلة",
+      "no_preferences": "لا توجد تفضيلات مُدخلة",
+      "verifications": "عمليات التوثيق",
+      "email": "البريد الإلكتروني",
+      "verified": "موثَّق",
+      "verify": "توثيق",
+      "phone": "الهاتف",
+      "not_provided": "غير مُدخل",
+      "identity_cin": "الهوية (البطاقة الوطنية)",
+      "official_document": "وثيقة رسمية",
+      "submit": "تقديم",
+      "two_factor_title": "المصادقة الثنائية",
+      "two_factor_short": "2FA",
+      "secure_account": "أمّن حسابك",
+      "disable": "تعطيل",
+      "enable": "تفعيل"
+    },
+    "user": {
+      "type": {
+        "room": "غرفة",
+        "apartment": "شقة",
+        "house": "منزل"
+      },
+      "per_month": "درهم/شهر",
+      "status_active": "نشط",
+      "load_error": "خطأ في تحميل الملف الشخصي",
+      "loading": "جارٍ تحميل الملف الشخصي…",
+      "lifestyle": {
+        "smoking": "التدخين",
+        "pets": "الحيوانات الأليفة",
+        "sleep": "الإيقاع",
+        "cleanliness": "النظافة",
+        "social": "الاجتماعية"
+      },
+      "smoking": {
+        "yes": "مدخّن",
+        "no": "غير مدخّن",
+        "occasional": "أحياناً"
+      },
+      "pets": {
+        "yes": "يقبل",
+        "no": "لا",
+        "maybe": "ربما"
+      },
+      "sleep": {
+        "early_bird": "صباحي",
+        "night_owl": "ليلي",
+        "flexible": "مرن"
+      },
+      "cleanliness": {
+        "very_clean": "نظيف جداً",
+        "clean": "نظيف",
+        "moderate": "مرتاح"
+      },
+      "social": {
+        "extrovert": "منفتح",
+        "introvert": "انطوائي",
+        "ambivert": "متوازن"
+      },
+      "tabs": {
+        "about": "نبذة",
+        "listings": "الإعلانات ({{count}})",
+        "reviews": "التقييمات ({{count}})"
+      },
+      "verification": {
+        "email": "البريد الإلكتروني",
+        "phone": "الهاتف",
+        "identity": "الهوية"
+      },
+      "back": "رجوع",
+      "gender": {
+        "male": "رجل",
+        "female": "امرأة",
+        "any": "غير محدد"
+      },
+      "age_suffix": " · {{age}} سنة",
+      "rating_summary": "{{rating}} · {{count}} تقييم",
+      "message": "رسالة",
+      "leave_review": "اترك تقييماً",
+      "edit_profile": "تعديل الملف",
+      "accept": "قبول",
+      "refuse": "رفض",
+      "pending_demand": "طلب كراء قيد الانتظار",
+      "pending_demand_for": "طلب كراء لـ « {{listing}} »",
+      "demand_accepted": "تم قبول الطلب",
+      "demand_refused": "تم رفض الطلب",
+      "demand_error": "حدث خطأ أثناء الرد",
+      "lifestyle_title": "نمط الحياة",
+      "budget": "الميزانية",
+      "compatibility": "التوافق",
+      "match_score": "درجة التوافق",
+      "about": "نبذة",
+      "interests": "الاهتمامات",
+      "roommate_prefs": "تفضيلات شريك السكن",
+      "pref_gender": "الجنس",
+      "pref_age": "العمر",
+      "age_range": "{{min}}–{{max}} سنة",
+      "pref_pets": "الحيوانات الأليفة",
+      "accepts": "يقبل",
+      "refuses": "يرفض",
+      "pref_smokers": "المدخنون",
+      "info": "المعلومات",
+      "member_since": "عضو منذ",
+      "active_listings": "الإعلانات النشطة",
+      "occupation": "المهنة",
+      "self_employed": "عمل حر",
+      "no_listings": "لا توجد إعلانات منشورة",
+      "leave_review_to": "اترك تقييماً لـ {{name}}"
+    },
+    "reviews": {
+      "rating1": {
+        "label": "مخيب جداً",
+        "sub": "تجربة سلبية للغاية"
+      },
+      "rating2": {
+        "label": "مخيب",
+        "sub": "دون التوقعات"
+      },
+      "rating3": {
+        "label": "مقبول",
+        "sub": "تجربة مقبولة"
+      },
+      "rating4": {
+        "label": "جيد",
+        "sub": "تجربة جيدة بشكل عام"
+      },
+      "rating5": {
+        "label": "ممتاز !",
+        "sub": "تجربة استثنائية"
+      },
+      "choose_rating": "يرجى اختيار تقييم",
+      "already_reviewed": "لقد تركت تقييماً لهذا المستخدم بالفعل",
+      "error": "حدث خطأ",
+      "leave_review": "اترك تقييماً",
+      "sent": "تم إرسال التقييم !",
+      "sent_hint": "سيُنشر عندما يقوم المستخدم الآخر بتقييمك.",
+      "your_rating": "تقييمك",
+      "comment": "تعليق",
+      "optional": "(اختياري)",
+      "comment_placeholder": "صف تجربتك مع هذا المستخدم…",
+      "related_listing": "الإعلان المعني",
+      "no_specific_listing": "— لا يوجد إعلان محدد —",
+      "mutual_before": "لن يظهر تقييمك إلا بعد أن يقوم",
+      "mutual_after": "بتقييمك بدوره (اتفاق متبادل).",
+      "sending": "جارٍ الإرسال…",
+      "submit": "نشر التقييم",
+      "loading": "جارٍ تحميل التقييمات…",
+      "empty": "لا توجد تقييمات حتى الآن",
+      "out_of_5": "من 5",
+      "verified_count": "{{count}} تقييم موثَّق"
+    },
+    "badges": {
+      "email_verified": "البريد الإلكتروني موثَّق",
+      "phone_verified": "الهاتف موثَّق",
+      "identity_verified": "الهوية موثقة",
+      "background_checked": "التحقق من الخلفية",
+      "premium": "بريميوم"
+    },
+    "compatibility": {
+      "excellent": "توافق ممتاز !",
+      "good": "توافق جيد",
+      "potential": "توافق محتمل",
+      "limited": "توافق محدود",
+      "label": "درجة التوافق"
+    }
+  }
+}

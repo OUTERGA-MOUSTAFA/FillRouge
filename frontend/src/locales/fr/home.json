@@ -1,0 +1,51 @@
+{
+  "home": {
+    "loading": "Chargement...",
+    "stats": {
+      "activeListings": "Annonces actives",
+      "users": "Utilisateurs",
+      "citiesCovered": "Villes couvertes",
+      "satisfactionRate": "Taux de satisfaction"
+    },
+    "features": {
+      "title": "Pourquoi choisir Semsar ?",
+      "subtitle": "Une plateforme complète pour votre recherche de colocataire",
+      "smartSearch": {
+        "name": "Recherche intelligente",
+        "description": "Trouvez le colocataire idéal grâce à notre algorithme de matching avancé."
+      },
+      "verifiedListings": {
+        "name": "Annonces vérifiées",
+        "description": "Toutes nos annonces sont vérifiées pour votre sécurité."
+      },
+      "secureMessaging": {
+        "name": "Messagerie sécurisée",
+        "description": "Communiquez en toute sécurité avec vos futurs colocataires."
+      },
+      "largeSelection": {
+        "name": "Large sélection",
+        "description": "Des milliers d'annonces dans toutes les villes du Maroc."
+      }
+    },
+    "sliders": {
+      "discover": "Découvrir",
+      "slide1": {
+        "title": "Trouvez votre espace idéal",
+        "subtitle": "Des milliers d'annonces à Casablanca, Rabat et partout au Maroc"
+      },
+      "slide2": {
+        "title": "Colocation sécurisée",
+        "subtitle": "Annonces vérifiées et profils authentifiés pour votre tranquillité"
+      },
+      "slide3": {
+        "title": "La communauté Semsar",
+        "subtitle": "Rejoignez plus de 10,000 membres à la recherche du colocataire parfait"
+      }
+    },
+    "cta": {
+      "title": "Prêt à trouver votre colocataire ?",
+      "subtitle": "Rejoignez la plus grande communauté de colocation au Maroc",
+      "button": "Commencer maintenant"
+    }
+  }
+}

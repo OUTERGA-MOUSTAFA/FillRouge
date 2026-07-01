@@ -1,0 +1,11 @@
+{
+  "listingsPage": {
+    "title": "Shared housing listings",
+    "available": "{{count}} listings available",
+    "filters": "Filters",
+    "list": "List",
+    "mapComingSoon": "Interactive map - Coming soon",
+    "loadError": "Error loading listings",
+    "noListings": "No listing found"
+  }
+}

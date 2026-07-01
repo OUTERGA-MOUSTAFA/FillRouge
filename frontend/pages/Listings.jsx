@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FunnelIcon, MapIcon } from '@heroicons/react/24/outline';
 import ListingCard from '../src/components/listings/ListingCard';
 import ListingFilters from '../src/components/listings/ListingFilters';
@@ -7,6 +8,7 @@ import toast from 'react-hot-toast';
 import MapComponent from '../src/components/map/MapComponent';
 
 export default function Listings() {
+  const { t } = useTranslation();
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -22,7 +24,7 @@ export default function Listings() {
       const response = await listingsService.getAll(filters);
       setListings(response.data.data);
     } catch (error) {
-      toast.error('Erreur lors du chargement des annonces', error);
+      toast.error(t('listingsPage.loadError'), error);
     } finally {
       setLoading(false);
     }
@@ -37,8 +39,8 @@ export default function Listings() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Annonces de colocation</h1>
-          <p className="text-gray-600 mt-1">{listings.length} annonces disponibles</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('listingsPage.title')}</h1>
+          <p className="text-gray-600 mt-1">{t('listingsPage.available', { count: listings.length })}</p>
         </div>
         
         <div className="flex gap-3">
@@ -47,7 +49,7 @@ export default function Listings() {
             className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
           >
             <FunnelIcon className="h-5 w-5" />
-            Filtres
+            {t('listingsPage.filters')}
           </button>
           
           <div className="flex rounded-lg border border-gray-300 overflow-hidden">
@@ -55,7 +57,7 @@ export default function Listings() {
               onClick={() => setViewMode('list')}
               className={`px-4 py-2 ${viewMode === 'list' ? 'bg-[#00BBA7] text-white' : 'bg-white text-gray-700'}`}
             >
-              Liste
+              {t('listingsPage.list')}
             </button>
             <button
               onClick={() => setViewMode('map')}
@@ -80,7 +82,7 @@ export default function Listings() {
         </div>
       ) : (
         <div className="bg-gray-200 rounded-xl h-96 flex items-center justify-center">
-          <p className="text-gray-500">Carte interactive - À venir</p>
+          <p className="text-gray-500">{t('listingsPage.mapComingSoon')}</p>
         </div>
       )}
 

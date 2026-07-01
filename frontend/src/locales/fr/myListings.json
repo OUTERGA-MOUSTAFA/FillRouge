@@ -1,0 +1,28 @@
+{
+  "myListings": {
+    "title": "Mes annonces",
+    "newListing": "Nouvelle annonce",
+    "noListings": "Vous n'avez pas encore d'annonces",
+    "createFirstListing": "Créer ma première annonce",
+    "noImage": "Pas d'image",
+    "perMonth": "MAD/mois",
+    "statusActive": "Active",
+    "statusInactive": "Inactive",
+    "featured": "Mis en avant",
+    "views": "Vues: {{count}}",
+    "messages": "Messages: {{count}}",
+    "view": "Voir",
+    "activate": "Activer",
+    "deactivate": "Désactiver",
+    "edit": "Modifier",
+    "makeFeatured": "Mettre en avant",
+    "delete": "Supprimer",
+    "errorLoading": "Erreur chargement des annonces",
+    "error": "Erreur",
+    "listingActivated": "Annonce activée",
+    "listingDeactivated": "Annonce désactivée",
+    "confirmDelete": "Supprimer définitivement cette annonce ?",
+    "listingDeleted": "Annonce supprimée",
+    "listingFeatured": "Annonce mise en avant !"
+  }
+}

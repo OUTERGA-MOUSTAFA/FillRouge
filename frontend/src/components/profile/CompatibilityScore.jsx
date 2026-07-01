@@ -1,4 +1,7 @@
+import { useTranslation } from 'react-i18next';
+
 export default function CompatibilityScore({ score }) {
+  const { t } = useTranslation();
   const getColor = () => {
     if (score >= 80) return { text: 'text-[#00BBA7]', stroke: '#00BBA7', bg: 'bg-[#e6f7f5]' };
     if (score >= 60) return { text: 'text-[#3fa79e]', stroke: '#4FD1C5', bg: 'bg-[#e6fcf8]' };
@@ -6,10 +9,10 @@ export default function CompatibilityScore({ score }) {
   };
 
   const getMessage = () => {
-    if (score >= 80) return 'Excellent match !';
-    if (score >= 60) return 'Bon match';
-    if (score >= 40) return 'Match potentiel';
-    return 'Compatibilité limitée';
+    if (score >= 80) return t('profile.compatibility.excellent');
+    if (score >= 60) return t('profile.compatibility.good');
+    if (score >= 40) return t('profile.compatibility.potential');
+    return t('profile.compatibility.limited');
   };
 
   const { text, stroke } = getColor();
@@ -40,7 +43,7 @@ export default function CompatibilityScore({ score }) {
       {/* Label */}
       <div>
         <p className={`text-sm font-bold ${text}`}>{getMessage()}</p>
-        <p className="text-xs text-gray-400 mt-0.5">Score de compatibilité</p>
+        <p className="text-xs text-gray-400 mt-0.5">{t('profile.compatibility.label')}</p>
       </div>
     </div>
   );

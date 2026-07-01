@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { subscriptionService } from '../../src/services/subscription';
 import toast from 'react-hot-toast';
 import {
@@ -10,61 +11,61 @@ import {
 import { StarIcon as StarSolid } from '@heroicons/react/24/solid';
 
 // Données des plans (fallback si l'API ne répond pas)
-const DEFAULT_PLANS = {
+const getDefaultPlans = (t) => ({
   free: {
-    label: 'Gratuit',
+    label: t('subscription.plans.free'),
     price: 0,
-    tagline: 'Pour commencer',
+    tagline: t('subscription.taglines.free'),
     color: 'gray',
     icon: <UserIcon className="h-5 w-5" />,
     features: [
-      { text: '5 messages par jour', included: true },
-      { text: 'Voir les profils basiques', included: true },
-      { text: 'Créer une annonce', included: true },
-      { text: 'Profil mis en avant', included: false },
-      { text: 'Messages illimités', included: false },
-      { text: 'Voir qui a visité ton profil', included: false },
-      { text: 'Filtres avancés', included: false },
-      { text: 'Support prioritaire', included: false },
+      { text: t('subscription.features.messages5'), included: true },
+      { text: t('subscription.features.viewBasicProfiles'), included: true },
+      { text: t('subscription.features.createListing'), included: true },
+      { text: t('subscription.features.featuredProfile'), included: false },
+      { text: t('subscription.features.messagesUnlimited'), included: false },
+      { text: t('subscription.features.viewProfileVisitors'), included: false },
+      { text: t('subscription.features.advancedFilters'), included: false },
+      { text: t('subscription.features.prioritySupport'), included: false },
     ],
   },
   standard: {
-    label: 'Standard',
+    label: t('subscription.plans.standard'),
     price: 99,
-    tagline: 'Le plus populaire',
+    tagline: t('subscription.taglines.standard'),
     color: 'teal',
     icon: <BoltIcon className="h-5 w-5" />,
-    badge: 'Populaire',
+    badge: t('subscription.badges.standard'),
     features: [
-      { text: '50 messages par jour', included: true },
-      { text: 'Voir les profils basiques', included: true },
-      { text: 'Créer une annonce', included: true },
-      { text: 'Profil mis en avant', included: true },
-      { text: 'Messages illimités', included: false },
-      { text: 'Voir qui a visité ton profil', included: false },
-      { text: 'Filtres avancés', included: true },
-      { text: 'Support prioritaire', included: true },
+      { text: t('subscription.features.messages50'), included: true },
+      { text: t('subscription.features.viewBasicProfiles'), included: true },
+      { text: t('subscription.features.createListing'), included: true },
+      { text: t('subscription.features.featuredProfile'), included: true },
+      { text: t('subscription.features.messagesUnlimited'), included: false },
+      { text: t('subscription.features.viewProfileVisitors'), included: false },
+      { text: t('subscription.features.advancedFilters'), included: true },
+      { text: t('subscription.features.prioritySupport'), included: true },
     ],
   },
   premium: {
-    label: 'Premium',
+    label: t('subscription.plans.premium'),
     price: 199,
-    tagline: 'Tout inclus',
+    tagline: t('subscription.taglines.premium'),
     color: 'primary',
     icon: <SparklesIcon className="h-5 w-5" />,
-    badge: 'Meilleur choix',
+    badge: t('subscription.badges.premium'),
     features: [
-      { text: 'Messages illimités', included: true },
-      { text: 'Voir les profils basiques', included: true },
-      { text: 'Créer une annonce', included: true },
-      { text: 'Profil mis en avant', included: true },
-      { text: 'Messages illimités', included: true },
-      { text: 'Voir qui a visité ton profil', included: true },
-      { text: 'Filtres avancés', included: true },
-      { text: 'Support prioritaire', included: true },
+      { text: t('subscription.features.messagesUnlimited'), included: true },
+      { text: t('subscription.features.viewBasicProfiles'), included: true },
+      { text: t('subscription.features.createListing'), included: true },
+      { text: t('subscription.features.featuredProfile'), included: true },
+      { text: t('subscription.features.messagesUnlimited'), included: true },
+      { text: t('subscription.features.viewProfileVisitors'), included: true },
+      { text: t('subscription.features.advancedFilters'), included: true },
+      { text: t('subscription.features.prioritySupport'), included: true },
     ],
   },
-};
+});
 
 const PLAN_STYLES = {
   free: {
@@ -94,6 +95,8 @@ const PLAN_STYLES = {
 };
 
 export default function SubscriptionPlans() {
+  const { t } = useTranslation();
+  const DEFAULT_PLANS = getDefaultPlans(t);
   const [plans, setPlans] = useState(DEFAULT_PLANS); // DEFAULT_PLANS comme fallback
   const [currentSubscription, setCurrentSubscription] = useState(null);
   const [viewMode, setViewMode] = useState('cards');
@@ -186,7 +189,7 @@ export default function SubscriptionPlans() {
       // En cas d’erreur réseau ou autre, log l’erreur dans la console
       console.error(error);
       // Affiche un message d’erreur via un toast
-      toast.error(error.response?.data?.message || 'Erreur chargement des plans');
+      toast.error(error.response?.data?.message || t('subscription.toast.loadError'));
       //  En dernier recours, utilise les données par défaut pour ne pas casser l’UI
       setPlans(DEFAULT_PLANS);
     } finally {
@@ -197,7 +200,7 @@ export default function SubscriptionPlans() {
 
   const handleSelectPlan = (planKey) => {
     if (planKey === 'free') {
-      toast.info('Le plan gratuit est déjà actif');
+      toast.info(t('subscription.toast.freeAlreadyActive'));
       return;
     }
     navigate('/subscription/checkout', { state: { plan: planKey } });
@@ -207,7 +210,7 @@ export default function SubscriptionPlans() {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
         <div className="h-12 w-12 rounded-full border-4 border-[#ccefeb] border-t-[#00BBA7] animate-spin" />
-        <p className="text-sm text-gray-400">Chargement des plans…</p>
+        <p className="text-sm text-gray-400">{t('subscription.loading')}</p>
       </div>
     );
   }
@@ -223,15 +226,18 @@ export default function SubscriptionPlans() {
     const remainingHours = (totalDays - days) * 24;
     const hours = Math.round(remainingHours);
 
+    const dayStr = days === 1 ? t('subscription.time.oneDay') : t('subscription.time.days', { n: days });
+    const hourStr = hours === 1 ? t('subscription.time.oneHour') : t('subscription.time.hours', { n: hours });
+
     if (days === 0) {
-      return hours === 1 ? '1 heure' : `${hours} heures`;
+      return hourStr;
     }
 
     if (hours === 0) {
-      return days === 1 ? '1 jour' : `${days} jours`;
+      return dayStr;
     }
 
-    return `${days} jour${days > 1 ? 's' : ''} et ${hours} heure${hours > 1 ? 's' : ''}`;
+    return t('subscription.time.daysAndHours', { days: dayStr, hours: hourStr });
   };
 
   return (
@@ -246,14 +252,14 @@ export default function SubscriptionPlans() {
         <div className="relative max-w-3xl mx-auto px-4 py-14 text-center">
           <span className="inline-flex items-center gap-1.5 bg-[#e6f7f5] text-[#009966] text-xs font-semibold px-3 py-1 rounded-full mb-4">
             <StarSolid className="h-3 w-3 text-[#00BBA7]" />
-            Semsar Premium
+            {t('subscription.heroBadge')}
           </span>
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-3">
-            Trouvez votre colocataire idéal,{' '}
-            <span className="text-[#009966]">plus vite</span>
+            {t('subscription.hero.titleMain')}{' '}
+            <span className="text-[#009966]">{t('subscription.hero.titleAccent')}</span>
           </h1>
           <p className="text-gray-500 text-base sm:text-lg max-w-xl mx-auto">
-            Passez à un plan payant pour débloquer toutes les fonctionnalités et maximiser vos chances.
+            {t('subscription.hero.subtitle')}
           </p>
 
           <div className="inline-flex mt-8 bg-gray-100 rounded-xl p-1 gap-1">
@@ -264,7 +270,7 @@ export default function SubscriptionPlans() {
                 : 'text-gray-500 hover:text-gray-700'
                 }`}
             >
-              <Squares2X2Icon className="h-4 w-4" /> Cartes
+              <Squares2X2Icon className="h-4 w-4" /> {t('subscription.viewCards')}
             </button>
             <button
               onClick={() => setViewMode('table')}
@@ -273,7 +279,7 @@ export default function SubscriptionPlans() {
                 : 'text-gray-500 hover:text-gray-700'
                 }`}
             >
-              <TableCellsIcon className="h-4 w-4" /> Tableau comparatif
+              <TableCellsIcon className="h-4 w-4" /> {t('subscription.viewTable')}
             </button>
           </div>
         </div>
@@ -289,14 +295,14 @@ export default function SubscriptionPlans() {
                 <ShieldCheckIcon className="h-5 w-5 text-[#009966]" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-900">Votre abonnement actuel</p>
+                <p className="text-sm font-semibold text-gray-900">{t('subscription.currentSubscriptionTitle')}</p>
                 <p className="text-sm text-gray-500">
-                  Plan{' '}
+                  {t('subscription.planWord')}{' '}
                   <span className="font-medium text-[#009966]">
-                    {currentPlan === 'premium' ? 'Premium' : 'Standard'}
+                    {currentPlan === 'premium' ? t('subscription.plans.premium') : t('subscription.plans.standard')}
                   </span>
                   {currentSubscription?.remaining_days > 0 && (
-                    <> — expire dans{' '}
+                    <> {t('subscription.expiresIn')}{' '}
                       <span className="font-medium">
                         {formatRemainingTime(currentSubscription.remaining_days)}
                       </span>
@@ -310,7 +316,7 @@ export default function SubscriptionPlans() {
                 onClick={() => handleSelectPlan('premium')}
                 className="flex items-center gap-2 bg-[#009966] text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-[#00734d] transition-colors shrink-0"
               >
-                Passer à Premium <ArrowRightIcon className="h-4 w-4" />
+                {t('subscription.upgradeToPremium')} <ArrowRightIcon className="h-4 w-4" />
               </button>
             )}
           </div>
@@ -339,6 +345,7 @@ export default function SubscriptionPlans() {
 
 // Composant PlanCard
 function PlanCard({ planKey, plan, isCurrent, onSelect, featured, delay }) {
+  const { t } = useTranslation();
   const styles = PLAN_STYLES[planKey];
 
   return (
@@ -365,11 +372,11 @@ function PlanCard({ planKey, plan, isCurrent, onSelect, featured, delay }) {
 
         <div className="mt-4 flex items-end gap-1">
           {plan.price === 0 ? (
-            <span className="text-3xl font-extrabold text-gray-900">Gratuit</span>
+            <span className="text-3xl font-extrabold text-gray-900">{t('subscription.free')}</span>
           ) : (
             <>
-              <span className={`text-3xl font-extrabold ${styles.price}`}>{plan.price} MAD</span>
-              <span className="text-gray-400 text-sm mb-1">/mois</span>
+              <span className={`text-3xl font-extrabold ${styles.price}`}>{plan.price} {t('subscription.currency')}</span>
+              <span className="text-gray-400 text-sm mb-1">{t('subscription.perMonthShort')}</span>
             </>
           )}
         </div>
@@ -396,14 +403,14 @@ function PlanCard({ planKey, plan, isCurrent, onSelect, featured, delay }) {
       <div className="p-5 pt-0">
         {isCurrent ? (
           <div className="w-full text-center py-2.5 rounded-xl text-sm font-semibold bg-gray-100 text-gray-400 cursor-default">
-            Plan actuel
+            {t('subscription.currentPlanLabel')}
           </div>
         ) : (
           <button
             onClick={onSelect}
             className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${styles.btn}`}
           >
-            {planKey === 'free' ? '' : `Choisir ${plan.label}`}
+            {planKey === 'free' ? '' : t('subscription.choose', { plan: plan.label })}
             {planKey !== 'free' && <ArrowRightIcon className="h-4 w-4" />}
           </button>
         )}

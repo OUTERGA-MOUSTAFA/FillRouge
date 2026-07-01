@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../../src/services/auth';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 const INTERESTS_OPTIONS = [
   { label: 'Voyage', value: 'travel' },
@@ -27,6 +28,7 @@ const SCHEDULE_OPTIONS = [
 ];
 
 export default function Register() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   
@@ -74,13 +76,13 @@ export default function Register() {
   };
 
   const validateStep1 = () => {
-    if (!formData.full_name) { toast.error('Nom complet requis'); return false; }
-    if (!formData.email) { toast.error('Email requis'); return false; }
-    if (!formData.phone) { toast.error('Téléphone requis'); return false; }
-    if (!formData.password) { toast.error('Mot de passe requis'); return false; }
-    if (formData.password.length < 8) { toast.error('8 caractères minimum'); return false; }
-    if (formData.password !== formData.password_confirmation) { toast.error('Les mots de passe ne correspondent pas'); return false; }
-    if (!formData.role) { toast.error('Rôle requis'); return false; }
+    if (!formData.full_name) { toast.error(t('auth.register.fullNameRequired')); return false; }
+    if (!formData.email) { toast.error(t('auth.register.emailRequired')); return false; }
+    if (!formData.phone) { toast.error(t('auth.register.phoneRequired')); return false; }
+    if (!formData.password) { toast.error(t('auth.register.passwordRequired')); return false; }
+    if (formData.password.length < 8) { toast.error(t('auth.register.passwordMin')); return false; }
+    if (formData.password !== formData.password_confirmation) { toast.error(t('auth.common.passwordsDoNotMatch')); return false; }
+    if (!formData.role) { toast.error(t('auth.register.roleRequired')); return false; }
     return true;
   };
 
@@ -129,16 +131,16 @@ export default function Register() {
       if (res.token) {
         localStorage.setItem('token', res.token);
         // if (avatar) await authService.uploadAvatar(avatar);
-        toast.success('Compte créé avec succès');
+        toast.success(t('auth.register.accountCreated'));
         navigate('/onboarding');
       } else {
-        toast.error('Aucun token retourné');
+        toast.error(t('auth.register.noToken'));
       }
     } catch (err) {
       if (err.response?.data?.errors) {
         Object.values(err.response.data.errors).forEach(e => toast.error(e[0]));
       } else {
-        toast.error(err.response?.data?.message || 'Erreur serveur');
+        toast.error(err.response?.data?.message || t('auth.register.serverError'));
       }
     } finally {
       setLoading(false);
@@ -151,9 +153,9 @@ export default function Register() {
 
         {/* Header */}
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Créer un compte</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t('auth.common.createAccount')}</h1>
           <p className="text-sm text-gray-500 mt-1">
-            {step === 1 ? 'Informations de base' : 'Profil & préférences'}
+            {step === 1 ? t('auth.register.basicInfo') : t('auth.register.profilePreferences')}
           </p>
         </div>
 
@@ -165,43 +167,43 @@ export default function Register() {
 
         {step === 1 && (
           <div className="space-y-5">
-            <Section title="Informations de base">
-              <FieldGroup label="Nom complet">
-                <Input name="full_name" placeholder="Ahmed Benali" value={formData.full_name} onChange={handleChange} />
+            <Section title={t('auth.register.basicInfo')}>
+              <FieldGroup label={t('auth.common.fullName')}>
+                <Input name="full_name" placeholder={t('auth.register.fullNamePlaceholder')} value={formData.full_name} onChange={handleChange} />
               </FieldGroup>
 
               <div className="grid grid-cols-2 gap-3">
-                <FieldGroup label="Genre">
+                <FieldGroup label={t('auth.register.gender')}>
                   <select name="gender" value={formData.gender} onChange={handleChange} className={selectCls}>
-                    <option value="">Choisir</option>
-                    <option value="male">Homme</option>
-                    <option value="female">Femme</option>
-                    <option value="other">Préfère ne pas dire</option>
+                    <option value="">{t('auth.register.choose')}</option>
+                    <option value="male">{t('auth.register.male')}</option>
+                    <option value="female">{t('auth.register.female')}</option>
+                    <option value="other">{t('auth.register.preferNotToSay')}</option>
                   </select>
                 </FieldGroup>
-                <FieldGroup label="Tranche d'âge">
+                <FieldGroup label={t('auth.register.ageRange')}>
                   <select name="age_range" value={formData.age_range} onChange={handleChange} className={selectCls}>
-                    <option value="">Sélectionner</option>
+                    <option value="">{t('auth.register.select')}</option>
                     {AGE_RANGES.map(r => <option key={r} value={r}>{r}</option>)}
                   </select>
                 </FieldGroup>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <FieldGroup label="Email">
-                  <Input name="email" type="email" placeholder="ahmed@example.com" value={formData.email} onChange={handleChange} />
+                <FieldGroup label={t('auth.common.email')}>
+                  <Input name="email" type="email" placeholder={t('auth.register.emailPlaceholder')} value={formData.email} onChange={handleChange} />
                 </FieldGroup>
-                <FieldGroup label="Téléphone">
-                  <Input name="phone" placeholder="+212 6XX XXX XXX" value={formData.phone} onChange={handleChange} />
+                <FieldGroup label={t('auth.common.phone')}>
+                  <Input name="phone" placeholder={t('auth.register.phonePlaceholder')} value={formData.phone} onChange={handleChange} />
                 </FieldGroup>
               </div>
 
-              <FieldGroup label="Mot de passe">
+              <FieldGroup label={t('auth.common.password')}>
                 <div className="relative">
                   <Input
                     name="password"
                     type={showPassword ? 'text' : 'password'}
-                    placeholder="8 caractères minimum"
+                    placeholder={t('auth.register.passwordMin')}
                     value={formData.password}
                     onChange={handleChange}
                   />
@@ -212,14 +214,14 @@ export default function Register() {
                 </div>
               </FieldGroup>
 
-              <FieldGroup label="Confirmer le mot de passe">
-                <Input name="password_confirmation" type="password" placeholder="Répétez le mot de passe"
+              <FieldGroup label={t('auth.common.confirmPassword')}>
+                <Input name="password_confirmation" type="password" placeholder={t('auth.register.confirmPasswordPlaceholder')}
                   value={formData.password_confirmation} onChange={handleChange} />
               </FieldGroup>
 
-              <FieldGroup label="Rôle">
+              <FieldGroup label={t('auth.register.role')}>
                 <div className="grid grid-cols-2 gap-3">
-                  {[{ value: 'chercheur', label: 'Chercheur' }, { value: 'semsar', label: 'Semsar' }].map(r => (
+                  {[{ value: 'chercheur', label: t('auth.register.roleSeeker') }, { value: 'semsar', label: t('auth.register.roleSemsar') }].map(r => (
                     <label key={r.value}
                       className={`flex items-center justify-center gap-2 p-3 rounded-xl border-2 cursor-pointer transition-all text-sm font-medium ${formData.role === r.value
                           ? 'border-[#009966] bg-[#009966]/5 text-[#009966]'
@@ -232,8 +234,8 @@ export default function Register() {
                 </div>
               </FieldGroup>
 
-              <FieldGroup label="Ville">
-                <Input name="city" placeholder="Casablanca" value={formData.city} onChange={handleChange} />
+              <FieldGroup label={t('auth.common.city')}>
+                <Input name="city" placeholder={t('auth.register.cityPlaceholder')} value={formData.city} onChange={handleChange} />
               </FieldGroup>
 
             </Section>
@@ -241,12 +243,12 @@ export default function Register() {
             <button type="button"
               onClick={() => { if (validateStep1()) setStep(2); }}
               className="w-full bg-[#009966] text-white py-3.5 rounded-xl font-semibold text-sm">
-              Suivant →
+              {t('auth.register.next')} →
             </button>
 
             <p className="text-center text-sm text-gray-500">
-              Déjà un compte ?{' '}
-              <Link to="/login" className="text-[#009966] font-medium">Se connecter</Link>
+              {t('auth.register.haveAccount')}{' '}
+              <Link to="/login" className="text-[#009966] font-medium">{t('auth.common.login')}</Link>
             </p>
           </div>
         )}
@@ -254,7 +256,7 @@ export default function Register() {
         {step === 2 && (
           <form onSubmit={handleSubmit} className="space-y-5">
 
-            <Section icon="🌐" title="Langues préférées">
+            <Section icon="🌐" title={t('auth.register.preferredLanguages')}>
               <div className="flex flex-wrap gap-2">
                 {LANGUAGES_OPTIONS.map(lang => (
                   <label key={lang}
@@ -275,20 +277,20 @@ export default function Register() {
               </div>
             </Section>
 
-            <Section icon="💬" title="Présentez-vous">
+            <Section icon="💬" title={t('auth.register.aboutYou')}>
               <textarea
                 name="bio"
                 value={formData.bio}
                 onChange={handleChange}
                 rows={4}
-                placeholder="Parlez de vous, vos hobbies, votre travail ou vos études..."
+                placeholder={t('auth.register.bioPlaceholder')}
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#009966]/30 focus:border-[#009966] transition-all placeholder:text-gray-400"
               />
             </Section>
 
-            <Section icon="🎯" title="Centres d'intérêt">
+            <Section icon="🎯" title={t('auth.register.interestsTitle')}>
               <div className="flex flex-wrap gap-2">
-                {INTERESTS_OPTIONS.map(({ label, value }) => (
+                {INTERESTS_OPTIONS.map(({ value }) => (
                   <button
                     key={value}
                     type="button"
@@ -297,16 +299,16 @@ export default function Register() {
                         ? 'border-[#009966] bg-[#009966]/5 text-[#009966] font-medium'
                         : 'border-gray-200 text-gray-600 hover:border-gray-300'
                       }`}>
-                    {label}
+                    {t(`auth.register.interests.${value}`)}
                   </button>
                 ))}
               </div>
             </Section>
 
-            <Section icon="🌿" title="Style de vie">
+            <Section icon="🌿" title={t('auth.register.lifestyle')}>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-xs text-gray-500 mb-2">Rythme de vie</p>
+                  <p className="text-xs text-gray-500 mb-2">{t('auth.register.rhythm')}</p>
                   <div className="space-y-2">
                     {SCHEDULE_OPTIONS.map(opt => (
                       <label key={opt.value}
@@ -323,16 +325,16 @@ export default function Register() {
                             <span className="w-2 h-2 rounded-full bg-[#009966] block" />
                           )}
                         </span>
-                        <span className="text-gray-700">{opt.label}</span>
+                        <span className="text-gray-700">{t(`auth.register.schedule.${opt.value}`)}</span>
                       </label>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <p className="text-xs text-gray-500 mb-2">Animaux de compagnie</p>
+                  <p className="text-xs text-gray-500 mb-2">{t('auth.register.pets')}</p>
                   <div className="grid grid-cols-2 gap-2">
-                    {[{ label: 'Oui', value: true }, { label: 'Non', value: false }].map(opt => (
+                    {[{ label: t('auth.register.yes'), value: true }, { label: t('auth.register.no'), value: false }].map(opt => (
                       <label key={String(opt.value)}
                         className={`flex items-center justify-center py-3 rounded-xl border-2 cursor-pointer text-sm font-medium transition-all ${formData.pets === opt.value
                             ? opt.value
@@ -354,11 +356,11 @@ export default function Register() {
             <div className="flex gap-3">
               <button type="button" onClick={() => setStep(1)}
                 className="flex-1 border-2 border-gray-200 text-gray-600 py-3.5 rounded-xl font-semibold text-sm">
-                ← Retour
+                ← {t('auth.register.back')}
               </button>
               <button type="submit" disabled={loading}
                 className="flex-[2] bg-[#009966] text-white py-3.5 rounded-xl font-semibold text-sm disabled:opacity-60">
-                {loading ? 'Inscription...' : 'Créer mon compte'}
+                {loading ? t('auth.register.creating') : t('auth.register.createMyAccount')}
               </button>
             </div>
 

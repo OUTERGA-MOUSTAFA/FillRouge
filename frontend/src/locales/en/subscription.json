@@ -1,0 +1,89 @@
+{
+  "subscription": {
+    "currency": "MAD",
+    "perMonthShort": "/month",
+    "free": "Free",
+    "choose": "Choose {{plan}}",
+    "startFree": "Start for free",
+    "currentPlanLabel": "Current plan",
+    "loading": "Loading plans…",
+    "planWord": "Plan",
+    "heroBadge": "Semsar Premium",
+    "upgradeToPremium": "Upgrade to Premium",
+    "expiresIn": "— expires in",
+    "currentSubscriptionTitle": "Your current subscription",
+    "viewCards": "Cards",
+    "viewTable": "Comparison table",
+    "plans": {
+      "free": "Free",
+      "standard": "Standard",
+      "premium": "Premium"
+    },
+    "taglines": {
+      "free": "To get started",
+      "standard": "Most popular",
+      "premium": "All included"
+    },
+    "badges": {
+      "standard": "Popular",
+      "premium": "Best choice"
+    },
+    "features": {
+      "messages5": "5 messages per day",
+      "messages50": "50 messages per day",
+      "messagesUnlimited": "Unlimited messages",
+      "viewBasicProfiles": "View basic profiles",
+      "createListing": "Create a listing",
+      "featuredProfile": "Featured profile",
+      "viewProfileVisitors": "See who visited your profile",
+      "advancedFilters": "Advanced filters",
+      "prioritySupport": "Priority support"
+    },
+    "hero": {
+      "titleMain": "Find your ideal roommate,",
+      "titleAccent": "faster",
+      "subtitle": "Upgrade to a paid plan to unlock all features and maximize your chances."
+    },
+    "time": {
+      "oneHour": "1 hour",
+      "hours": "{{n}} hours",
+      "oneDay": "1 day",
+      "days": "{{n}} days",
+      "daysAndHours": "{{days}} and {{hours}}"
+    },
+    "toast": {
+      "loadError": "Error loading plans",
+      "freeAlreadyActive": "The free plan is already active"
+    },
+    "table": {
+      "featureHeader": "Feature",
+      "profile": "Profile",
+      "listingsPublished": "Published listings",
+      "messagesPerDay": "Messages per day",
+      "whoViewedProfile": "See who viewed my profile",
+      "premiumBadge": "\"Premium\" badge",
+      "noAds": "No ads",
+      "backgroundCheck": "Background check",
+      "unlimited": "Unlimited",
+      "maxCount": "{{n}} max",
+      "oneFreePerYear": "1 free/year",
+      "current": "Current",
+      "pricePerMonth": "{{price}} MAD/month"
+    },
+    "checkout": {
+      "title": "Complete your subscription",
+      "summary": "You are about to subscribe to the {{plan}} plan at {{price}} MAD/month",
+      "paymentMethod": "Payment method",
+      "creditCard": "Credit card",
+      "cmi": "CMI (Morocco)",
+      "cardNumber": "Card number",
+      "cardExpiry": "Expiry date",
+      "cvc": "CVC",
+      "total": "Total",
+      "processing": "Processing...",
+      "pay": "Pay {{price}} MAD",
+      "success": "Subscription activated successfully",
+      "paymentError": "Payment error"
+    }
+  }
+}

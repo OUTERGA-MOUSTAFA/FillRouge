@@ -1,0 +1,28 @@
+{
+  "myListings": {
+    "title": "إعلاناتي",
+    "newListing": "إعلان جديد",
+    "noListings": "ليس لديك أي إعلانات بعد",
+    "createFirstListing": "إنشاء أول إعلان لي",
+    "noImage": "لا توجد صورة",
+    "perMonth": "درهم/شهر",
+    "statusActive": "نشط",
+    "statusInactive": "غير نشط",
+    "featured": "مميز",
+    "views": "المشاهدات: {{count}}",
+    "messages": "الرسائل: {{count}}",
+    "view": "عرض",
+    "activate": "تفعيل",
+    "deactivate": "إلغاء التفعيل",
+    "edit": "تعديل",
+    "makeFeatured": "جعله مميزًا",
+    "delete": "حذف",
+    "errorLoading": "خطأ في تحميل الإعلانات",
+    "error": "خطأ",
+    "listingActivated": "تم تفعيل الإعلان",
+    "listingDeactivated": "تم إلغاء تفعيل الإعلان",
+    "confirmDelete": "هل تريد حذف هذا الإعلان نهائيًا؟",
+    "listingDeleted": "تم حذف الإعلان",
+    "listingFeatured": "تم تمييز الإعلان!"
+  }
+}

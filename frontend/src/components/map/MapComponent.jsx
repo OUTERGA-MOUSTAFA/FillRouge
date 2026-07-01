@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 // Correction des icônes Leaflet par défaut
 delete L.Icon.Default.prototype._getIconUrl;
@@ -34,8 +35,9 @@ function ChangeView({ center, zoom }) {
 
 // Composant pour les marqueurs de recherche
 function SearchMarker({ position, onDragEnd }) {
+  const { t } = useTranslation();
   const markerRef = useRef(null);
-  
+
   useEffect(() => {
     if (markerRef.current) {
       markerRef.current.on('dragend', () => {
@@ -57,7 +59,7 @@ function SearchMarker({ position, onDragEnd }) {
     >
       <Popup>
         <div className="text-center">
-          <p className="font-semibold">Position sélectionnée</p>
+          <p className="font-semibold">{t('map.selectedPosition')}</p>
           <p className="text-xs text-gray-500">
             {position[0].toFixed(6)}, {position[1].toFixed(6)}
           </p>
@@ -78,6 +80,7 @@ export default function MapComponent({
   showSearch = true,
   showUserLocation = true
 }) {
+  const { t } = useTranslation();
   const [userPosition, setUserPosition] = useState(null);
   const [searchPosition, setSearchPosition] = useState(null);
   const [mapCenter, setMapCenter] = useState(center);
@@ -133,7 +136,7 @@ export default function MapComponent({
             <button
               onClick={getUserLocation}
               className="bg-white p-2 rounded-lg shadow-md hover:bg-gray-50 transition-colors"
-              title="Ma position"
+              title={t('map.myLocation')}
             >
               <svg className="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
@@ -149,7 +152,7 @@ export default function MapComponent({
             <div className="flex">
               <input
                 type="text"
-                placeholder="Rechercher une adresse..."
+                placeholder={t('map.searchAddressPlaceholder')}
                 className="px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary-500 w-64"
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') {
@@ -242,12 +245,12 @@ export default function MapComponent({
                 )}
                 <h3 className="font-semibold text-gray-900">{listing.title}</h3>
                 <p className="text-sm text-gray-600">{listing.city}</p>
-                <p className="text-primary-600 font-bold mt-1">{listing.price} MAD/mois</p>
+                <p className="text-primary-600 font-bold mt-1">{t('map.pricePerMonth', { price: listing.price })}</p>
                 <Link
                   to={`/listings/${listing.id}`}
                   className="inline-block mt-2 text-sm text-primary-500 hover:text-primary-600"
                 >
-                  Voir détails →
+                  {t('map.viewDetails')}
                 </Link>
               </div>
             </Popup>
@@ -259,11 +262,11 @@ export default function MapComponent({
           <div className="leaflet-control leaflet-bar bg-white p-2 rounded shadow-md m-2">
             <div className="flex items-center gap-2 text-xs">
               <div className="w-3 h-3 bg-primary-500 rounded-full"></div>
-              <span>Annonces</span>
+              <span>{t('map.listings')}</span>
               {userPosition && (
                 <>
                   <div className="w-3 h-3 bg-blue-500 rounded-full ml-2"></div>
-                  <span>Ma position</span>
+                  <span>{t('map.myLocation')}</span>
                 </>
               )}
             </div>

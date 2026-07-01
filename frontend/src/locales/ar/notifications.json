@@ -1,0 +1,32 @@
+{
+  "notifications": {
+    "title": "الإشعارات",
+    "unreadCount": "{{count}} غير مقروءة",
+    "markAllAsRead": "تحديد الكل كمقروء",
+    "markAsRead": "تحديد كمقروء",
+    "view": "عرض",
+    "delete": "حذف",
+    "deleteError": "خطأ في الحذف",
+    "filterAll": "الكل",
+    "filterUnread": "غير المقروءة",
+    "emptyUnread": "لا توجد إشعارات غير مقروءة",
+    "emptyAll": "لا إشعارات حتى الآن",
+    "emptyHint": "سيتم إشعارك هنا بالرسائل والتطابقات والتحديثات الجديدة.",
+    "today": "اليوم",
+    "yesterday": "أمس",
+    "types": {
+      "message": "رسالة",
+      "match": "تطابق",
+      "listing": "إعلان",
+      "subscription": "الاشتراك",
+      "profile": "الملف الشخصي",
+      "notification": "إشعار"
+    },
+    "time": {
+      "now": "الآن",
+      "minutesAgo": "قبل {{count}} دقيقة",
+      "hoursAgo": "قبل {{count}} ساعة",
+      "daysAgo": "قبل {{count}} يوم"
+    }
+  }
+}

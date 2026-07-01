@@ -1,0 +1,129 @@
+{
+  "listingForm": {
+    "mad": "درهم",
+    "amenities": {
+      "wifi": "واي فاي",
+      "ac": "تكييف",
+      "parking": "موقف سيارات",
+      "tv": "تلفاز",
+      "kitchen": "مطبخ مجهز",
+      "pets": "الحيوانات الأليفة مسموحة",
+      "washing_machine": "غسالة",
+      "furnished": "مفروش",
+      "heating": "تدفئة",
+      "balcony": "شرفة"
+    },
+    "types": {
+      "room": {
+        "name": "غرفة",
+        "description": "غرفة فردية في شقة/منزل"
+      },
+      "apartment": {
+        "name": "شقة",
+        "description": "شقة كاملة"
+      },
+      "looking_for_roommate": {
+        "name": "منزل",
+        "description": "منزل كامل"
+      }
+    },
+    "create": {
+      "title": "نشر إعلان",
+      "subtitle": "أنشئ إعلانك في بضع خطوات",
+      "steps": {
+        "typeInfo": "النوع والمعلومات",
+        "location": "الموقع",
+        "priceAvailability": "السعر والتوفر",
+        "photosDetails": "الصور والتفاصيل"
+      },
+      "typeHeading": "نوع الإعلان",
+      "typeQuestion": "ما نوع السكن الذي تعرضه؟",
+      "generalInfo": "معلومات عامة",
+      "titlePlaceholder": "عنوان الإعلان *",
+      "descriptionPlaceholder": "وصف مفصل *",
+      "locationHeading": "الموقع",
+      "selectCityRequired": "اختر مدينة *",
+      "mapComingSoon": "خريطة تفاعلية قريباً",
+      "mapComingSoonHint": "في الوقت الحالي، حدد المدينة فقط",
+      "priceAvailabilityHeading": "السعر والتوفر",
+      "monthlyPriceLabel": "السعر الشهري (درهم) *",
+      "pricePlaceholder": "مثال: 2500",
+      "availableFromLabel": "متاح ابتداءً من *",
+      "furnishedCheckbox": "سكن مفروش",
+      "amenitiesPhotosHeading": "المرافق والصور",
+      "amenitiesOffered": "المرافق المتوفرة",
+      "choosePhotos": "اختر الصور",
+      "photosHint": "3 صور كحد أدنى • 10 صور كحد أقصى",
+      "photosFormats": "الصيغ المقبولة: JPG، PNG (5 ميغابايت كحد أقصى لكل صورة)",
+      "photosRemaining": "ما زال مطلوباً {{count}} صورة",
+      "back": "رجوع",
+      "continue": "متابعة",
+      "publishing": "جاري النشر...",
+      "publish": "نشر الإعلان",
+      "summaryType": "النوع:",
+      "summaryCity": "المدينة:",
+      "summaryPrice": "السعر:",
+      "notSelectedM": "غير محدد",
+      "notSelectedF": "غير محددة",
+      "priceNotDefined": "غير محدد",
+      "priceValue": "{{price}} درهم",
+      "toastMaxPhotos": "10 صور كحد أقصى",
+      "toastTypeRequired": "يرجى اختيار نوع الإعلان",
+      "toastTitleRequired": "العنوان مطلوب",
+      "toastDescriptionRequired": "الوصف مطلوب",
+      "toastCityRequired": "يرجى اختيار مدينة",
+      "toastPriceRequired": "السعر مطلوب ويجب أن يكون أكبر من 0",
+      "toastDateRequired": "تاريخ التوفر مطلوب",
+      "toastMinPhotos": "مطلوب 3 صور كحد أدنى",
+      "toastSuccess": "تم إنشاء الإعلان بنجاح!",
+      "toastCreateError": "خطأ أثناء الإنشاء"
+    },
+    "edit": {
+      "backToListings": "العودة إلى إعلاناتي",
+      "title": "تعديل الإعلان",
+      "titleLabel": "عنوان الإعلان *",
+      "titlePlaceholder": "مثال: غرفة واسعة في سكن مشترك",
+      "descriptionLabel": "الوصف *",
+      "descriptionPlaceholder": "صف سكنك، الأجواء، قواعد المنزل...",
+      "priceLabel": "السعر (درهم/شهرياً) *",
+      "pricePlaceholder": "2500",
+      "roomTypeLabel": "نوع الغرفة *",
+      "roomType": {
+        "private": "غرفة خاصة",
+        "shared": "غرفة مشتركة",
+        "entire": "سكن كامل"
+      },
+      "cityLabel": "المدينة *",
+      "selectCity": "اختر مدينة",
+      "addressLabel": "العنوان",
+      "addressPlaceholder": "مثال: حي المعاريف، شارع X",
+      "availableFromLabel": "متاح ابتداءً من",
+      "durationLabel": "مدة الكراء",
+      "duration": {
+        "short": "إقامة قصيرة (1-3 أشهر)",
+        "medium": "إقامة متوسطة (3-6 أشهر)",
+        "long": "إقامة طويلة (6+ أشهر)"
+      },
+      "maxTenantsLabel": "الحد الأقصى لعدد المشاركين في السكن",
+      "amenitiesLabel": "المرافق",
+      "currentImages": "الصور الحالية",
+      "addImages": "إضافة صور",
+      "clickToAddImages": "انقر لإضافة صور",
+      "imageFormats": "JPG، PNG، WebP - 5 ميغابايت كحد أقصى",
+      "saving": "جاري الحفظ...",
+      "saveChanges": "حفظ التعديلات",
+      "cancel": "إلغاء",
+      "toastNotAuthorized": "غير مصرح لك بتعديل هذا الإعلان",
+      "toastLoadError": "خطأ أثناء تحميل الإعلان",
+      "toastMaxImages": "10 صور كحد أقصى لكل إعلان",
+      "toastImageTooLarge": "الصورة {{name}} تتجاوز 5 ميغابايت",
+      "toastTitleRequired": "العنوان مطلوب",
+      "toastDescriptionRequired": "الوصف مطلوب",
+      "toastPriceRequired": "السعر مطلوب",
+      "toastCityRequired": "المدينة مطلوبة",
+      "toastImageRequired": "مطلوبة صورة واحدة على الأقل",
+      "toastSuccess": "تم تعديل الإعلان بنجاح",
+      "toastUpdateError": "خطأ أثناء التعديل"
+    }
+  }
+}

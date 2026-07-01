@@ -6,9 +6,12 @@ import {
   StarIcon, HomeIcon, CalendarIcon,
   UserGroupIcon, MoonIcon, SparklesIcon,
   ArrowLeftIcon, EllipsisHorizontalIcon,
+  CheckCircleIcon, XCircleIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarSolid } from '@heroicons/react/24/solid';
+import { useTranslation } from 'react-i18next';
 import { usersService } from '../src/services/users';
+import { messagesService } from '../src/services/messages';
 import { useAuthStore } from '../src/store/authStore';
 import ReviewsList from '../src/components/profile/ReviewsList';
 import AddReview from '../src/components/profile/AddReview';
@@ -52,8 +55,9 @@ const Stars = ({ rating, size = 'sm' }) => {
 
 /* ── listing card ──────────────────────────────────────── */
 const ListingCard = ({ listing }) => {
+  const { t } = useTranslation();
   const photo = listing.main_photo || listing.photos?.[0]?.url;
-  const typeLabel = { room: 'Chambre', apartment: 'Appartement', house: 'Maison' };
+  const typeLabel = { room: t('profile.user.type.room'), apartment: t('profile.user.type.apartment'), house: t('profile.user.type.house') };
   return (
     <Link
       to={`/listings/${listing.id}`}
@@ -73,10 +77,10 @@ const ListingCard = ({ listing }) => {
         </div>
         <div className="flex items-center justify-between mt-2">
           <span className="text-base font-bold text-[#00BBA7]">
-            {Number(listing.price).toLocaleString()} <span className="text-xs font-normal text-gray-400">MAD/mois</span>
+            {Number(listing.price).toLocaleString()} <span className="text-xs font-normal text-gray-400">{t('profile.user.per_month')}</span>
           </span>
           <Badge
-            label={listing.status === 'active' ? 'Actif' : listing.status}
+            label={listing.status === 'active' ? t('profile.user.status_active') : listing.status}
             color={listing.status === 'active' ? 'green' : 'gray'}
           />
         </div>
@@ -87,14 +91,33 @@ const ListingCard = ({ listing }) => {
 
 /* ── main component ────────────────────────────────────── */
 export default function UserProfile() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [profile, setProfile] = useState(null);
   const [compatibility, setCompatibility] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('about');
   const [reviewModal, setReviewModal] = useState(false);
+  const [responding, setResponding] = useState(false);
   const { user } = useAuthStore();
   const isOwnProfile = user?.id === parseInt(id);
+
+  // Le semsar accepte/refuse la demande de location du chercheur depuis son profil
+  const handleRespondDemand = async (action) => {
+    if (!profile?.pending_demand || responding) return;
+    setResponding(true);
+    try {
+      await messagesService.respondDemand(profile.pending_demand.id, action);
+      toast.success(action === 'accept'
+        ? t('profile.user.demand_accepted')
+        : t('profile.user.demand_refused'));
+      fetchProfile(); // recharge → pending_demand devient null
+    } catch (error) {
+      toast.error(error.response?.data?.message || t('profile.user.demand_error'));
+    } finally {
+      setResponding(false);
+    }
+  };
 
   useEffect(() => {
     fetchProfile();
@@ -107,7 +130,7 @@ export default function UserProfile() {
       const response = await usersService.getProfile(id);
       setProfile(response.data?.data ?? response.data);
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Erreur chargement du profil');
+      toast.error(error.response?.data?.message || t('profile.user.load_error'));
     } finally {
       setLoading(false);
     }
@@ -124,7 +147,7 @@ export default function UserProfile() {
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <div className="flex flex-col items-center gap-3">
         <div className="w-10 h-10 rounded-full border-[3px] border-[#00BBA7] border-t-transparent animate-spin" />
-        <p className="text-sm text-gray-400">Chargement du profil…</p>
+        <p className="text-sm text-gray-400">{t('profile.user.loading')}</p>
       </div>
     </div>
   );
@@ -134,23 +157,23 @@ export default function UserProfile() {
   const p = profile.profile ?? {};
 
   const lifestyleMap = {
-    smoking: { label: 'Tabac', map: { yes: 'Fumeur', no: 'Non-fumeur', occasional: 'Occasionnel' } },
-    pets: { label: 'Animaux', map: { yes: 'Accepte', no: 'Non', maybe: 'Peut-être' } },
-    sleep_schedule: { label: 'Rythme', map: { early_bird: 'Lève-tôt', night_owl: 'Couche-tard', flexible: 'Flexible' } },
-    cleanliness: { label: 'Propreté', map: { very_clean: 'Très propre', clean: 'Propre', moderate: 'Relax' } },
-    social_level: { label: 'Social', map: { extrovert: 'Extraverti', introvert: 'Introverti', ambivert: 'Ambiverti' } },
+    smoking: { label: t('profile.user.lifestyle.smoking'), map: { yes: t('profile.user.smoking.yes'), no: t('profile.user.smoking.no'), occasional: t('profile.user.smoking.occasional') } },
+    pets: { label: t('profile.user.lifestyle.pets'), map: { yes: t('profile.user.pets.yes'), no: t('profile.user.pets.no'), maybe: t('profile.user.pets.maybe') } },
+    sleep_schedule: { label: t('profile.user.lifestyle.sleep'), map: { early_bird: t('profile.user.sleep.early_bird'), night_owl: t('profile.user.sleep.night_owl'), flexible: t('profile.user.sleep.flexible') } },
+    cleanliness: { label: t('profile.user.lifestyle.cleanliness'), map: { very_clean: t('profile.user.cleanliness.very_clean'), clean: t('profile.user.cleanliness.clean'), moderate: t('profile.user.cleanliness.moderate') } },
+    social_level: { label: t('profile.user.lifestyle.social'), map: { extrovert: t('profile.user.social.extrovert'), introvert: t('profile.user.social.introvert'), ambivert: t('profile.user.social.ambivert') } },
   };
 
   const tabs = [
-    { id: 'about',    label: 'À propos' },
-    { id: 'listings', label: `Annonces (${profile.listings?.length ?? 0})` },
-    { id: 'reviews',  label: `Avis (${profile.reviews_count ?? 0})` },
+    { id: 'about',    label: t('profile.user.tabs.about') },
+    { id: 'listings', label: t('profile.user.tabs.listings', { count: profile.listings?.length ?? 0 }) },
+    { id: 'reviews',  label: t('profile.user.tabs.reviews', { count: profile.reviews_count ?? 0 }) },
   ];
 
   const verificationLabels = {
-    email_verified:    { label: 'Email',    color: 'green' },
-    phone_verified:    { label: 'Téléphone', color: 'blue' },
-    identity_verified: { label: 'Identité', color: 'purple' },
+    email_verified:    { label: t('profile.user.verification.email'),    color: 'green' },
+    phone_verified:    { label: t('profile.user.verification.phone'), color: 'blue' },
+    identity_verified: { label: t('profile.user.verification.identity'), color: 'purple' },
   };
 
   return (
@@ -160,7 +183,7 @@ export default function UserProfile() {
       <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-100 px-4 py-3 flex items-center justify-between">
         <button onClick={() => window.history.back()} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition">
           <ArrowLeftIcon className="h-4 w-4" />
-          Retour
+          {t('profile.user.back')}
         </button>
         <span className="text-sm font-semibold text-gray-800">{profile.full_name}</span>
         <button className="p-1.5 rounded-lg hover:bg-gray-100 transition">
@@ -200,8 +223,8 @@ export default function UserProfile() {
               <div className="mt-3">
                 <h1 className="text-lg font-bold text-gray-900 leading-tight">{profile.full_name}</h1>
                 <p className="text-sm text-gray-500 mt-0.5">
-                  {profile.gender === 'male' ? 'Homme' : profile.gender === 'female' ? 'Femme' : ''}
-                  {profile.age ? ` · ${profile.age} ans` : ''}
+                  {profile.gender === 'male' ? t('profile.user.gender.male') : profile.gender === 'female' ? t('profile.user.gender.female') : ''}
+                  {profile.age ? t('profile.user.age_suffix', { age: profile.age }) : ''}
                 </p>
                 {profile.profession && (
                   <div className="flex items-center gap-1.5 mt-1.5">
@@ -221,7 +244,7 @@ export default function UserProfile() {
               {profile.average_rating > 0 && (
                 <div className="flex items-center gap-2 mt-3">
                   <Stars rating={Math.round(profile.average_rating)} />
-                  <span className="text-xs text-gray-500">{profile.average_rating.toFixed(1)} · {profile.reviews_count} avis</span>
+                  <span className="text-xs text-gray-500">{t('profile.user.rating_summary', { rating: profile.average_rating.toFixed(1), count: profile.reviews_count })}</span>
                 </div>
               )}
 
@@ -253,12 +276,12 @@ export default function UserProfile() {
                     className="flex-1 flex items-center justify-center gap-1.5 bg-[#00BBA7] hover:bg-[#009966] text-white text-sm font-semibold py-2.5 rounded-xl transition-colors"
                   >
                     <ChatBubbleLeftRightIcon className="h-4 w-4" />
-                    Message
+                    {t('profile.user.message')}
                   </Link>
                   <button
                     onClick={() => setReviewModal(true)}
                     className="p-2.5 rounded-xl border border-[#99dfd7] bg-[#e6f7f5] hover:bg-[#ccefeb] transition-colors group"
-                    title="Laisser un avis"
+                    title={t('profile.user.leave_review')}
                   >
                     <StarIcon className="h-4 w-4 text-[#00BBA7]" />
                   </button>
@@ -267,12 +290,40 @@ export default function UserProfile() {
                   </button>
                 </div>
               )}
+
+              {/* Demande de location en attente — le semsar peut accepter/refuser */}
+              {!isOwnProfile && profile.pending_demand && (
+                <div className="mt-4 p-3 rounded-xl border border-amber-200 bg-amber-50">
+                  <p className="text-xs font-medium text-amber-800 mb-2">
+                    {profile.pending_demand.listing
+                      ? t('profile.user.pending_demand_for', { listing: profile.pending_demand.listing.title })
+                      : t('profile.user.pending_demand')}
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleRespondDemand('accept')}
+                      disabled={responding}
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-[#009966] text-white rounded-lg text-sm font-semibold hover:bg-[#00734d] disabled:opacity-50 transition-colors"
+                    >
+                      <CheckCircleIcon className="h-4 w-4" /> {t('profile.user.accept')}
+                    </button>
+                    <button
+                      onClick={() => handleRespondDemand('refuse')}
+                      disabled={responding}
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 border border-red-200 text-red-600 rounded-lg text-sm font-semibold hover:bg-red-50 disabled:opacity-50 transition-colors"
+                    >
+                      <XCircleIcon className="h-4 w-4" /> {t('profile.user.refuse')}
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {isOwnProfile && (
                 <Link
                   to="/profile/edit"
                   className="mt-4 block text-center text-sm font-semibold text-[#00BBA7] hover:text-[#009966] py-2.5 rounded-xl border border-[#99dfd7] hover:bg-[#e6f7f5] transition-colors"
                 >
-                  Modifier le profil
+                  {t('profile.user.edit_profile')}
                 </Link>
               )}
             </div>
@@ -281,7 +332,7 @@ export default function UserProfile() {
           {/* Lifestyle card */}
           {Object.keys(lifestyleMap).some(k => p[k]) && (
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Mode de vie</h3>
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">{t('profile.user.lifestyle_title')}</h3>
               <div>
                 {Object.entries(lifestyleMap).map(([key, info]) => p[key] ? (
                   <InfoRow key={key} label={info.label} value={info.map[p[key]] ?? p[key]} />
@@ -293,7 +344,7 @@ export default function UserProfile() {
           {/* Budget card */}
           {(profile.budget_min || profile.budget_max) && (
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Budget</h3>
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">{t('profile.user.budget')}</h3>
               <p className="text-2xl font-bold text-gray-900">
                 {profile.budget_min && profile.budget_max
                   ? `${Number(profile.budget_min).toLocaleString()} – ${Number(profile.budget_max).toLocaleString()}`
@@ -308,7 +359,7 @@ export default function UserProfile() {
           {/* Compatibility */}
           {compatibility && (
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Compatibilité</h3>
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">{t('profile.user.compatibility')}</h3>
               <div className="flex items-center gap-3">
                 <div className="relative w-14 h-14">
                   <svg className="w-14 h-14 -rotate-90" viewBox="0 0 56 56">
@@ -326,7 +377,7 @@ export default function UserProfile() {
                   </span>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-800">Score de match</p>
+                  <p className="text-sm font-semibold text-gray-800">{t('profile.user.match_score')}</p>
                   {compatibility.common_interests?.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1">
                       {compatibility.common_interests.slice(0, 3).map(i => (
@@ -365,7 +416,7 @@ export default function UserProfile() {
               {/* Bio */}
               {p.bio && (
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">À propos</h3>
+                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">{t('profile.user.about')}</h3>
                   <p className="text-sm text-gray-700 leading-relaxed">{p.bio}</p>
                 </div>
               )}
@@ -373,7 +424,7 @@ export default function UserProfile() {
               {/* Interests */}
               {p.interests?.length > 0 && (
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Centres d'intérêt</h3>
+                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">{t('profile.user.interests')}</h3>
                   <div className="flex flex-wrap gap-2">
                     {p.interests.map(interest => (
                       <span key={interest} className="px-3 py-1.5 bg-[#e6f7f5] text-[#00734d] rounded-full text-sm font-medium">
@@ -387,34 +438,34 @@ export default function UserProfile() {
               {/* Roommate preferences */}
               {(p.preferred_gender || p.preferred_min_age || p.preferred_max_age || p.occupation) && (
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Préférences colocataire</h3>
+                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">{t('profile.user.roommate_prefs')}</h3>
                   <div className="grid grid-cols-2 gap-3">
                     {p.preferred_gender && (
                       <div className="bg-gray-50 rounded-xl p-3">
-                        <p className="text-[10px] text-gray-400 uppercase font-semibold mb-1">Genre</p>
+                        <p className="text-[10px] text-gray-400 uppercase font-semibold mb-1">{t('profile.user.pref_gender')}</p>
                         <p className="text-sm font-semibold text-gray-800 capitalize">
-                          {p.preferred_gender === 'female' ? 'Femme' : p.preferred_gender === 'male' ? 'Homme' : 'Indifférent'}
+                          {p.preferred_gender === 'female' ? t('profile.user.gender.female') : p.preferred_gender === 'male' ? t('profile.user.gender.male') : t('profile.user.gender.any')}
                         </p>
                       </div>
                     )}
                     {(p.preferred_min_age || p.preferred_max_age) && (
                       <div className="bg-gray-50 rounded-xl p-3">
-                        <p className="text-[10px] text-gray-400 uppercase font-semibold mb-1">Âge</p>
+                        <p className="text-[10px] text-gray-400 uppercase font-semibold mb-1">{t('profile.user.pref_age')}</p>
                         <p className="text-sm font-semibold text-gray-800">
-                          {p.preferred_min_age}–{p.preferred_max_age} ans
+                          {t('profile.user.age_range', { min: p.preferred_min_age, max: p.preferred_max_age })}
                         </p>
                       </div>
                     )}
                     {p.accepts_pets !== undefined && (
                       <div className="bg-gray-50 rounded-xl p-3">
-                        <p className="text-[10px] text-gray-400 uppercase font-semibold mb-1">Animaux</p>
-                        <p className="text-sm font-semibold text-gray-800">{p.accepts_pets ? 'Accepte' : 'Refuse'}</p>
+                        <p className="text-[10px] text-gray-400 uppercase font-semibold mb-1">{t('profile.user.pref_pets')}</p>
+                        <p className="text-sm font-semibold text-gray-800">{p.accepts_pets ? t('profile.user.accepts') : t('profile.user.refuses')}</p>
                       </div>
                     )}
                     {p.accepts_smokers !== undefined && (
                       <div className="bg-gray-50 rounded-xl p-3">
-                        <p className="text-[10px] text-gray-400 uppercase font-semibold mb-1">Fumeurs</p>
-                        <p className="text-sm font-semibold text-gray-800">{p.accepts_smokers ? 'Accepte' : 'Refuse'}</p>
+                        <p className="text-[10px] text-gray-400 uppercase font-semibold mb-1">{t('profile.user.pref_smokers')}</p>
+                        <p className="text-sm font-semibold text-gray-800">{p.accepts_smokers ? t('profile.user.accepts') : t('profile.user.refuses')}</p>
                       </div>
                     )}
                   </div>
@@ -423,15 +474,15 @@ export default function UserProfile() {
 
               {/* Member since */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Informations</h3>
+                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">{t('profile.user.info')}</h3>
                 <InfoRow
-                  label="Membre depuis"
+                  label={t('profile.user.member_since')}
                   value={profile.created_at
                     ? new Date(profile.created_at).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
                     : null}
                 />
-                <InfoRow label="Annonces actives" value={profile.listings?.filter(l => l.status === 'active').length} />
-                <InfoRow label="Occupation" value={p.occupation === 'self_employed' ? 'Indépendant' : p.occupation} />
+                <InfoRow label={t('profile.user.active_listings')} value={profile.listings?.filter(l => l.status === 'active').length} />
+                <InfoRow label={t('profile.user.occupation')} value={p.occupation === 'self_employed' ? t('profile.user.self_employed') : p.occupation} />
               </div>
             </div>
           )}
@@ -446,7 +497,7 @@ export default function UserProfile() {
               ) : (
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
                   <HomeIcon className="h-10 w-10 text-gray-200 mx-auto mb-3" />
-                  <p className="text-sm text-gray-400">Aucune annonce publiée</p>
+                  <p className="text-sm text-gray-400">{t('profile.user.no_listings')}</p>
                 </div>
               )}
             </div>
@@ -462,7 +513,7 @@ export default function UserProfile() {
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl border-2 border-dashed border-[#99dfd7] text-[#00BBA7] hover:bg-[#e6f7f5] hover:border-[#00BBA7] transition-all text-sm font-semibold"
                 >
                   <StarIcon className="h-4 w-4" />
-                  Laisser un avis à {profile.full_name?.split(' ')[0]}
+                  {t('profile.user.leave_review_to', { name: profile.full_name?.split(' ')[0] })}
                 </button>
               )}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">

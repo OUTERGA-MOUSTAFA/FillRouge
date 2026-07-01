@@ -1,0 +1,17 @@
+{
+  "filters": {
+    "title": "Filtres",
+    "city": "Ville",
+    "allCities": "Toutes les villes",
+    "budget": "Budget (MAD/mois): {{min}} - {{max}}",
+    "min": "Min",
+    "max": "Max",
+    "housingType": "Type de logement",
+    "room": "Chambre",
+    "apartment": "Appartement",
+    "lookingForRoommate": "Cherche coloc",
+    "amenities": "Commodités",
+    "reset": "Réinitialiser",
+    "apply": "Appliquer"
+  }
+}

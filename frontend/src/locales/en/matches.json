@@ -1,0 +1,23 @@
+{
+  "matches": {
+    "title": "Matches & Recommendations",
+    "tabMatches": "My matches ({{count}})",
+    "tabRecommendations": "Recommendations ({{count}})",
+    "noMatches": "No match yet",
+    "completeProfileRecommendations": "Complete your profile to receive recommendations",
+    "noRecommendations": "No recommendation yet",
+    "completeProfileSuggestions": "Complete your profile to receive suggestions",
+    "completeMyProfile": "Complete my profile",
+    "matchAccepted": "Match accepted!",
+    "matchDeclined": "Match declined",
+    "interestSent": "Interest sent!",
+    "error": "Error",
+    "errorLoading": "Error loading data",
+    "ageYears": "{{age}} years old",
+    "accept": "Accept",
+    "decline": "Decline",
+    "sendMessage": "Send a message",
+    "compatibilityScore": "{{score}}% compatibility",
+    "commonInterests": "Common interests"
+  }
+}

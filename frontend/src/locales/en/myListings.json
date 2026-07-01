@@ -1,0 +1,28 @@
+{
+  "myListings": {
+    "title": "My listings",
+    "newListing": "New listing",
+    "noListings": "You don't have any listings yet",
+    "createFirstListing": "Create my first listing",
+    "noImage": "No image",
+    "perMonth": "MAD/month",
+    "statusActive": "Active",
+    "statusInactive": "Inactive",
+    "featured": "Featured",
+    "views": "Views: {{count}}",
+    "messages": "Messages: {{count}}",
+    "view": "View",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "edit": "Edit",
+    "makeFeatured": "Make featured",
+    "delete": "Delete",
+    "errorLoading": "Error loading listings",
+    "error": "Error",
+    "listingActivated": "Listing activated",
+    "listingDeactivated": "Listing deactivated",
+    "confirmDelete": "Permanently delete this listing?",
+    "listingDeleted": "Listing deleted",
+    "listingFeatured": "Listing featured!"
+  }
+}

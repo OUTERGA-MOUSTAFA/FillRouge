@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { UserIcon, HeartIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 
 export default function RecommendationCard({ recommendation, onLike }) {
+  const { t } = useTranslation();
   const { user, score, common_interests } = recommendation;
 
   const getScoreColor = (score) => {
@@ -27,9 +29,9 @@ export default function RecommendationCard({ recommendation, onLike }) {
           <Link to={`/users/${user.id}`} className="font-semibold text-gray-900 hover:text-[#009966]">
             {user.full_name}
           </Link>
-          <div className="text-sm text-gray-500">{user.age} ans</div>
+          <div className="text-sm text-gray-500">{t('matches.ageYears', { age: user.age })}</div>
           <div className={`text-sm font-semibold ${getScoreColor(score)}`}>
-            {score}% de compatibilité
+            {t('matches.compatibilityScore', { score })}
           </div>
         </div>
         
@@ -45,7 +47,7 @@ export default function RecommendationCard({ recommendation, onLike }) {
       {/* Common interests */}
       {common_interests && common_interests.length > 0 && (
         <div className="mt-3 pt-3 border-t">
-          <div className="text-xs text-gray-500 mb-1">Intérêts communs</div>
+          <div className="text-xs text-gray-500 mb-1">{t('matches.commonInterests')}</div>
           <div className="flex flex-wrap gap-1">
             {common_interests.slice(0, 4).map((interest) => (
               <span key={interest} className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs">

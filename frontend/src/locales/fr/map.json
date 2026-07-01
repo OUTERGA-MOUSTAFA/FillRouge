@@ -1,0 +1,14 @@
+{
+  "map": {
+    "selectedPosition": "Position sélectionnée",
+    "searchAddressPlaceholder": "Rechercher une adresse...",
+    "myLocation": "Ma position",
+    "viewDetails": "Voir détails →",
+    "listings": "Annonces",
+    "pricePerMonth": "{{price}} MAD/mois",
+    "nearbyListings": "Annonces à proximité ({{count}})",
+    "noListingsInArea": "Aucune annonce dans cette zone",
+    "loadError": "Erreur chargement des annonces",
+    "mad": "MAD"
+  }
+}

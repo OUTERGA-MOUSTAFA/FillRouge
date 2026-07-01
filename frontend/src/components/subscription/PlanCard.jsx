@@ -1,4 +1,5 @@
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 
 const PLAN_STYLES = {
   free: {
@@ -28,6 +29,7 @@ const PLAN_STYLES = {
 };
 
 export function PlanCard({ planKey, plan, isCurrent, onSelect, featured = false, delay = 0 }) {
+  const { t } = useTranslation();
   const styles = PLAN_STYLES[planKey] ?? PLAN_STYLES.free;
 console.log("plan",plan);
   return (
@@ -56,11 +58,11 @@ console.log("plan",plan);
 
         <div className="mt-4 flex items-end gap-1">
           {plan.price === 0 ? (
-            <span className="text-3xl font-extrabold text-gray-900">Gratuit</span>
+            <span className="text-3xl font-extrabold text-gray-900">{t('subscription.free')}</span>
           ) : (
             <>
-              <span className={`text-3xl font-extrabold ${styles.price}`}>{plan.price} MAD</span>
-              <span className="text-gray-400 text-sm mb-1">/mois</span>
+              <span className={`text-3xl font-extrabold ${styles.price}`}>{plan.price} {t('subscription.currency')}</span>
+              <span className="text-gray-400 text-sm mb-1">{t('subscription.perMonthShort')}</span>
             </>
           )}
         </div>
@@ -90,14 +92,14 @@ console.log("plan",plan);
       <div className="p-5 pt-0">
         {isCurrent ? (
           <div className="w-full text-center py-2.5 rounded-xl text-sm font-semibold bg-gray-100 text-gray-400 cursor-default">
-            Plan actuel
+            {t('subscription.currentPlanLabel')}
           </div>
         ) : (
           <button
             onClick={onSelect}
             className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${styles.btn}`}
           >
-            {planKey === 'free' ? 'Commencer gratuitement' : `Choisir ${plan.label}`}
+            {planKey === 'free' ? t('subscription.startFree') : t('subscription.choose', { plan: plan.label })}
           </button>
         )}
       </div>

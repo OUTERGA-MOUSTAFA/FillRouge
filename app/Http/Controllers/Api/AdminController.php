@@ -400,6 +400,14 @@ class AdminController extends Controller // extand men controller o Middlewares 
      */
     public function deleteUser(User $user)
     {
+        // Sécurité : un admin ne peut pas supprimer son propre compte
+        if (auth()->id() === $user->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vous ne pouvez pas supprimer votre propre compte',
+            ], 403);
+        }
+
         // Supprimer les fichiers associés
         if ($user->avatar) {
             Storage::delete($user->avatar);

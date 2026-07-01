@@ -1,0 +1,33 @@
+{
+  "profileEdit": {
+    "title": "Modifier mon profil",
+    "savingShort": "Enreg…",
+    "save": "Enregistrer",
+    "avatarAlt": "Avatar",
+    "choosePhoto": "Choisir une photo",
+    "photoHint": "JPG, PNG — max 5 Mo",
+    "basicInfo": "Informations de base",
+    "fullName": "Nom complet",
+    "phone": "Téléphone",
+    "gender": "Genre",
+    "genderUnspecified": "Non précisé",
+    "male": "Homme",
+    "female": "Femme",
+    "other": "Autre",
+    "birthDate": "Date de naissance",
+    "profession": "Profession",
+    "professionPlaceholder": "Ingénieur, Étudiant, Freelance…",
+    "budgetTitle": "Budget mensuel (MAD)",
+    "min": "Minimum",
+    "max": "Maximum",
+    "account": "Compte",
+    "email": "E-mail",
+    "emailReadonly": "L'adresse e-mail ne peut pas être modifiée ici.",
+    "saving": "Enregistrement…",
+    "cancel": "Annuler",
+    "toastPhotoTooLarge": "La photo ne doit pas dépasser 5 Mo",
+    "toastProfileUpdated": "Profil mis à jour avec succès",
+    "toastFixErrors": "Veuillez corriger les erreurs",
+    "errorUpdate": "Erreur lors de la mise à jour"
+  }
+}

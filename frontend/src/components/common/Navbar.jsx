@@ -8,6 +8,7 @@ import {
   BookmarkIcon, PhotoIcon,
 } from '@heroicons/react/24/outline';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../store/authStore';
 import NotificationBell from './NotificationBell';
 import toast from 'react-hot-toast';
@@ -16,32 +17,32 @@ import { SparklesIcon } from '@heroicons/react/24/solid'; // ou outline
 
 const getNavItems = (user) => {
   const base = [
-    { name: 'Accueil',   href: '/',        icon: HomeIcon },
-    { name: 'Annonces',  href: '/listings', icon: DocumentTextIcon },
+    { labelKey: 'nav.home',     href: '/',         icon: HomeIcon },
+    { labelKey: 'nav.listings', href: '/listings', icon: DocumentTextIcon },
   ];
 
   if (!user) return base;
 
   if (user.role === 'admin') return [
     ...base,
-    { name: 'Dashboard',      href: '/admin',                        icon: ShieldCheckIcon },
-    { name: 'Utilisateurs',   href: '/admin/users',                  icon: UsersIcon },
-    { name: 'Signalements',   href: '/admin/reports',                icon: FlagIcon },
-    { name: 'Vérifications',  href: '/admin/income-verifications',   icon: CurrencyDollarIcon },
-    { name: 'Sliders',        href: '/admin/sliders',                icon: PhotoIcon },
+    { labelKey: 'nav.admin.dashboard',     href: '/admin',                      icon: ShieldCheckIcon },
+    { labelKey: 'nav.admin.users',         href: '/admin/users',                icon: UsersIcon },
+    { labelKey: 'nav.admin.reports',       href: '/admin/reports',              icon: FlagIcon },
+    { labelKey: 'nav.admin.verifications', href: '/admin/income-verifications', icon: CurrencyDollarIcon },
+    { labelKey: 'nav.admin.sliders',       href: '/admin/sliders',              icon: PhotoIcon },
   ];
 
   if (user.role === 'semsar') return [
     ...base,
-    { name: 'Mes annonces', href: '/MyListings', icon: DocumentTextIcon },
-    { name: 'Messages',     href: '/messages',    icon: ChatBubbleLeftRightIcon },
+    { labelKey: 'nav.my_listings', href: '/MyListings', icon: DocumentTextIcon },
+    { labelKey: 'nav.messages',    href: '/messages',   icon: ChatBubbleLeftRightIcon },
   ];
 
   if (user.role === 'chercheur') return [
     ...base,
-    { name: 'Matches',   href: '/matches',   icon: HeartIcon },
-    { name: 'Messages',  href: '/messages',  icon: ChatBubbleLeftRightIcon },
-    { name: 'Favoris',   href: '/favorites', icon: BookmarkIcon },
+    { labelKey: 'nav.matches',   href: '/matches',   icon: HeartIcon },
+    { labelKey: 'nav.messages',  href: '/messages',  icon: ChatBubbleLeftRightIcon },
+    { labelKey: 'nav.favorites', href: '/favorites', icon: BookmarkIcon },
   ];
 
   return base;
@@ -51,19 +52,20 @@ const getNavItems = (user) => {
 
 const getUserMenuItems = (role) => {
   const common = [
-    { href: '/profile',       emoji: '👤', label: 'Mon profil' },
-    { href: '/notifications', emoji: '🔔', label: 'Notifications' },
+    { href: '/profile',       emoji: '👤', labelKey: 'userMenu.profile' },
+    { href: '/notifications', emoji: '🔔', labelKey: 'userMenu.notifications' },
   ];
 
   if (role === 'semsar') return [
     ...common,
-    { href: '/myLlistings',        emoji: '📋', label: 'Mes annonces' },
-    { href: '/subscription/plans', emoji: '💎', label: 'Abonnement' },
+    { href: '/myLlistings',        emoji: '📋', labelKey: 'userMenu.my_listings' },
+    { href: '/subscription/plans', emoji: '💎', labelKey: 'userMenu.subscription' },
   ];
 
   if (role === 'chercheur') return [
     ...common,
-    { href: '/favorites', emoji: '❤️', label: 'Mes favoris' },
+    { href: '/favorites',          emoji: '❤️', labelKey: 'userMenu.favorites' },
+    { href: '/subscription/plans', emoji: '💎', labelKey: 'userMenu.subscription' },
   ];
 
   return common; // admin + default
@@ -72,17 +74,18 @@ const getUserMenuItems = (role) => {
 // ─── Role badge ───────────────────────────────────────────────────────────────
 
 const ROLE_META = {
-  admin:    { emoji: '👑', label: 'Administrateur', cls: 'bg-red-50 text-red-600 border-red-100' },
-  semsar:   { emoji: '🏠', label: 'Semsar',   cls: 'bg-blue-50 text-blue-600 border-blue-100' },
-  chercheur:{ emoji: '🔍', label: 'Chercheur',      cls: 'bg-purple-50 text-purple-600 border-purple-100' },
+  admin:    { emoji: '👑', cls: 'bg-red-50 text-red-600 border-red-100' },
+  semsar:   { emoji: '🏠', cls: 'bg-blue-50 text-blue-600 border-blue-100' },
+  chercheur:{ emoji: '🔍', cls: 'bg-purple-50 text-purple-600 border-purple-100' },
 };
 
 function RoleBadge({ role, className = '' }) {
+  const { t } = useTranslation();
   const meta = ROLE_META[role];
   if (!meta) return null;
   return (
     <span className={`inline-flex items-center gap-1 px-2 py-0.5 border rounded-full text-xs font-semibold ${meta.cls} ${className}`}>
-      {meta.emoji} {meta.label}
+      {meta.emoji} {t(`roles.${role}`)}
     </span>
   );
 }
@@ -90,19 +93,27 @@ function RoleBadge({ role, className = '' }) {
 // ─── Language selector ────────────────────────────────────────────────────────
 
 const LANGUES = [
-  { code: 'FR', flag: '🇫🇷', name: 'Français' },
-  { code: 'EN', flag: '🇬🇧', name: 'English' },
-  { code: 'AR', flag: '🇲🇦', name: 'العربية' },
+  { code: 'fr', flag: '🇫🇷', label: 'FR', name: 'Français' },
+  { code: 'en', flag: '🇬🇧', label: 'EN', name: 'English' },
+  { code: 'ar', flag: '🇲🇦', label: 'AR', name: 'العربية' },
 ];
 
 function LanguageSelector() {
-  const [current, setCurrent] = useState('FR');
+  const { t, i18n } = useTranslation();
+  const current = (i18n.language || 'fr').split('-')[0];
+  const currentLang = LANGUES.find(l => l.code === current) || LANGUES[0];
+
+  const handleChange = (lang) => {
+    if (lang.code === current) return;
+    i18n.changeLanguage(lang.code); // persiste via localStorage + applique RTL/LTR
+    toast.success(t('language.changed', { name: lang.name }));
+  };
 
   return (
     <Menu as="div" className="relative">
       <Menu.Button className="flex items-center gap-1 px-2.5 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none">
-        <span>{LANGUES.find(l => l.code === current)?.flag}</span>
-        <span className="hidden sm:inline">{current}</span>
+        <span>{currentLang.flag}</span>
+        <span className="hidden sm:inline">{currentLang.label}</span>
         <ChevronDownIcon className="h-3 w-3 text-gray-400" />
       </Menu.Button>
 
@@ -120,13 +131,13 @@ function LanguageSelector() {
             <Menu.Item key={lang.code}>
               {({ active }) => (
                 <button
-                  onClick={() => { setCurrent(lang.code); toast.success(`Langue : ${lang.name}`); }}
+                  onClick={() => handleChange(lang)}
                   className={`flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 transition-colors
                     ${active ? 'bg-gray-50' : ''}
                     ${current === lang.code ? 'font-semibold text-[#009966]' : ''}`}
                 >
                   <span>{lang.flag}</span>
-                  <span>{lang.code}</span>
+                  <span>{lang.label}</span>
                   <span className="text-gray-400 text-xs">· {lang.name}</span>
                 </button>
               )}
@@ -145,8 +156,9 @@ function LanguageSelector() {
 // Dans Navbar.jsx, modifions le UserMenu component
 
 function UserMenu({ user, onLogout }) {
+  const { t } = useTranslation();
   const menuItems = getUserMenuItems(user?.role);
-  
+
   // Vérifier le plan d'abonnement
   const isPremium = user?.subscription_plan === 'premium' || user?.is_premium;
   const isStandard = user?.subscription_plan === 'standard';
@@ -155,7 +167,7 @@ function UserMenu({ user, onLogout }) {
   const getBadgeConfig = () => {
     if (isPremium) {
       return {
-        label: 'Premium',
+        label: t('plans.premium'),
         icon: <SparklesIcon className="h-3 w-3" />,
         className: 'bg-gradient-to-r from-amber-400 to-amber-500 text-white shadow-sm',
         emoji: '⭐'
@@ -163,7 +175,7 @@ function UserMenu({ user, onLogout }) {
     }
     if (isStandard) {
       return {
-        label: 'Standard',
+        label: t('plans.standard'),
         icon: <BoltIcon className="h-3 w-3" />,
         className: 'bg-gradient-to-r from-teal-400 to-teal-500 text-white shadow-sm',
         emoji: '💎'
@@ -252,7 +264,7 @@ function UserMenu({ user, onLogout }) {
                   className={`flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 transition-colors ${active ? 'bg-gray-50' : ''}`}
                 >
                   <span>{item.emoji}</span>
-                  {item.label}
+                  {t(item.labelKey)}
                 </Link>
               )}
             </Menu.Item>
@@ -266,7 +278,7 @@ function UserMenu({ user, onLogout }) {
                   onClick={onLogout}
                   className={`flex items-center gap-2.5 w-full px-4 py-2 text-sm text-red-500 transition-colors ${active ? 'bg-red-50' : ''}`}
                 >
-                  <span>🚪</span> Déconnexion
+                  <span>🚪</span> {t('navbar.logout')}
                 </button>
               )}
             </Menu.Item>
@@ -282,19 +294,20 @@ function UserMenu({ user, onLogout }) {
 // ─── Guest menu ───────────────────────────────────────────────────────────────
 
 function GuestMenu() {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center gap-2">
       <Link
         to="/login"
         className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-[#009966] rounded-lg hover:bg-gray-50 transition-colors"
       >
-        Connexion
+        {t('navbar.login')}
       </Link>
       <Link
         to="/register"
         className="px-4 py-2 text-sm font-semibold text-white bg-[#009966] rounded-xl hover:bg-[#00734d] active:scale-[0.98] transition-all shadow-sm"
       >
-        Inscription
+        {t('navbar.register')}
       </Link>
     </div>
   );
@@ -303,6 +316,7 @@ function GuestMenu() {
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 
 export default function Navbar() {
+  const { t } = useTranslation();
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
@@ -316,7 +330,7 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     await logout();
-    toast.success('Déconnecté avec succès');
+    toast.success(t('navbar.logout_success'));
     navigate('/');
   };
 
@@ -359,7 +373,7 @@ export default function Navbar() {
                 <div className="hidden md:flex items-center gap-0.5">
                   {navItems.map(item => (
                     <Link
-                      key={item.name}
+                      key={item.href}
                       to={item.href}
                       className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                         isActive(item.href)
@@ -368,7 +382,7 @@ export default function Navbar() {
                       }`}
                     >
                       <item.icon className="h-4 w-4" />
-                      {item.name}
+                      {t(item.labelKey)}
                     </Link>
                   ))}
                 </div>
@@ -384,7 +398,7 @@ export default function Navbar() {
                     className="hidden md:flex items-center gap-1.5 px-3.5 py-2 bg-[#009966] text-white rounded-xl text-sm font-semibold hover:bg-[#00734d] active:scale-[0.98] transition-all shadow-sm"
                   >
                     <PlusIcon className="h-4 w-4" />
-                    Publier
+                    {t('navbar.publish')}
                   </Link>
                 )}
 
@@ -405,7 +419,7 @@ export default function Navbar() {
               {/* ✅ Fix: call close() on every Link click to dismiss menu */}
               {navItems.map(item => (
                 <Link
-                  key={item.name}
+                  key={item.href}
                   to={item.href}
                   onClick={close}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
@@ -415,7 +429,7 @@ export default function Navbar() {
                   }`}
                 >
                   <item.icon className="h-5 w-5 shrink-0" />
-                  {item.name}
+                  {t(item.labelKey)}
                 </Link>
               ))}
 
@@ -426,7 +440,7 @@ export default function Navbar() {
                   className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-[#009966] hover:bg-[#e6f7f5] transition-colors"
                 >
                   <PlusIcon className="h-5 w-5" />
-                  Publier une annonce
+                  {t('navbar.publish_listing')}
                 </Link>
               )}
 
@@ -458,7 +472,7 @@ export default function Navbar() {
                         className="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
                       >
                         <span>{item.emoji}</span>
-                        {item.label}
+                        {t(item.labelKey)}
                       </Link>
                     ))}
 
@@ -466,7 +480,7 @@ export default function Navbar() {
                       onClick={() => { close(); handleLogout(); }}
                       className="w-full text-left flex items-center gap-2.5 px-3 py-2 mt-1 text-sm text-red-500 hover:bg-red-50 rounded-xl transition-colors"
                     >
-                      <span>🚪</span> Déconnexion
+                      <span>🚪</span> {t('navbar.logout')}
                     </button>
                   </>
                 ) : (
@@ -476,14 +490,14 @@ export default function Navbar() {
                       onClick={close}
                       className="block px-3 py-2.5 text-center rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 border border-gray-200 transition-colors"
                     >
-                      Connexion
+                      {t('navbar.login')}
                     </Link>
                     <Link
                       to="/register"
                       onClick={close}
                       className="block px-3 py-2.5 text-center rounded-xl text-sm font-semibold bg-[#009966] text-white hover:bg-[#00734d] transition-colors"
                     >
-                      Inscription
+                      {t('navbar.register')}
                     </Link>
                   </div>
                 )}

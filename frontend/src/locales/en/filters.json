@@ -1,0 +1,17 @@
+{
+  "filters": {
+    "title": "Filters",
+    "city": "City",
+    "allCities": "All cities",
+    "budget": "Budget (MAD/month): {{min}} - {{max}}",
+    "min": "Min",
+    "max": "Max",
+    "housingType": "Housing type",
+    "room": "Room",
+    "apartment": "Apartment",
+    "lookingForRoommate": "Looking for roommate",
+    "amenities": "Amenities",
+    "reset": "Reset",
+    "apply": "Apply"
+  }
+}

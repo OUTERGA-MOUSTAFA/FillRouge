@@ -13,36 +13,38 @@ import { messagesService } from '../src/services/messages';
 import { useAuthStore } from '../src/store/authStore';
 import api from '../src/services/api';
 import toast from 'react-hot-toast';
+import MapComponent from '../src/components/map/MapComponent';
+import { useTranslation } from 'react-i18next';
 
 // ─── Amenity config ────────────────────────────────────────────────────────────
 const AMENITY_CONFIG = {
-  wifi: { icon: '📶', label: 'Wi-Fi' },
-  ac: { icon: '❄️', label: 'Climatisation' },
-  parking: { icon: '🅿️', label: 'Parking' },
-  tv: { icon: '📺', label: 'Télévision' },
-  kitchen: { icon: '🍳', label: 'Cuisine' },
-  pets: { icon: '🐾', label: 'Animaux ok' },
-  workspace: { icon: '💻', label: 'Espace de travail' },
-  balcony: { icon: '🌿', label: 'Balcon' },
-  washing_machine: { icon: '🫧', label: 'Lave-linge' },
-  heating: { icon: '🔥', label: 'Chauffage' },
-  furnished: { icon: '🛋️', label: 'Meublé' },
-  pool: { icon: '🏊', label: 'Piscine' },
-  gym: { icon: '🏋️', label: 'Salle de sport' },
-  elevator: { icon: '🛗', label: 'Ascenseur' },
+  wifi: { icon: '📶' },
+  ac: { icon: '❄️' },
+  parking: { icon: '🅿️' },
+  tv: { icon: '📺' },
+  kitchen: { icon: '🍳' },
+  pets: { icon: '🐾' },
+  workspace: { icon: '💻' },
+  balcony: { icon: '🌿' },
+  washing_machine: { icon: '🫧' },
+  heating: { icon: '🔥' },
+  furnished: { icon: '🛋️' },
+  pool: { icon: '🏊' },
+  gym: { icon: '🏋️' },
+  elevator: { icon: '🛗' },
 };
 
 const TYPE_LABELS = {
-  room: { label: 'Chambre', icon: '🛏️', color: 'bg-blue-50 text-blue-700' },
-  apartment: { label: 'Appartement', icon: '🏢', color: 'bg-purple-50 text-purple-700' },
-  looking_for_roommate: { label: 'Cherche coloc', icon: '🤝', color: 'bg-orange-50 text-orange-700' },
+  room: { icon: '🛏️', color: 'bg-blue-50 text-blue-700' },
+  apartment: { icon: '🏢', color: 'bg-purple-50 text-purple-700' },
+  looking_for_roommate: { icon: '🤝', color: 'bg-orange-50 text-orange-700' },
 };
 
 const STATUS_CONFIG = {
-  active: { label: 'Active', color: 'bg-green-50 text-green-700 border-green-200' },
-  inactive: { label: 'Inactive', color: 'bg-gray-50 text-gray-500 border-gray-200' },
-  rented: { label: 'Louée', color: 'bg-blue-50 text-blue-700 border-blue-200' },
-  expired: { label: 'Expirée', color: 'bg-red-50 text-red-700 border-red-200' },
+  active: { color: 'bg-green-50 text-green-700 border-green-200' },
+  inactive: { color: 'bg-gray-50 text-gray-500 border-gray-200' },
+  rented: { color: 'bg-blue-50 text-blue-700 border-blue-200' },
+  expired: { color: 'bg-red-50 text-red-700 border-red-200' },
 };
 
 // ─── Star rating ──────────────────────────────────────────────────────────────
@@ -79,6 +81,7 @@ const getPhotoUrl = (photo) => {
 
 // ─── Photo gallery ─────────────────────────────────────────────────────────────
 function PhotoGallery({ photos, mainPhoto, title }) {
+  const { t } = useTranslation();
   const [selected, setSelected] = useState(0);
   const [lightbox, setLightbox] = useState(false);
   // const allPhotos = photos?.length ? photos : mainPhoto ? [mainPhoto] : [];
@@ -91,7 +94,7 @@ function PhotoGallery({ photos, mainPhoto, title }) {
     return (
       <div className="h-[440px] bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col items-center justify-center gap-3 text-gray-400">
         <HomeIcon className="h-16 w-16 opacity-30" />
-        <p className="text-sm">Aucune photo disponible</p>
+        <p className="text-sm">{t('listingDetail.photoGallery.noPhotos')}</p>
       </div>
     );
   }
@@ -178,19 +181,20 @@ function InfoRow({ icon, label, value, highlight }) {
 
 // ─── Review modal ──────────────────────────────────────────────────────────────
 function ReviewModal({ listing, onClose, onSubmit }) {
+  const { t } = useTranslation();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (!rating) return toast.error('Veuillez donner une note');
+    if (!rating) return toast.error(t('listingDetail.reviewModal.ratingRequired'));
     setLoading(true);
     try {
       await onSubmit({ rating, comment, listing_id: listing.id });
-      toast.success('Avis soumis — il sera publié après accord mutuel');
+      toast.success(t('listingDetail.reviewModal.success'));
       onClose();
     } catch (e) {
-      toast.error(e.response?.data?.message || 'Erreur');
+      toast.error(e.response?.data?.message || t('listingDetail.reviewModal.error'));
     } finally {
       setLoading(false);
     }
@@ -199,34 +203,34 @@ function ReviewModal({ listing, onClose, onSubmit }) {
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
-        <h3 className="text-lg font-semibold text-gray-900 mb-1">Laisser un avis</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('listingDetail.reviewModal.title')}</h3>
         <p className="text-sm text-gray-500 mb-5">
-          Votre avis sera visible lorsque l'hôte vous aura également évalué.
+          {t('listingDetail.reviewModal.subtitle')}
         </p>
         <div className="mb-4">
-          <p className="text-sm font-medium text-gray-700 mb-2">Note globale</p>
+          <p className="text-sm font-medium text-gray-700 mb-2">{t('listingDetail.reviewModal.overallRating')}</p>
           <StarRating value={rating} onChange={setRating} size="lg" />
         </div>
         <div className="mb-5">
-          <p className="text-sm font-medium text-gray-700 mb-2">Commentaire (optionnel)</p>
+          <p className="text-sm font-medium text-gray-700 mb-2">{t('listingDetail.reviewModal.commentOptional')}</p>
           <textarea
             value={comment}
             onChange={e => setComment(e.target.value)}
             rows={4}
-            placeholder="Décrivez votre expérience..."
+            placeholder={t('listingDetail.reviewModal.commentPlaceholder')}
             className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#009966]/30 focus:border-[#009966]"
           />
         </div>
         <div className="flex gap-3">
           <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 text-sm hover:bg-gray-50">
-            Annuler
+            {t('listingDetail.reviewModal.cancel')}
           </button>
           <button
             onClick={handleSubmit}
             disabled={loading || !rating}
             className="flex-1 py-2.5 rounded-xl bg-[#009966] text-white text-sm font-medium hover:bg-[#00734d] disabled:opacity-50"
           >
-            {loading ? 'Envoi…' : 'Soumettre'}
+            {loading ? t('listingDetail.reviewModal.submitting') : t('listingDetail.reviewModal.submit')}
           </button>
         </div>
       </div>
@@ -236,6 +240,7 @@ function ReviewModal({ listing, onClose, onSubmit }) {
 
 // ─── Rent modal ────────────────────────────────────────────────────────────────
 function RentModal({ listing, onClose }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     move_in_date: '',
     duration: '1_month',
@@ -251,10 +256,10 @@ function RentModal({ listing, onClose }) {
   const navigate = useNavigate();
 
   const DURATIONS = [
-    { value: '1_month', label: '1 Mois' },
-    { value: '3_months', label: '3 Mois' },
-    { value: '6_months', label: '6 Mois' },
-    { value: 'long_term', label: '12+ Mois' },
+    { value: '1_month', label: t('listingDetail.rentModal.duration1Month') },
+    { value: '3_months', label: t('listingDetail.rentModal.duration3Months') },
+    { value: '6_months', label: t('listingDetail.rentModal.duration6Months') },
+    { value: 'long_term', label: t('listingDetail.rentModal.durationLongTerm') },
   ];
 
   const monthly = listing.price;
@@ -263,25 +268,25 @@ function RentModal({ listing, onClose }) {
   const total = monthly + deposit + fee;
 
   const handleSend = async () => {
-    if (!form.move_in_date) return toast.error('Veuillez choisir une date');
+    if (!form.move_in_date) return toast.error(t('listingDetail.rentModal.dateRequired'));
     setLoading(true);
     try {
-      const typeLabel = listing.type === 'room' ? 'chambre' : listing.type === 'apartment' ? 'appartement' : 'logement';
-      const msg = `Bonjour, je suis intéressé(e) par louer votre ${typeLabel} "${listing.title}".
+      const typeLabel = listing.type === 'room' ? t('listingDetail.rentModal.typeRoom') : listing.type === 'apartment' ? t('listingDetail.rentModal.typeApartment') : t('listingDetail.rentModal.typeHousing');
+      const msg = t('listingDetail.rentModal.message', {
+        type: typeLabel,
+        title: listing.title,
+        date: new Date(form.move_in_date).toLocaleDateString('fr-FR'),
+        duration: DURATIONS.find(d => d.value === form.duration)?.label,
+        guests: form.guests,
+        notes: form.notes ? t('listingDetail.rentModal.notesLine', { notes: form.notes }) : '',
+      });
 
-📅 Date d'emménagement souhaitée : ${new Date(form.move_in_date).toLocaleDateString('fr-FR')}
-⏱ Durée : ${DURATIONS.find(d => d.value === form.duration)?.label}
-👥 Nombre de personnes : ${form.guests}
-${form.notes ? `\n📝 Notes : ${form.notes}` : ''}
-
-Pouvez-vous me confirmer la disponibilité ?`;
-
-      await messagesService.send(listing.user_id, msg);
-      toast.success('Demande envoyée ! L\'hôte vous répondra bientôt.');
+      await messagesService.send(listing.user_id, msg, [], listing.id);
+      toast.success(t('listingDetail.rentModal.requestSent'));
       onClose();
       navigate(`/messages/${listing.user_id}`);
     } catch (e) {
-      toast.error(e.response?.data?.message || 'Erreur lors de l\'envoi');
+      toast.error(e.response?.data?.message || t('listingDetail.rentModal.sendError'));
     } finally {
       setLoading(false);
     }
@@ -293,7 +298,7 @@ Pouvez-vous me confirmer la disponibilité ?`;
         {/* Header */}
         <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-gray-100 px-6 py-4 flex items-center justify-between rounded-t-3xl sm:rounded-t-2xl z-10">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Demande de location</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t('listingDetail.rentModal.title')}</h3>
             <p className="text-xs text-gray-400">{listing.title}</p>
           </div>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors">
@@ -319,12 +324,12 @@ Pouvez-vous me confirmer la disponibilité ?`;
             {/* Personal info */}
             <div className="space-y-3">
               <p className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
-                <UserIcon className="h-4 w-4 text-[#009966]" /> Vos informations
+                <UserIcon className="h-4 w-4 text-[#009966]" /> {t('listingDetail.rentModal.yourInfo')}
               </p>
               {[
-                { name: 'full_name', label: 'Nom complet', placeholder: 'Ahmed Benali', def: user?.full_name },
-                { name: 'phone', label: 'Téléphone', placeholder: '+212 6XX XXX XXX', def: user?.phone },
-                { name: 'email', label: 'Email', placeholder: 'ahmed@exemple.com', def: user?.email },
+                { name: 'full_name', label: t('listingDetail.rentModal.fullName'), placeholder: t('listingDetail.rentModal.fullNamePlaceholder'), def: user?.full_name },
+                { name: 'phone', label: t('listingDetail.rentModal.phone'), placeholder: t('listingDetail.rentModal.phonePlaceholder'), def: user?.phone },
+                { name: 'email', label: t('listingDetail.rentModal.email'), placeholder: t('listingDetail.rentModal.emailPlaceholder'), def: user?.email },
               ].map(f => (
                 <div key={f.name}>
                   <label className="block text-xs text-gray-500 mb-1">{f.label}</label>
@@ -341,10 +346,10 @@ Pouvez-vous me confirmer la disponibilité ?`;
             {/* Stay details */}
             <div className="space-y-3">
               <p className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
-                <CalendarIcon className="h-4 w-4 text-[#009966]" /> Détails du séjour
+                <CalendarIcon className="h-4 w-4 text-[#009966]" /> {t('listingDetail.rentModal.stayDetails')}
               </p>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Date d'emménagement *</label>
+                <label className="block text-xs text-gray-500 mb-1">{t('listingDetail.rentModal.moveInDate')}</label>
                 <input
                   type="date"
                   value={form.move_in_date}
@@ -354,7 +359,7 @@ Pouvez-vous me confirmer la disponibilité ?`;
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-2">Durée souhaitée</label>
+                <label className="block text-xs text-gray-500 mb-2">{t('listingDetail.rentModal.desiredDuration')}</label>
                 <div className="grid grid-cols-2 gap-2">
                   {DURATIONS.map(d => (
                     <button key={d.value} type="button"
@@ -368,7 +373,7 @@ Pouvez-vous me confirmer la disponibilité ?`;
                 </div>
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Nombre de personnes</label>
+                <label className="block text-xs text-gray-500 mb-1">{t('listingDetail.rentModal.guests')}</label>
                 <input type="number" min={1} max={10} value={form.guests}
                   onChange={e => setForm(p => ({ ...p, guests: e.target.value }))}
                   className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009966]/20 focus:border-[#009966]"
@@ -378,13 +383,13 @@ Pouvez-vous me confirmer la disponibilité ?`;
                 <label className="flex items-center gap-2 text-xs text-gray-500 cursor-pointer">
                   <input type="checkbox" className="rounded"
                     onChange={e => setForm(p => ({ ...p, showNotes: e.target.checked }))} />
-                  Ajouter un message personnalisé
+                  {t('listingDetail.rentModal.addCustomMessage')}
                 </label>
                 {form.showNotes && (
                   <textarea
                     value={form.notes}
                     onChange={e => setForm(p => ({ ...p, notes: e.target.value }))}
-                    placeholder="Présentez-vous ou posez une question..."
+                    placeholder={t('listingDetail.rentModal.notesPlaceholder')}
                     rows={3}
                     className="mt-2 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#009966]/20 focus:border-[#009966]"
                   />
@@ -397,13 +402,13 @@ Pouvez-vous me confirmer la disponibilité ?`;
           <div className="space-y-4">
             <div className="border border-gray-100 rounded-xl p-4 bg-gray-50/50">
               <p className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-1.5">
-                <ShieldCheckIcon className="h-4 w-4 text-[#009966]" /> Sécurité & Garanties
+                <ShieldCheckIcon className="h-4 w-4 text-[#009966]" /> {t('listingDetail.rentModal.security')}
               </p>
               <div className="space-y-2">
                 {[
-                  { icon: '✅', text: 'Vérification d\'identité requise', c: 'text-green-700' },
-                  { icon: '✅', text: 'Réservation sécurisée garantie', c: 'text-green-700' },
-                  { icon: '⚠️', text: 'Ne jamais payer hors plateforme', c: 'text-amber-600' },
+                  { icon: '✅', text: t('listingDetail.rentModal.securityIdentity'), c: 'text-green-700' },
+                  { icon: '✅', text: t('listingDetail.rentModal.securityBooking'), c: 'text-green-700' },
+                  { icon: '⚠️', text: t('listingDetail.rentModal.securityNeverPay'), c: 'text-amber-600' },
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-2">
                     <span className="text-sm mt-px">{item.icon}</span>
@@ -414,23 +419,23 @@ Pouvez-vous me confirmer la disponibilité ?`;
             </div>
 
             <div className="border border-gray-100 rounded-xl p-4">
-              <p className="text-sm font-semibold text-gray-700 mb-3">💰 Récapitulatif des coûts</p>
+              <p className="text-sm font-semibold text-gray-700 mb-3">💰 {t('listingDetail.rentModal.costSummary')}</p>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between text-gray-600">
-                  <span>Loyer mensuel</span><span>{monthly.toLocaleString()} MAD</span>
+                  <span>{t('listingDetail.rentModal.monthlyRent')}</span><span>{monthly.toLocaleString()} {t('listingDetail.mad')}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
-                  <span>Dépôt de garantie</span><span>{deposit.toLocaleString()} MAD</span>
+                  <span>{t('listingDetail.rentModal.deposit')}</span><span>{deposit.toLocaleString()} {t('listingDetail.mad')}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
-                  <span>Frais de service (10%)</span><span>{fee.toLocaleString()} MAD</span>
+                  <span>{t('listingDetail.rentModal.serviceFee')}</span><span>{fee.toLocaleString()} {t('listingDetail.mad')}</span>
                 </div>
                 <div className="border-t border-gray-100 pt-2 flex justify-between font-bold text-gray-900">
-                  <span>Total initial</span>
-                  <span className="text-[#009966]">{total} MAD</span>
+                  <span>{t('listingDetail.rentModal.totalInitial')}</span>
+                  <span className="text-[#009966]">{total} {t('listingDetail.mad')}</span>
                 </div>
               </div>
-              <p className="text-xs text-gray-400 mt-3 leading-relaxed">Aucun paiement n'est traité avant l'acceptation de l'hôte.</p>
+              <p className="text-xs text-gray-400 mt-3 leading-relaxed">{t('listingDetail.rentModal.noPaymentNote')}</p>
             </div>
 
             <button
@@ -439,9 +444,9 @@ Pouvez-vous me confirmer la disponibilité ?`;
               className="w-full bg-[#009966] text-white py-3.5 rounded-xl font-semibold hover:bg-[#00734d] active:scale-[0.99] transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
             >
               <ChatBubbleLeftRightIcon className="h-5 w-5" />
-              {loading ? 'Envoi en cours…' : 'Envoyer la demande'}
+              {loading ? t('listingDetail.rentModal.sending') : t('listingDetail.rentModal.sendRequest')}
             </button>
-            <p className="text-xs text-center text-gray-400">Aucun paiement traité avant acceptation</p>
+            <p className="text-xs text-center text-gray-400">{t('listingDetail.rentModal.noPaymentShort')}</p>
           </div>
         </div>
       </div>
@@ -451,6 +456,7 @@ Pouvez-vous me confirmer la disponibilité ?`;
 
 // ─── Main ListingDetail ────────────────────────────────────────────────────────
 export default function ListingDetail() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuthStore();
@@ -476,7 +482,7 @@ export default function ListingDetail() {
       const revRes = await api.get(`/auth/users/${res.data.user_id}/reviews`);
       setReviews(revRes.data?.data?.reviews?.data || []);
     } catch {
-      toast.error('Annonce introuvable');
+      toast.error(t('listingDetail.loadError'));
       navigate('/listings');
     } finally {
       setLoading(false);
@@ -491,14 +497,17 @@ export default function ListingDetail() {
   if (loading) return (
     <div className="flex flex-col items-center justify-center py-32 gap-4">
       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#009966]" />
-      <p className="text-sm text-gray-400">Chargement de l'annonce…</p>
+      <p className="text-sm text-gray-400">{t('listingDetail.loading')}</p>
     </div>
   );
 
   if (!listing) return null;
 
-  const type = TYPE_LABELS[listing.type] || { label: listing.type, icon: '🏠', color: 'bg-gray-100 text-gray-700' };
+  const type = TYPE_LABELS[listing.type] || { icon: '🏠', color: 'bg-gray-100 text-gray-700' };
+  const typeLabel = TYPE_LABELS[listing.type] ? t(`listingDetail.types.${listing.type}`) : listing.type;
   const statusCfg = STATUS_CONFIG[listing.status] || STATUS_CONFIG.active;
+  const statusKey = STATUS_CONFIG[listing.status] ? listing.status : 'active';
+  const statusLabel = t(`listingDetail.status.${statusKey}`);
   const avgRating = reviews.length ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1) : null;
 
   return (
@@ -511,9 +520,9 @@ export default function ListingDetail() {
 
         {/* ── Breadcrumb ── */}
         <nav className="flex items-center gap-2 text-xs text-gray-400 mb-6">
-          <Link to="/" className="hover:text-[#009966]">Accueil</Link>
+          <Link to="/" className="hover:text-[#009966]">{t('listingDetail.breadcrumbHome')}</Link>
           <span>›</span>
-          <Link to="/listings" className="hover:text-[#009966]">Annonces</Link>
+          <Link to="/listings" className="hover:text-[#009966]">{t('listingDetail.breadcrumbListings')}</Link>
           <span>›</span>
           <span className="text-gray-600 truncate max-w-[200px]">{listing.title}</span>
         </nav>
@@ -528,24 +537,24 @@ export default function ListingDetail() {
               {/* Badges */}
               <div className="flex flex-wrap gap-2 mb-4">
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${type.color}`}>
-                  {type.icon} {type.label}
+                  {type.icon} {typeLabel}
                 </span>
                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${statusCfg.color}`}>
-                  {statusCfg.label}
+                  {statusLabel}
                 </span>
                 {listing.is_featured && (
                   <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-50 text-amber-600 text-xs font-semibold rounded-full border border-amber-200">
-                    <FireIcon className="h-3 w-3" /> Mis en avant
+                    <FireIcon className="h-3 w-3" /> {t('listingDetail.featured')}
                   </span>
                 )}
                 {listing.is_urgent && (
                   <span className="inline-flex items-center gap-1 px-3 py-1 bg-red-50 text-red-600 text-xs font-semibold rounded-full border border-red-200">
-                    <BoltIcon className="h-3 w-3" /> Urgent
+                    <BoltIcon className="h-3 w-3" /> {t('listingDetail.urgent')}
                   </span>
                 )}
                 {listing.user?.profile?.is_identity_verified && (
                   <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-600 text-xs font-semibold rounded-full border border-blue-200">
-                    <ShieldCheckIcon className="h-3 w-3" /> Vérifié
+                    <ShieldCheckIcon className="h-3 w-3" /> {t('listingDetail.verified')}
                   </span>
                 )}
               </div>
@@ -561,7 +570,7 @@ export default function ListingDetail() {
                     <div className="flex items-center gap-2 mt-2">
                       <StarRating value={Math.round(avgRating)} size="sm" />
                       <span className="text-sm text-gray-600 font-medium">{avgRating}</span>
-                      <span className="text-xs text-gray-400">({reviews.length} avis)</span>
+                      <span className="text-xs text-gray-400">({t('listingDetail.reviewsCount', { count: reviews.length })})</span>
                     </div>
                   )}
                 </div>
@@ -570,10 +579,10 @@ export default function ListingDetail() {
                     {listing.price?.toLocaleString()}
                     <span className="text-base font-normal text-gray-400 ml-1">MAD</span>
                   </div>
-                  <p className="text-xs text-gray-400">par mois</p>
+                  <p className="text-xs text-gray-400">{t('listingDetail.perMonth')}</p>
                   {listing.price_is_negotiable && (
                     <span className="inline-block mt-1 text-xs text-green-700 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full">
-                      💬 Négociable
+                      💬 {t('listingDetail.negotiable')}
                     </span>
                   )}
                 </div>
@@ -582,10 +591,10 @@ export default function ListingDetail() {
               {/* Key stats row */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5 pt-5 border-t border-gray-100">
                 {[
-                  { icon: '🛏️', label: 'Chambres', val: listing.bedrooms ?? '—' },
-                  { icon: '🚿', label: 'SDB', val: listing.bathrooms ?? '—' },
-                  { icon: '👁️', label: 'Vues', val: listing.views_count?.toLocaleString() ?? 0 },
-                  { icon: '📞', label: 'Contacts', val: listing.contacts_count?.toLocaleString() ?? 0 },
+                  { icon: '🛏️', label: t('listingDetail.stats.bedrooms'), val: listing.bedrooms ?? '—' },
+                  { icon: '🚿', label: t('listingDetail.stats.bathrooms'), val: listing.bathrooms ?? '—' },
+                  { icon: '👁️', label: t('listingDetail.stats.views'), val: listing.views_count?.toLocaleString() ?? 0 },
+                  { icon: '📞', label: t('listingDetail.stats.contacts'), val: listing.contacts_count?.toLocaleString() ?? 0 },
                 ].map(s => (
                   <div key={s.label} className="flex flex-col items-center p-3 bg-gray-50 rounded-xl">
                     <span className="text-xl mb-1">{s.icon}</span>
@@ -599,20 +608,20 @@ export default function ListingDetail() {
             {/* ── Availability & Details ── */}
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
               <h2 className="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <CalendarIcon className="h-5 w-5 text-[#009966]" /> Disponibilité & Détails
+                <CalendarIcon className="h-5 w-5 text-[#009966]" /> {t('listingDetail.availabilityDetails')}
               </h2>
               <div className="divide-y divide-gray-50">
-                <InfoRow icon="📅" label="Disponible dès le" value={listing.available_from ? new Date(listing.available_from).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : null} highlight />
-                <InfoRow icon="📆" label="Disponible jusqu'au" value={listing.available_until ? new Date(listing.available_until).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Non défini'} />
-                <InfoRow icon="🏠" label="Type" value={type.label} />
-                <InfoRow icon="🛋️" label="Meublé" value={listing.furnished ? 'Oui' : 'Non'} />
-                <InfoRow icon="🛏️" label="Chambres" value={listing.bedrooms} />
-                <InfoRow icon="🚿" label="Salles de bain" value={listing.bathrooms} />
+                <InfoRow icon="📅" label={t('listingDetail.availableFrom')} value={listing.available_from ? new Date(listing.available_from).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : null} highlight />
+                <InfoRow icon="📆" label={t('listingDetail.availableUntil')} value={listing.available_until ? new Date(listing.available_until).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : t('listingDetail.notDefined')} />
+                <InfoRow icon="🏠" label={t('listingDetail.typeLabel')} value={typeLabel} />
+                <InfoRow icon="🛋️" label={t('listingDetail.furnishedLabel')} value={listing.furnished ? t('listingDetail.yes') : t('listingDetail.no')} />
+                <InfoRow icon="🛏️" label={t('listingDetail.bedroomsLabel')} value={listing.bedrooms} />
+                <InfoRow icon="🚿" label={t('listingDetail.bathroomsLabel')} value={listing.bathrooms} />
                 {listing.is_featured && listing.featured_until && (
-                  <InfoRow icon="⭐" label="Mis en avant jusqu'au" value={new Date(listing.featured_until).toLocaleDateString('fr-FR')} />
+                  <InfoRow icon="⭐" label={t('listingDetail.featuredUntil')} value={new Date(listing.featured_until).toLocaleDateString('fr-FR')} />
                 )}
 
-                <InfoRow icon="🕒" label="Publiée le" value={listing.created_at ? new Date(listing.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : null} />
+                <InfoRow icon="🕒" label={t('listingDetail.publishedOn')} value={listing.created_at ? new Date(listing.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : null} />
                 {/* {listing.updated_at !== listing.created_at && (
                   <InfoRow icon="✏️" label="Mise à jour le" value={listing.updated_at ? new Date(listing.updated_at).toLocaleDateString('fr-FR') : null} />
                 )} */}
@@ -622,14 +631,14 @@ export default function ListingDetail() {
             {/* ── Description ── */}
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
               <h2 className="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <span>📝</span> À propos
+                <span>📝</span> {t('listingDetail.about')}
               </h2>
               <p className="text-gray-600 whitespace-pre-line leading-relaxed text-sm">{listing.description}</p>
 
               {listing.house_rules?.length > 0 && (
                 <div className="mt-5 pt-5 border-t border-gray-100">
                   <p className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                    🏠 Règles de la maison
+                    🏠 {t('listingDetail.houseRules')}
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {listing.house_rules.map((rule, i) => (
@@ -646,15 +655,17 @@ export default function ListingDetail() {
             {listing.amenities?.length > 0 && (
               <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                 <h2 className="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <span>✨</span> Équipements ({listing.amenities.length})
+                  <span>✨</span> {t('listingDetail.amenitiesCount', { count: listing.amenities.length })}
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {listing.amenities.map((a) => {
-                    const cfg = AMENITY_CONFIG[a.toLowerCase()] || { icon: '✓', label: a };
+                    const amenityKey = a.toLowerCase();
+                    const cfg = AMENITY_CONFIG[amenityKey] || { icon: '✓' };
+                    const amenityLabel = AMENITY_CONFIG[amenityKey] ? t(`listingDetail.amenities.${amenityKey}`) : a;
                     return (
                       <div key={a} className="flex items-center gap-2.5 p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-[#009966]/5 hover:border-[#009966]/20 transition-colors">
                         <span className="text-xl">{cfg.icon}</span>
-                        <span className="text-sm text-gray-700 font-medium">{cfg.label}</span>
+                        <span className="text-sm text-gray-700 font-medium">{amenityLabel}</span>
                       </div>
                     );
                   })}
@@ -665,15 +676,15 @@ export default function ListingDetail() {
             {/* ── Location ── */}
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
               <h2 className="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <MapPinIcon className="h-5 w-5 text-[#009966]" /> Localisation
+                <MapPinIcon className="h-5 w-5 text-[#009966]" /> {t('listingDetail.location')}
               </h2>
 
               <div className="grid sm:grid-cols-2 gap-3 mb-4">
                 {[
-                  { label: 'Ville', value: listing.city, icon: '🏙️' },
-                  { label: 'Quartier', value: listing.neighborhood, icon: '📍' },
-                  { label: 'Adresse', value: listing.address, icon: '🏠' },
-                  { label: 'Coordonnées', value: listing.latitude ? `${listing.latitude}°N, ${listing.longitude}°E` : null, icon: '🌐' },
+                  { label: t('listingDetail.city'), value: listing.city, icon: '🏙️' },
+                  { label: t('listingDetail.neighborhood'), value: listing.neighborhood, icon: '📍' },
+                  { label: t('listingDetail.address'), value: listing.address, icon: '🏠' },
+                  { label: t('listingDetail.coordinates'), value: listing.latitude ? `${listing.latitude}°N, ${listing.longitude}°E` : null, icon: '🌐' },
                 ].filter(i => i.value).map(item => (
                   <div key={item.label} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
                     <span className="text-lg">{item.icon}</span>
@@ -685,14 +696,38 @@ export default function ListingDetail() {
                 ))}
               </div>
 
-              <div className="bg-gradient-to-br from-gray-100 to-gray-50 rounded-xl h-44 flex flex-col items-center justify-center gap-2 text-gray-400 border border-gray-200">
-                <MapPinIcon className="h-8 w-8 text-[#009966]" />
-                <p className="font-semibold text-gray-700">{listing.city}{listing.neighborhood ? `, ${listing.neighborhood}` : ''}</p>
-                {listing.latitude && <p className="text-xs">{listing.latitude}°N, {listing.longitude}°E</p>}
-                <button className="text-sm text-[#009966] font-medium hover:underline underline-offset-2 mt-1">
-                  Ouvrir dans Google Maps →
-                </button>
-              </div>
+              {Number(listing.latitude) && Number(listing.longitude) ? (
+                <div className="space-y-3">
+                  <div className="overflow-hidden rounded-xl border border-gray-200">
+                    <MapComponent
+                      listings={[{
+                        ...listing,
+                        latitude: Number(listing.latitude),
+                        longitude: Number(listing.longitude),
+                      }]}
+                      center={[Number(listing.latitude), Number(listing.longitude)]}
+                      zoom={15}
+                      height="300px"
+                      showSearch={false}
+                      showUserLocation={true}
+                    />
+                  </div>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${Number(listing.latitude)},${Number(listing.longitude)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block text-sm text-[#009966] font-medium hover:underline underline-offset-2"
+                  >
+                    {t('listingDetail.openInGoogleMaps')}
+                  </a>
+                </div>
+              ) : (
+                <div className="bg-gradient-to-br from-gray-100 to-gray-50 rounded-xl h-44 flex flex-col items-center justify-center gap-2 text-gray-400 border border-gray-200">
+                  <MapPinIcon className="h-8 w-8 text-[#009966]" />
+                  <p className="font-semibold text-gray-700">{listing.city}{listing.neighborhood ? `, ${listing.neighborhood}` : ''}</p>
+                  <p className="text-xs">{t('listingDetail.positionNotProvided')}</p>
+                </div>
+              )}
             </div>
 
             {/* ── Reviews ── */}
@@ -700,14 +735,14 @@ export default function ListingDetail() {
               <div className="flex justify-between items-center mb-5">
                 <div>
                   <h2 className="text-base font-semibold text-gray-900">
-                    Avis & Notes
+                    {t('listingDetail.reviewsTitle')}
                   </h2>
                   {avgRating && (
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-2xl font-bold text-gray-900">{avgRating}</span>
                       <div>
                         <StarRating value={Math.round(avgRating)} size="sm" />
-                        <p className="text-xs text-gray-400 mt-0.5">{reviews.length} avis</p>
+                        <p className="text-xs text-gray-400 mt-0.5">{t('listingDetail.reviewsCount', { count: reviews.length })}</p>
                       </div>
                     </div>
                   )}
@@ -717,7 +752,7 @@ export default function ListingDetail() {
                     onClick={() => setShowReviewModal(true)}
                     className="px-4 py-2 text-sm bg-[#009966] text-white rounded-xl hover:bg-[#00734d] transition-colors font-medium"
                   >
-                    + Laisser un avis
+                    {t('listingDetail.leaveReview')}
                   </button>
                 )}
               </div>
@@ -725,7 +760,7 @@ export default function ListingDetail() {
               {reviews.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-10 text-gray-300 gap-2">
                   <StarOutline className="h-10 w-10" />
-                  <p className="text-sm text-gray-400">Aucun avis pour le moment</p>
+                  <p className="text-sm text-gray-400">{t('listingDetail.noReviews')}</p>
                 </div>
               ) : (
                 <div className="space-y-5">
@@ -784,7 +819,7 @@ export default function ListingDetail() {
                   </Link>
                   {listing.user?.is_premium && (
                     <p className="text-xs text-amber-600 flex items-center gap-1 mt-0.5">
-                      <ShieldCheckIcon className="h-3 w-3" /> Premium
+                      <ShieldCheckIcon className="h-3 w-3" /> {t('listingDetail.premium')}
                     </p>
                   )}
                   <div className="flex items-center gap-1 mt-1">
@@ -800,10 +835,10 @@ export default function ListingDetail() {
                 <div className="text-2xl font-bold text-[#009966]">
                   {listing.price?.toLocaleString()} MAD
                 </div>
-                <p className="text-xs text-gray-400 mt-0.5">par mois{listing.price_is_negotiable ? ' · Négociable' : ''}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{t('listingDetail.perMonth')}{listing.price_is_negotiable ? t('listingDetail.negotiableSuffix') : ''}</p>
                 <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
                   <CalendarIcon className="h-3.5 w-3.5" />
-                  Dispo. dès le {listing.available_from ? new Date(listing.available_from).toLocaleDateString('fr-FR') : '—'}
+                  {t('listingDetail.availableFromShort')} {listing.available_from ? new Date(listing.available_from).toLocaleDateString('fr-FR') : '—'}
                 </p>
               </div>
 
@@ -814,23 +849,33 @@ export default function ListingDetail() {
                     to={`/listings/${listing.id}/edit`}
                     className="w-full flex items-center justify-center gap-2 py-3 bg-[#009966] text-white rounded-xl font-semibold text-sm hover:bg-[#00734d] transition-colors shadow-sm"
                   >
-                    <PencilIcon className="h-4 w-4" /> Modifier l'annonce
+                    <PencilIcon className="h-4 w-4" /> {t('listingDetail.editListing')}
                   </Link>
                 )}
                 {isChercheur && !isOwner && (
-                  <button
-                    onClick={() => setShowRentModal(true)}
-                    className="w-full flex items-center justify-center gap-2 py-3 bg-[#009966] text-white rounded-xl font-semibold text-sm hover:bg-[#00734d] transition-colors shadow-sm"
-                  >
-                    <HomeIcon className="h-4 w-4" /> Demande de location
-                  </button>
+                  listing.has_requested ? (
+                    <button
+                      disabled
+                      title={t('listingDetail.requestAlreadySentTitle')}
+                      className="w-full flex items-center justify-center gap-2 py-3 bg-gray-100 text-gray-500 rounded-xl font-semibold text-sm cursor-not-allowed"
+                    >
+                      <CheckCircleIcon className="h-4 w-4" /> {t('listingDetail.requestAlreadySent')}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setShowRentModal(true)}
+                      className="w-full flex items-center justify-center gap-2 py-3 bg-[#009966] text-white rounded-xl font-semibold text-sm hover:bg-[#00734d] transition-colors shadow-sm"
+                    >
+                      <HomeIcon className="h-4 w-4" /> {t('listingDetail.rentalRequest')}
+                    </button>
+                  )
                 )}
                 {!user && (
                   <Link
                     to="/login"
                     className="w-full flex items-center justify-center gap-2 py-3 bg-[#009966] text-white rounded-xl font-semibold text-sm hover:bg-[#00734d] transition-colors"
                   >
-                    Se connecter pour contacter
+                    {t('listingDetail.loginToContact')}
                   </Link>
                 )}
                 {!isOwner && (
@@ -840,15 +885,15 @@ export default function ListingDetail() {
                       }`}
                   >
                     <HeartIcon className={`h-4 w-4 ${favorited ? 'fill-red-500 text-red-500' : ''}`} />
-                    {favorited ? 'Sauvegardé' : 'Ajouter aux favoris'}
+                    {favorited ? t('listingDetail.saved') : t('listingDetail.addToFavorites')}
                   </button>
                 )}
                 <button className="w-full flex items-center justify-center gap-2 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm hover:bg-gray-50 transition-colors font-medium">
-                  <ShareIcon className="h-4 w-4" /> Partager
+                  <ShareIcon className="h-4 w-4" /> {t('listingDetail.share')}
                 </button>
                 {!isOwner && user && (
                   <button className="w-full flex items-center justify-center gap-2 py-2.5 text-red-500 text-sm hover:bg-red-50 rounded-xl transition-colors">
-                    <FlagIcon className="h-4 w-4" /> Signaler l'annonce
+                    <FlagIcon className="h-4 w-4" /> {t('listingDetail.reportListing')}
                   </button>
                 )}
               </div>
@@ -858,13 +903,13 @@ export default function ListingDetail() {
                 <div className="flex flex-col items-center p-2.5 bg-gray-50 rounded-xl">
                   <span className="text-base font-bold text-gray-900">{listing.views_count ?? 0}</span>
                   <span className="text-xs text-gray-400 flex items-center gap-0.5 mt-0.5">
-                    <EyeIcon className="h-3 w-3" /> vues
+                    <EyeIcon className="h-3 w-3" /> {t('listingDetail.viewsLabel')}
                   </span>
                 </div>
                 <div className="flex flex-col items-center p-2.5 bg-gray-50 rounded-xl">
                   <span className="text-base font-bold text-gray-900">{listing.contacts_count ?? 0}</span>
                   <span className="text-xs text-gray-400 flex items-center gap-0.5 mt-0.5">
-                    <PhoneIcon className="h-3 w-3" /> contacts
+                    <PhoneIcon className="h-3 w-3" /> {t('listingDetail.contactsLabel')}
                   </span>
                 </div>
               </div>
@@ -872,7 +917,7 @@ export default function ListingDetail() {
               {/* Safety notice */}
               <div className="mt-4 p-3 bg-amber-50 rounded-xl border border-amber-100">
                 <p className="text-xs text-amber-700 leading-relaxed">
-                  🛡️ Rencontrez toujours dans un lieu public et ne payez jamais en dehors de la plateforme.
+                  🛡️ {t('listingDetail.safetyNotice')}
                 </p>
               </div>
             </div>

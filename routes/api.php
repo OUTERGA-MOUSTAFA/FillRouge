@@ -129,6 +129,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/messages/{message}', [MessageController::class, 'destroy']);
     Route::post('/messages/{message}/report', [MessageController::class, 'report']);
 
+    // Demande de location : le semsar accepte/refuse depuis le chat
+    Route::post('/demands/{message}/respond', [MessageController::class, 'respondDemand']);
+
     // Matches
     Route::get('/matches', [MatchController::class, 'index']);
     Route::post('/matches/{user}/accept', [MatchController::class, 'accept']);

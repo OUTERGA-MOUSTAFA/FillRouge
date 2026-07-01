@@ -1,0 +1,129 @@
+{
+  "listingForm": {
+    "mad": "MAD",
+    "amenities": {
+      "wifi": "Wi-Fi",
+      "ac": "Air conditioning",
+      "parking": "Parking",
+      "tv": "TV",
+      "kitchen": "Equipped kitchen",
+      "pets": "Pets allowed",
+      "washing_machine": "Washing machine",
+      "furnished": "Furnished",
+      "heating": "Heating",
+      "balcony": "Balcony"
+    },
+    "types": {
+      "room": {
+        "name": "Room",
+        "description": "Single room in an apartment/house"
+      },
+      "apartment": {
+        "name": "Apartment",
+        "description": "Entire apartment"
+      },
+      "looking_for_roommate": {
+        "name": "House",
+        "description": "Entire house"
+      }
+    },
+    "create": {
+      "title": "Publish a listing",
+      "subtitle": "Create your listing in a few steps",
+      "steps": {
+        "typeInfo": "Type & Info",
+        "location": "Location",
+        "priceAvailability": "Price & Availability",
+        "photosDetails": "Photos & Details"
+      },
+      "typeHeading": "Listing type",
+      "typeQuestion": "What type of housing are you offering?",
+      "generalInfo": "General information",
+      "titlePlaceholder": "Listing title *",
+      "descriptionPlaceholder": "Detailed description *",
+      "locationHeading": "Location",
+      "selectCityRequired": "Select a city *",
+      "mapComingSoon": "Interactive map coming soon",
+      "mapComingSoonHint": "For now, just specify the city",
+      "priceAvailabilityHeading": "Price and availability",
+      "monthlyPriceLabel": "Monthly price (MAD) *",
+      "pricePlaceholder": "e.g. 2500",
+      "availableFromLabel": "Available from *",
+      "furnishedCheckbox": "Furnished housing",
+      "amenitiesPhotosHeading": "Amenities & Photos",
+      "amenitiesOffered": "Amenities offered",
+      "choosePhotos": "Choose photos",
+      "photosHint": "Minimum 3 photos • Max 10 photos",
+      "photosFormats": "Accepted formats: JPG, PNG (max 5MB per photo)",
+      "photosRemaining": "{{count}} more photo(s) required",
+      "back": "Back",
+      "continue": "Continue",
+      "publishing": "Publishing...",
+      "publish": "Publish listing",
+      "summaryType": "Type:",
+      "summaryCity": "City:",
+      "summaryPrice": "Price:",
+      "notSelectedM": "Not selected",
+      "notSelectedF": "Not selected",
+      "priceNotDefined": "Not defined",
+      "priceValue": "{{price}} MAD",
+      "toastMaxPhotos": "Maximum 10 photos",
+      "toastTypeRequired": "Please choose a listing type",
+      "toastTitleRequired": "Title is required",
+      "toastDescriptionRequired": "Description is required",
+      "toastCityRequired": "Please choose a city",
+      "toastPriceRequired": "Price is required and must be greater than 0",
+      "toastDateRequired": "Availability date is required",
+      "toastMinPhotos": "Minimum 3 photos required",
+      "toastSuccess": "Listing created successfully!",
+      "toastCreateError": "Error while creating"
+    },
+    "edit": {
+      "backToListings": "Back to my listings",
+      "title": "Edit listing",
+      "titleLabel": "Listing title *",
+      "titlePlaceholder": "E.g. Spacious room in shared housing",
+      "descriptionLabel": "Description *",
+      "descriptionPlaceholder": "Describe your housing, the atmosphere, the house rules...",
+      "priceLabel": "Price (MAD/month) *",
+      "pricePlaceholder": "2500",
+      "roomTypeLabel": "Room type *",
+      "roomType": {
+        "private": "Private room",
+        "shared": "Shared room",
+        "entire": "Entire housing"
+      },
+      "cityLabel": "City *",
+      "selectCity": "Select a city",
+      "addressLabel": "Address",
+      "addressPlaceholder": "E.g. Maarif district, X Street",
+      "availableFromLabel": "Available from",
+      "durationLabel": "Rental duration",
+      "duration": {
+        "short": "Short stay (1-3 months)",
+        "medium": "Medium stay (3-6 months)",
+        "long": "Long stay (6+ months)"
+      },
+      "maxTenantsLabel": "Maximum number of roommates",
+      "amenitiesLabel": "Amenities",
+      "currentImages": "Current images",
+      "addImages": "Add images",
+      "clickToAddImages": "Click to add images",
+      "imageFormats": "JPG, PNG, WebP - Max 5MB",
+      "saving": "Saving...",
+      "saveChanges": "Save changes",
+      "cancel": "Cancel",
+      "toastNotAuthorized": "You are not authorized to edit this listing",
+      "toastLoadError": "Error while loading the listing",
+      "toastMaxImages": "Maximum 10 images per listing",
+      "toastImageTooLarge": "Image {{name}} exceeds 5 MB",
+      "toastTitleRequired": "Title is required",
+      "toastDescriptionRequired": "Description is required",
+      "toastPriceRequired": "Price is required",
+      "toastCityRequired": "City is required",
+      "toastImageRequired": "At least one image is required",
+      "toastSuccess": "Listing updated successfully",
+      "toastUpdateError": "Error while updating"
+    }
+  }
+}

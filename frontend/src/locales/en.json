@@ -1,0 +1,93 @@
+{
+  "app": {
+    "name": "Semsar",
+    "tagline": "Find the perfect roommate",
+    "description": "The 1st Moroccan platform dedicated to trusted shared housing"
+  },
+  "nav": {
+    "home": "Home",
+    "listings": "Listings",
+    "matches": "Matches",
+    "messages": "Messages",
+    "favorites": "Favorites",
+    "profile": "Profile",
+    "my_listings": "My listings",
+    "notifications": "Notifications",
+    "subscription": "Subscription",
+    "login": "Login",
+    "register": "Sign up",
+    "logout": "Logout",
+    "admin": {
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "reports": "Reports",
+      "verifications": "Verifications",
+      "sliders": "Sliders"
+    }
+  },
+  "navbar": {
+    "publish": "Publish",
+    "publish_listing": "Publish a listing",
+    "login": "Login",
+    "register": "Sign up",
+    "logout": "Logout",
+    "logout_success": "Logged out successfully"
+  },
+  "userMenu": {
+    "profile": "My profile",
+    "notifications": "Notifications",
+    "my_listings": "My listings",
+    "subscription": "Subscription",
+    "favorites": "My favorites"
+  },
+  "roles": {
+    "admin": "Administrator",
+    "semsar": "Semsar",
+    "chercheur": "Seeker"
+  },
+  "plans": {
+    "premium": "Premium",
+    "standard": "Standard",
+    "free": "Free"
+  },
+  "language": {
+    "label": "Language",
+    "changed": "Language: {{name}}"
+  },
+  "listings": {
+    "title": "Listings",
+    "create": "Publish a listing",
+    "types": {
+      "room": "Room",
+      "apartment": "Apartment",
+      "house": "House",
+      "studio": "Studio",
+      "looking_for_roommate": "Looking for roommate"
+    }
+  },
+  "card": {
+    "featured": "Featured",
+    "per_month": "/month",
+    "premium": "Premium"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "send": "Send",
+    "search": "Search",
+    "filter": "Filter",
+    "reset": "Reset",
+    "loading": "Loading...",
+    "no_data": "No data",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Finish",
+    "skip": "Skip"
+  }
+}

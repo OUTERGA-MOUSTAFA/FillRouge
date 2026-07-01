@@ -1,0 +1,89 @@
+{
+  "subscription": {
+    "currency": "MAD",
+    "perMonthShort": "/mois",
+    "free": "Gratuit",
+    "choose": "Choisir {{plan}}",
+    "startFree": "Commencer gratuitement",
+    "currentPlanLabel": "Plan actuel",
+    "loading": "Chargement des plans…",
+    "planWord": "Plan",
+    "heroBadge": "Semsar Premium",
+    "upgradeToPremium": "Passer à Premium",
+    "expiresIn": "— expire dans",
+    "currentSubscriptionTitle": "Votre abonnement actuel",
+    "viewCards": "Cartes",
+    "viewTable": "Tableau comparatif",
+    "plans": {
+      "free": "Gratuit",
+      "standard": "Standard",
+      "premium": "Premium"
+    },
+    "taglines": {
+      "free": "Pour commencer",
+      "standard": "Le plus populaire",
+      "premium": "Tout inclus"
+    },
+    "badges": {
+      "standard": "Populaire",
+      "premium": "Meilleur choix"
+    },
+    "features": {
+      "messages5": "5 messages par jour",
+      "messages50": "50 messages par jour",
+      "messagesUnlimited": "Messages illimités",
+      "viewBasicProfiles": "Voir les profils basiques",
+      "createListing": "Créer une annonce",
+      "featuredProfile": "Profil mis en avant",
+      "viewProfileVisitors": "Voir qui a visité ton profil",
+      "advancedFilters": "Filtres avancés",
+      "prioritySupport": "Support prioritaire"
+    },
+    "hero": {
+      "titleMain": "Trouvez votre colocataire idéal,",
+      "titleAccent": "plus vite",
+      "subtitle": "Passez à un plan payant pour débloquer toutes les fonctionnalités et maximiser vos chances."
+    },
+    "time": {
+      "oneHour": "1 heure",
+      "hours": "{{n}} heures",
+      "oneDay": "1 jour",
+      "days": "{{n}} jours",
+      "daysAndHours": "{{days}} et {{hours}}"
+    },
+    "toast": {
+      "loadError": "Erreur chargement des plans",
+      "freeAlreadyActive": "Le plan gratuit est déjà actif"
+    },
+    "table": {
+      "featureHeader": "Fonctionnalité",
+      "profile": "Profil",
+      "listingsPublished": "Annonces publiées",
+      "messagesPerDay": "Messages par jour",
+      "whoViewedProfile": "Voir qui a vu mon profil",
+      "premiumBadge": "Badge \"Premium\"",
+      "noAds": "Pas de publicités",
+      "backgroundCheck": "Background check",
+      "unlimited": "Illimité",
+      "maxCount": "{{n}} max",
+      "oneFreePerYear": "1 gratuit/an",
+      "current": "Actuel",
+      "pricePerMonth": "{{price}} MAD/mois"
+    },
+    "checkout": {
+      "title": "Finaliser l'abonnement",
+      "summary": "Vous allez souscrire au plan {{plan}} à {{price}} MAD/mois",
+      "paymentMethod": "Méthode de paiement",
+      "creditCard": "Carte bancaire",
+      "cmi": "CMI (Maroc)",
+      "cardNumber": "Numéro de carte",
+      "cardExpiry": "Date d'expiration",
+      "cvc": "CVC",
+      "total": "Total",
+      "processing": "Traitement en cours...",
+      "pay": "Payer {{price}} MAD",
+      "success": "Abonnement activé avec succès",
+      "paymentError": "Erreur lors du paiement"
+    }
+  }
+}

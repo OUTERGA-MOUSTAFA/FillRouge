@@ -1,0 +1,14 @@
+{
+  "map": {
+    "selectedPosition": "الموقع المحدد",
+    "searchAddressPlaceholder": "ابحث عن عنوان...",
+    "myLocation": "موقعي",
+    "viewDetails": "عرض التفاصيل →",
+    "listings": "الإعلانات",
+    "pricePerMonth": "{{price}} درهم/شهرياً",
+    "nearbyListings": "إعلانات قريبة ({{count}})",
+    "noListingsInArea": "لا توجد إعلانات في هذه المنطقة",
+    "loadError": "خطأ في تحميل الإعلانات",
+    "mad": "درهم"
+  }
+}

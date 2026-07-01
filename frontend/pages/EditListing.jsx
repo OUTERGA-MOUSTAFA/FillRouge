@@ -13,11 +13,13 @@ import {
   XMarkIcon,
   ChevronLeftIcon,
 } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 
 export default function EditListing() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuthStore();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -67,7 +69,7 @@ export default function EditListing() {
       const response = await listingsService.getById(id);
 
       if (response.data.user_id !== user?.id && user?.role !== 'admin') {
-        toast.error('Vous n\'êtes pas autorisé à modifier cette annonce');
+        toast.error(t('listingForm.edit.toastNotAuthorized'));
         navigate('/MyListings');
         return;
       }
@@ -105,7 +107,7 @@ export default function EditListing() {
 
     } catch (error) {
       console.error('Erreur:', error);
-      toast.error('Erreur lors du chargement de l\'annonce');
+      toast.error(t('listingForm.edit.toastLoadError'));
       navigate('/MyListings');
     } finally {
       setLoading(false);
@@ -123,13 +125,13 @@ export default function EditListing() {
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     if (files.length + existingImages.length + imagePreview.length > 10) {
-      toast.error('Maximum 10 images par annonce');
+      toast.error(t('listingForm.edit.toastMaxImages'));
       return;
     }
 
     files.forEach(file => {
       if (file.size > 5 * 1024 * 1024) {
-        toast.error(`L'image ${file.name} dépasse 5 Mo`);
+        toast.error(t('listingForm.edit.toastImageTooLarge', { name: file.name }));
         return;
       }
     });
@@ -162,24 +164,24 @@ export default function EditListing() {
     e.preventDefault();
 
     if (!formData.title.trim()) {
-      toast.error('Le titre est requis');
+      toast.error(t('listingForm.edit.toastTitleRequired'));
       return;
     }
     if (!formData.description.trim()) {
-      toast.error('La description est requise');
+      toast.error(t('listingForm.edit.toastDescriptionRequired'));
       return;
     }
     if (!formData.price || formData.price <= 0) {
-      toast.error('Le prix est requis');
+      toast.error(t('listingForm.edit.toastPriceRequired'));
       return;
     }
     if (!formData.city) {
-      toast.error('La ville est requise');
+      toast.error(t('listingForm.edit.toastCityRequired'));
       return;
     }
 
     if (existingImages.length === 0 && formData.images.length === 0) {
-      toast.error('Au moins une image est requise');
+      toast.error(t('listingForm.edit.toastImageRequired'));
       return;
     }
 
@@ -218,11 +220,11 @@ export default function EditListing() {
       });
 
       await listingsService.update(id, submitData);
-      toast.success('Annonce modifiée avec succès');
+      toast.success(t('listingForm.edit.toastSuccess'));
       navigate('/MyListings');
     } catch (error) {
       console.error('Erreur:', error);
-      toast.error(error.response?.data?.message || 'Erreur lors de la modification');
+      toast.error(error.response?.data?.message || t('listingForm.edit.toastUpdateError'));
     } finally {
       setSubmitting(false);
     }
@@ -246,9 +248,9 @@ export default function EditListing() {
             className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
           >
             <ChevronLeftIcon className="h-5 w-5" />
-            Retour à mes annonces
+            {t('listingForm.edit.backToListings')}
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">Modifier l'annonce</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t('listingForm.edit.title')}</h1>
           <div className="w-20"></div>
         </div>
 
@@ -257,7 +259,7 @@ export default function EditListing() {
           {/* Titre */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Titre de l'annonce *
+              {t('listingForm.edit.titleLabel')}
             </label>
             <input
               type="text"
@@ -265,14 +267,14 @@ export default function EditListing() {
               value={formData.title}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009966] focus:border-transparent"
-              placeholder="Ex: Chambre spacieuse dans colocation"
+              placeholder={t('listingForm.edit.titlePlaceholder')}
             />
           </div>
 
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description *
+              {t('listingForm.edit.descriptionLabel')}
             </label>
             <textarea
               name="description"
@@ -280,7 +282,7 @@ export default function EditListing() {
               onChange={handleChange}
               rows="5"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009966] focus:border-transparent"
-              placeholder="Décrivez votre logement, l'ambiance, les règles de la maison..."
+              placeholder={t('listingForm.edit.descriptionPlaceholder')}
             />
           </div>
 
@@ -288,7 +290,7 @@ export default function EditListing() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Prix (MAD/mois) *
+                {t('listingForm.edit.priceLabel')}
               </label>
               <div className="relative">
                 <CurrencyDollarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -298,14 +300,14 @@ export default function EditListing() {
                   value={formData.price}
                   onChange={handleChange}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009966] focus:border-transparent"
-                  placeholder="2500"
+                  placeholder={t('listingForm.edit.pricePlaceholder')}
                 />
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Type de chambre *
+                {t('listingForm.edit.roomTypeLabel')}
               </label>
               <select
                 name="room_type"
@@ -313,9 +315,9 @@ export default function EditListing() {
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009966] focus:border-transparent"
               >
-                <option value="private">Chambre privée</option>
-                <option value="shared">Chambre partagée</option>
-                <option value="entire">Logement entier</option>
+                <option value="private">{t('listingForm.edit.roomType.private')}</option>
+                <option value="shared">{t('listingForm.edit.roomType.shared')}</option>
+                <option value="entire">{t('listingForm.edit.roomType.entire')}</option>
               </select>
             </div>
           </div>
@@ -324,7 +326,7 @@ export default function EditListing() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Ville *
+                {t('listingForm.edit.cityLabel')}
               </label>
               <div className="relative">
                 <MapPinIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -334,7 +336,7 @@ export default function EditListing() {
                   onChange={handleChange}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009966] focus:border-transparent"
                 >
-                  <option value="">Sélectionnez une ville</option>
+                  <option value="">{t('listingForm.edit.selectCity')}</option>
                   {villes.map(ville => (
                     <option key={ville} value={ville}>{ville}</option>
                   ))}
@@ -344,7 +346,7 @@ export default function EditListing() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Adresse
+                {t('listingForm.edit.addressLabel')}
               </label>
               <input
                 type="text"
@@ -352,7 +354,7 @@ export default function EditListing() {
                 value={formData.address}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009966] focus:border-transparent"
-                placeholder="Ex: Quartier Maarif, Rue X"
+                placeholder={t('listingForm.edit.addressPlaceholder')}
               />
             </div>
           </div>
@@ -361,7 +363,7 @@ export default function EditListing() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Disponible à partir de
+                {t('listingForm.edit.availableFromLabel')}
               </label>
               <input
                 type="date"
@@ -374,7 +376,7 @@ export default function EditListing() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Durée de location
+                {t('listingForm.edit.durationLabel')}
               </label>
               <select
                 name="duration"
@@ -382,9 +384,9 @@ export default function EditListing() {
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009966] focus:border-transparent"
               >
-                <option value="short">Court séjour (1-3 mois)</option>
-                <option value="medium">Moyen séjour (3-6 mois)</option>
-                <option value="long">Long séjour (6+ mois)</option>
+                <option value="short">{t('listingForm.edit.duration.short')}</option>
+                <option value="medium">{t('listingForm.edit.duration.medium')}</option>
+                <option value="long">{t('listingForm.edit.duration.long')}</option>
               </select>
             </div>
           </div>
@@ -392,7 +394,7 @@ export default function EditListing() {
           {/* Nombre de colocataires */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Nombre maximum de colocataires
+              {t('listingForm.edit.maxTenantsLabel')}
             </label>
             <div className="flex items-center gap-2">
               <UserGroupIcon className="h-5 w-5 text-gray-400" />
@@ -411,17 +413,17 @@ export default function EditListing() {
           {/* Équipements */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">
-              Équipements
+              {t('listingForm.edit.amenitiesLabel')}
             </label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
-                { name: 'is_furnished', label: 'Meublé / Furnished' },
-                { name: 'has_wifi', label: 'Wi-Fi' },
-                { name: 'has_kitchen', label: 'Cuisine équipée' },
-                { name: 'has_heating', label: 'Chauffage' },
-                { name: 'has_air_conditioning', label: 'Climatisation' },
-                { name: 'has_parking', label: 'Parking' },
-                { name: 'has_balcony', label: 'Balcon' },
+                { name: 'is_furnished', labelKey: 'furnished' },
+                { name: 'has_wifi', labelKey: 'wifi' },
+                { name: 'has_kitchen', labelKey: 'kitchen' },
+                { name: 'has_heating', labelKey: 'heating' },
+                { name: 'has_air_conditioning', labelKey: 'ac' },
+                { name: 'has_parking', labelKey: 'parking' },
+                { name: 'has_balcony', labelKey: 'balcony' },
               ].map(amenity => (
                 <label key={amenity.name} className="flex items-center gap-2">
                   <input
@@ -431,7 +433,7 @@ export default function EditListing() {
                     onChange={handleChange}
                     className="rounded border-gray-300 text-[#009966] focus:ring-[#009966]"
                   />
-                  <span className="text-sm text-gray-700">{amenity.label}</span>
+                  <span className="text-sm text-gray-700">{t(`listingForm.amenities.${amenity.labelKey}`)}</span>
                 </label>
               ))}
             </div>
@@ -441,7 +443,7 @@ export default function EditListing() {
           {existingImages.length > 0 && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Images actuelles
+                {t('listingForm.edit.currentImages')}
               </label>
               <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
                 {existingImages.map((image, index) => (
@@ -467,7 +469,7 @@ export default function EditListing() {
           {/* Nouvelles images */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Ajouter des images
+              {t('listingForm.edit.addImages')}
             </label>
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
               <input
@@ -483,8 +485,8 @@ export default function EditListing() {
                 className="cursor-pointer inline-flex flex-col items-center"
               >
                 <PhotoIcon className="h-10 w-10 text-gray-400 mb-2" />
-                <span className="text-sm text-gray-600">Cliquez pour ajouter des images</span>
-                <span className="text-xs text-gray-400">JPG, PNG, WebP - Max 5MB</span>
+                <span className="text-sm text-gray-600">{t('listingForm.edit.clickToAddImages')}</span>
+                <span className="text-xs text-gray-400">{t('listingForm.edit.imageFormats')}</span>
               </label>
             </div>
 
@@ -518,14 +520,14 @@ export default function EditListing() {
               disabled={submitting}
               className="flex-1 bg-[#009966] text-white py-2 rounded-lg hover:bg-[#00734d] transition disabled:opacity-50"
             >
-              {submitting ? 'Enregistrement...' : 'Enregistrer les modifications'}
+              {submitting ? t('listingForm.edit.saving') : t('listingForm.edit.saveChanges')}
             </button>
             <button
               type="button"
               onClick={() => navigate('/MyListings')}
               className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition"
             >
-              Annuler
+              {t('listingForm.edit.cancel')}
             </button>
           </div>
         </form>

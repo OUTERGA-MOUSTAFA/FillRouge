@@ -1,4 +1,5 @@
 import { Fragment, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon, FunnelIcon } from '@heroicons/react/24/outline';
 
@@ -6,6 +7,7 @@ const cities = ['Agadir', 'Tanger', 'Fès', 'Meknès', 'Marrakech', 'Casablanca'
 const amenities = ['WiFi', 'AC', 'Parking', 'Furnished', 'Workspace', 'Kitchen', 'Garden'];
 
 export default function ListingFilters({ isOpen, onClose, onApply }) {
+  const { t } = useTranslation();
   const [filters, setFilters] = useState({
     city: '',
     min_price: 0,
@@ -70,7 +72,7 @@ export default function ListingFilters({ isOpen, onClose, onApply }) {
                 <div className="flex items-center justify-between mb-4">
                   <Dialog.Title as="h3" className="text-lg font-semibold text-gray-900">
                     <FunnelIcon className="h-5 w-5 inline mr-2" />
-                    Filtres
+                    {t('filters.title')}
                   </Dialog.Title>
                   <button onClick={onClose} className="text-gray-400 hover:text-gray-500">
                     <XMarkIcon className="h-6 w-6" />
@@ -80,13 +82,13 @@ export default function ListingFilters({ isOpen, onClose, onApply }) {
                 <div className="space-y-6">
                   {/* Ville */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Ville</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('filters.city')}</label>
                     <select
                       value={filters.city}
                       onChange={(e) => setFilters({ ...filters, city: e.target.value })}
                       className="input"
                     >
-                      <option value="">Toutes les villes</option>
+                      <option value="">{t('filters.allCities')}</option>
                       {cities.map(city => (
                         <option key={city} value={city}>{city}</option>
                       ))}
@@ -96,7 +98,7 @@ export default function ListingFilters({ isOpen, onClose, onApply }) {
                   {/* Budget */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Budget (MAD/mois): {filters.min_price} - {filters.max_price}
+                      {t('filters.budget', { min: filters.min_price, max: filters.max_price })}
                     </label>
                     <div className="flex gap-4">
                       <input
@@ -115,21 +117,21 @@ export default function ListingFilters({ isOpen, onClose, onApply }) {
                         value={filters.min_price}
                         onChange={(e) => setFilters({ ...filters, min_price: parseInt(e.target.value) })}
                         className="input w-1/2"
-                        placeholder="Min"
+                        placeholder={t('filters.min')}
                       />
                       <input
                         type="number"
                         value={filters.max_price}
                         onChange={(e) => setFilters({ ...filters, max_price: parseInt(e.target.value) })}
                         className="input w-1/2"
-                        placeholder="Max"
+                        placeholder={t('filters.max')}
                       />
                     </div>
                   </div>
 
                   {/* Type de logement */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Type de logement</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('filters.housingType')}</label>
                     <div className="flex gap-3">
                       {['room', 'apartment', 'looking_for_roommate'].map(type => (
                         <button
@@ -141,7 +143,7 @@ export default function ListingFilters({ isOpen, onClose, onApply }) {
                               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                           }`}
                         >
-                          {type === 'room' ? 'Chambre' : type === 'apartment' ? 'Appartement' : 'Cherche coloc'}
+                          {type === 'room' ? t('filters.room') : type === 'apartment' ? t('filters.apartment') : t('filters.lookingForRoommate')}
                         </button>
                       ))}
                     </div>
@@ -149,7 +151,7 @@ export default function ListingFilters({ isOpen, onClose, onApply }) {
 
                   {/* Commodités */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Commodités</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('filters.amenities')}</label>
                     <div className="flex flex-wrap gap-2">
                       {amenities.map(amenity => (
                         <button
@@ -170,10 +172,10 @@ export default function ListingFilters({ isOpen, onClose, onApply }) {
 
                 <div className="flex gap-3 mt-6 pt-4 border-t">
                   <button onClick={handleReset} className="flex-1 btn-secondary">
-                    Réinitialiser
+                    {t('filters.reset')}
                   </button>
                   <button onClick={handleApply} className="flex-1 btn-primary">
-                    Appliquer
+                    {t('filters.apply')}
                   </button>
                 </div>
               </Dialog.Panel>

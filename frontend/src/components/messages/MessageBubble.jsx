@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { CheckIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 
 export default function MessageBubble({ message, isOwn }) {
+  const { t } = useTranslation();
   const [showTime, setShowTime] = useState(false);
 
   const formatTime = (date) => {
@@ -35,7 +37,7 @@ export default function MessageBubble({ message, isOwn }) {
                   rel="noopener noreferrer"
                   className={`block text-xs underline ${isOwn ? 'text-green-100' : 'text-blue-500'}`}
                 >
-                  📎 Attachment {i + 1}
+                  📎 {t('messages.chat.attachment', { number: i + 1 })}
                 </a>
               ))}
             </div>
@@ -48,7 +50,7 @@ export default function MessageBubble({ message, isOwn }) {
                 isOwn ? 'text-green-200' : 'text-gray-400'
               } ${showTime || isTemp ? 'opacity-100' : 'opacity-0'}`}
             >
-              {isTemp ? 'Sending...' : formatTime(message.created_at)}
+              {isTemp ? t('messages.chat.sending') : formatTime(message.created_at)}
             </span>
 
             {isOwn && !isTemp && (

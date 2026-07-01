@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { UserIcon, ChatBubbleLeftRightIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 
 export default function MatchCard({ match, onAccept, onDecline, onMessage }) {
+  const { t } = useTranslation();
   const { user, compatibility_score, common_interests, status } = match;
 
   const getScoreColor = (score) => {
@@ -32,7 +34,7 @@ export default function MatchCard({ match, onAccept, onDecline, onMessage }) {
               {compatibility_score}%
             </div>
           </div>
-          <div className="text-sm text-gray-500">{user.age} ans</div>
+          <div className="text-sm text-gray-500">{t('matches.ageYears', { age: user.age })}</div>
           
           {/* Common interests */}
           {common_interests && common_interests.length > 0 && (
@@ -59,14 +61,14 @@ export default function MatchCard({ match, onAccept, onDecline, onMessage }) {
               className="flex-1 btn-primary flex items-center justify-center gap-2"
             >
               <CheckIcon className="h-4 w-4" />
-              Accepter
+              {t('matches.accept')}
             </button>
             <button
               onClick={() => onDecline?.(user.id)}
               className="flex-1 btn-secondary flex items-center justify-center gap-2"
             >
               <XMarkIcon className="h-4 w-4" />
-              Refuser
+              {t('matches.decline')}
             </button>
           </>
         ) : (
@@ -75,7 +77,7 @@ export default function MatchCard({ match, onAccept, onDecline, onMessage }) {
             className="flex-1 btn-primary flex items-center justify-center gap-2"
           >
             <ChatBubbleLeftRightIcon className="h-4 w-4" />
-            Envoyer un message
+            {t('matches.sendMessage')}
           </button>
         )}
       </div>

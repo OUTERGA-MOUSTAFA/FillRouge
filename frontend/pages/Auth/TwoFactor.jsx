@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../src/store/authStore';  // ← chemin corrigé
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export default function TwoFactor() {
+  const { t } = useTranslation();
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const location = useLocation();
@@ -16,10 +18,10 @@ export default function TwoFactor() {
     
     try {
       await verify2FA(code);
-      toast.success('Connexion réussie');
+      toast.success(t('auth.common.loginSuccess'));
       navigate('/');
     } catch (error) {
-      const message = error.response?.data?.message || 'Code 2FA invalide';
+      const message = error.response?.data?.message || t('auth.twoFactor.invalidCode');
       toast.error(message);
     } finally {
       setLoading(false);
@@ -31,10 +33,10 @@ export default function TwoFactor() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="text-center text-3xl font-bold text-gray-900">
-            Authentification à deux facteurs
+            {t('auth.twoFactor.title')}
           </h2>
           <p className="mt-2 text-center text-gray-600">
-            Entrez le code généré par votre application d'authentification
+            {t('auth.twoFactor.subtitle')}
           </p>
         </div>
         
@@ -57,7 +59,7 @@ export default function TwoFactor() {
             disabled={loading}
             className="btn-primary w-full"
           >
-            {loading ? 'Vérification...' : 'Vérifier'}
+            {loading ? t('auth.common.verifying') : t('auth.common.verify')}
           </button>
         </form>
       </div>

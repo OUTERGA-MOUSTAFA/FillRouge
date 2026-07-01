@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { PencilIcon, TrashIcon, EyeIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { listingsService } from '../src/services/listings';
+import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 
 export default function MyListings() {
+  const { t } = useTranslation();
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -18,7 +20,7 @@ export default function MyListings() {
       const response = await listingsService.myListings();
       setListings(response.data.data || []);
     } catch (error) {
-      const message = error.response?.data?.message || 'Erreur chargement des annonces';
+      const message = error.response?.data?.message || t('myListings.errorLoading');
       toast.error(message);
     } finally {
       setLoading(false);
@@ -28,22 +30,22 @@ export default function MyListings() {
   const handleToggleStatus = async (id, currentStatus) => {
     try {
       await listingsService.toggleStatus(id);
-      toast.success(currentStatus === 'active' ? 'Annonce désactivée' : 'Annonce activée');
+      toast.success(currentStatus === 'active' ? t('myListings.listingDeactivated') : t('myListings.listingActivated'));
       fetchListings();
     } catch (error) {
-      const message = error.response?.data?.message || 'Erreur';
+      const message = error.response?.data?.message || t('myListings.error');
       toast.error(message);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Supprimer définitivement cette annonce ?')) return;
+    if (!confirm(t('myListings.confirmDelete'))) return;
     try {
       await listingsService.delete(id);
-      toast.success('Annonce supprimée');
+      toast.success(t('myListings.listingDeleted'));
       fetchListings();
     } catch (error) {
-      const message = error.response?.data?.message || 'Erreur';
+      const message = error.response?.data?.message || t('myListings.error');
       toast.error(message);
     }
   };
@@ -51,10 +53,10 @@ export default function MyListings() {
   const handleMakeFeatured = async (id) => {
     try {
       await listingsService.makeFeatured(id);
-      toast.success('Annonce mise en avant !');
+      toast.success(t('myListings.listingFeatured'));
       fetchListings();
     } catch (error) {
-      const message = error.response?.data?.message || 'Erreur';
+      const message = error.response?.data?.message || t('myListings.error');
       toast.error(message);
     }
   };
@@ -70,18 +72,18 @@ export default function MyListings() {
   return (
     <div className="container-custom py-8 px-4">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Mes annonces</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('myListings.title')}</h1>
         <Link to="/listings/create" className="btn-primary flex items-center gap-2">
           <PlusIcon className="h-5 w-5" />
-          Nouvelle annonce
+          {t('myListings.newListing')}
         </Link>
       </div>
 
       {listings.length === 0 ? (
         <div className="card p-12 text-center">
-          <p className="text-gray-500 mb-4">Vous n'avez pas encore d'annonces</p>
+          <p className="text-gray-500 mb-4">{t('myListings.noListings')}</p>
           <Link to="/listings/create" className="btn-primary">
-            Créer ma première annonce
+            {t('myListings.createFirstListing')}
           </Link>
         </div>
       ) : (
@@ -99,7 +101,7 @@ export default function MyListings() {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400">
-                      Pas d'image
+                      {t('myListings.noImage')}
                     </div>
                   )}
                 </div>
@@ -110,7 +112,7 @@ export default function MyListings() {
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">{listing.title}</h3>
                       <p className="text-gray-500 text-sm">
-                        {listing.city} • {listing.price.toLocaleString()} MAD/mois
+                        {listing.city} • {listing.price.toLocaleString()} {t('myListings.perMonth')}
                       </p>
                       <div className="flex gap-2 mt-2">
                         <span className={`px-2 py-1 text-xs rounded-full ${
@@ -118,21 +120,21 @@ export default function MyListings() {
                             ? 'bg-green-100 text-green-800' 
                             : 'bg-gray-100 text-gray-800'
                         }`}>
-                          {listing.status === 'active' ? 'Active' : 'Inactive'}
+                          {listing.status === 'active' ? t('myListings.statusActive') : t('myListings.statusInactive')}
                         </span>
                         {listing.is_featured && (
                           <span className="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">
-                            ⭐ Mis en avant
+                            ⭐ {t('myListings.featured')}
                           </span>
                         )}
                       </div>
                     </div>
                     <div className="text-right">
                       <p className="text-sm text-gray-500">
-                        Vues: {listing.views_count || 0}
+                        {t('myListings.views', { count: listing.views_count || 0 })}
                       </p>
                       <p className="text-sm text-gray-500">
-                        Messages: {listing.contacts_count || 0}
+                        {t('myListings.messages', { count: listing.contacts_count || 0 })}
                       </p>
                     </div>
                   </div>
@@ -145,27 +147,27 @@ export default function MyListings() {
                     className="btn-secondary text-sm flex items-center justify-center gap-1"
                   >
                     <EyeIcon className="h-4 w-4" />
-                    Voir
+                    {t('myListings.view')}
                   </Link>
                   <button
                     onClick={() => handleToggleStatus(listing.id, listing.status)}
                     className="btn-secondary text-sm flex items-center justify-center gap-1"
                   >
-                    {listing.status === 'active' ? 'Désactiver' : 'Activer'}
+                    {listing.status === 'active' ? t('myListings.deactivate') : t('myListings.activate')}
                   </button>
                   <Link
                     to={`/listings/${listing.id}`}
                     className="btn-secondary text-sm flex items-center justify-center gap-1"
                   >
                     <PencilIcon className="h-4 w-4" />
-                    Modifier
+                    {t('myListings.edit')}
                   </Link>
                   {!listing.is_featured && (
                     <button
                       onClick={() => handleMakeFeatured(listing.id)}
                       className="btn-primary text-sm flex items-center justify-center gap-1"
                     >
-                      Mettre en avant
+                      {t('myListings.makeFeatured')}
                     </button>
                   )}
                   <button
@@ -173,7 +175,7 @@ export default function MyListings() {
                     className="text-red-600 hover:text-red-800 text-sm flex items-center justify-center gap-1"
                   >
                     <TrashIcon className="h-4 w-4" />
-                    Supprimer
+                    {t('myListings.delete')}
                   </button>
                 </div>
               </div>

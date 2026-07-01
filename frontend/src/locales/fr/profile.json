@@ -1,0 +1,285 @@
+{
+  "profile": {
+    "me": {
+      "load_error": "Erreur chargement du profil",
+      "logout_success": "Déconnecté avec succès",
+      "smoking": {
+        "no": "Non-fumeur",
+        "occasionally": "Occasionnel",
+        "yes": "Fumeur"
+      },
+      "pets": {
+        "no": "Non",
+        "maybe": "Peut-être",
+        "yes": "Oui"
+      },
+      "sleep": {
+        "early_bird": "Lève-tôt",
+        "flexible": "Flexible",
+        "night_owl": "Couche-tard"
+      },
+      "cleanliness": {
+        "relaxed": "Relax",
+        "moderate": "Modéré",
+        "very_clean": "Très propre"
+      },
+      "social": {
+        "introvert": "Introverti",
+        "ambivert": "Ambiverti",
+        "extrovert": "Extraverti"
+      },
+      "gender": {
+        "male": "Homme",
+        "female": "Femme",
+        "other": "Autre",
+        "any": "Peu importe"
+      },
+      "interests": {
+        "cooking": "Cuisine",
+        "fitness": "Sport",
+        "tech": "Technologie",
+        "travel": "Voyage",
+        "study": "Études",
+        "remote_work": "Télétravail",
+        "music": "Musique",
+        "sports": "Sports",
+        "reading": "Lecture",
+        "art": "Art",
+        "gaming": "Jeux vidéo",
+        "outdoors": "Plein air"
+      },
+      "plan": {
+        "premium": "Premium",
+        "standard": "Standard",
+        "free": "Gratuit"
+      },
+      "features": {
+        "unlimited_messages": "Messages illimités",
+        "unlimited_listings": "Annonces illimitées",
+        "featured_profile": "Profil mis en avant",
+        "vip_support": "Support VIP",
+        "messages_50_day": "50 messages/jour",
+        "listings_10_max": "10 annonces max",
+        "priority_support": "Support prioritaire",
+        "messages_5_day": "5 messages/jour",
+        "listings_2_max": "2 annonces max",
+        "basic_profile": "Profil basique"
+      },
+      "email_verified": "Email vérifié",
+      "identity_verified": "Identité vérifiée",
+      "subscription_valid": "Abonnement {{plan}} valable jusqu'au {{date}}",
+      "days_left": "({{count}} jours restants)",
+      "edit": "Modifier",
+      "logout": "Déconnexion",
+      "plan_benefit": "Vous bénéficiez du plan {{plan}} !",
+      "upgrade_premium": "Passer à Premium →",
+      "manage_subscription": "Gérer mon abonnement →",
+      "completion": "Complétion du profil",
+      "complete_profile": "Compléter mon profil",
+      "tabs": {
+        "info": "Informations",
+        "interests": "Centres d'intérêt",
+        "lifestyle": "Mode de vie",
+        "preferences": "Préférences",
+        "security": "Sécurité"
+      },
+      "member_since": "Membre depuis",
+      "na": "N/A",
+      "listings": "Annonces",
+      "reviews": "Avis",
+      "average_rating": "Note moyenne",
+      "about": "À propos",
+      "personal_info": "Informations personnelles",
+      "full_name": "Nom complet",
+      "gender_label": "Genre",
+      "birth_date": "Date de naissance",
+      "profession": "Profession",
+      "city": "Ville",
+      "neighborhood": "Quartier",
+      "budget": "Budget",
+      "monthly_budget": "Budget mensuel",
+      "budget_range": "{{min}} - {{max}} MAD",
+      "budget_from": "À partir de {{min}} MAD",
+      "budget_up_to": "Jusqu'à {{max}} MAD",
+      "interests_title": "Centres d'intérêt",
+      "no_interests": "Aucun centre d'intérêt renseigné",
+      "lifestyle_title": "Mode de vie",
+      "tobacco": "Tabac",
+      "pets_label": "Animaux",
+      "sleep_label": "Sommeil",
+      "cleanliness_label": "Propreté",
+      "social_label": "Niveau social",
+      "no_lifestyle": "Aucune préférence de vie renseignée",
+      "roommate_prefs": "Préférences colocataire",
+      "preferred_gender": "Genre préféré",
+      "accepts_pets": "Accepte les animaux",
+      "accepts_smokers": "Accepte les fumeurs",
+      "yes": "Oui",
+      "no": "Non",
+      "preferred_age_range": "Tranche d'âge préférée",
+      "no_preferences": "Aucune préférence renseignée",
+      "verifications": "Vérifications",
+      "email": "Email",
+      "verified": "Vérifié",
+      "verify": "Vérifier",
+      "phone": "Téléphone",
+      "not_provided": "Non renseigné",
+      "identity_cin": "Identité (CIN)",
+      "official_document": "Document officiel",
+      "submit": "Soumettre",
+      "two_factor_title": "Authentification à deux facteurs",
+      "two_factor_short": "2FA",
+      "secure_account": "Sécurisez votre compte",
+      "disable": "Désactiver",
+      "enable": "Activer"
+    },
+    "user": {
+      "type": {
+        "room": "Chambre",
+        "apartment": "Appartement",
+        "house": "Maison"
+      },
+      "per_month": "MAD/mois",
+      "status_active": "Actif",
+      "load_error": "Erreur chargement du profil",
+      "loading": "Chargement du profil…",
+      "lifestyle": {
+        "smoking": "Tabac",
+        "pets": "Animaux",
+        "sleep": "Rythme",
+        "cleanliness": "Propreté",
+        "social": "Social"
+      },
+      "smoking": {
+        "yes": "Fumeur",
+        "no": "Non-fumeur",
+        "occasional": "Occasionnel"
+      },
+      "pets": {
+        "yes": "Accepte",
+        "no": "Non",
+        "maybe": "Peut-être"
+      },
+      "sleep": {
+        "early_bird": "Lève-tôt",
+        "night_owl": "Couche-tard",
+        "flexible": "Flexible"
+      },
+      "cleanliness": {
+        "very_clean": "Très propre",
+        "clean": "Propre",
+        "moderate": "Relax"
+      },
+      "social": {
+        "extrovert": "Extraverti",
+        "introvert": "Introverti",
+        "ambivert": "Ambiverti"
+      },
+      "tabs": {
+        "about": "À propos",
+        "listings": "Annonces ({{count}})",
+        "reviews": "Avis ({{count}})"
+      },
+      "verification": {
+        "email": "Email",
+        "phone": "Téléphone",
+        "identity": "Identité"
+      },
+      "back": "Retour",
+      "gender": {
+        "male": "Homme",
+        "female": "Femme",
+        "any": "Indifférent"
+      },
+      "age_suffix": " · {{age}} ans",
+      "rating_summary": "{{rating}} · {{count}} avis",
+      "message": "Message",
+      "leave_review": "Laisser un avis",
+      "edit_profile": "Modifier le profil",
+      "accept": "Accepter",
+      "refuse": "Refuser",
+      "pending_demand": "Demande de location en attente",
+      "pending_demand_for": "Demande de location pour « {{listing}} »",
+      "demand_accepted": "Demande acceptée",
+      "demand_refused": "Demande refusée",
+      "demand_error": "Erreur lors de la réponse",
+      "lifestyle_title": "Mode de vie",
+      "budget": "Budget",
+      "compatibility": "Compatibilité",
+      "match_score": "Score de match",
+      "about": "À propos",
+      "interests": "Centres d'intérêt",
+      "roommate_prefs": "Préférences colocataire",
+      "pref_gender": "Genre",
+      "pref_age": "Âge",
+      "age_range": "{{min}}–{{max}} ans",
+      "pref_pets": "Animaux",
+      "accepts": "Accepte",
+      "refuses": "Refuse",
+      "pref_smokers": "Fumeurs",
+      "info": "Informations",
+      "member_since": "Membre depuis",
+      "active_listings": "Annonces actives",
+      "occupation": "Occupation",
+      "self_employed": "Indépendant",
+      "no_listings": "Aucune annonce publiée",
+      "leave_review_to": "Laisser un avis à {{name}}"
+    },
+    "reviews": {
+      "rating1": {
+        "label": "Très décevant",
+        "sub": "Expérience très négative"
+      },
+      "rating2": {
+        "label": "Décevant",
+        "sub": "En dessous des attentes"
+      },
+      "rating3": {
+        "label": "Correct",
+        "sub": "Expérience correcte"
+      },
+      "rating4": {
+        "label": "Bien",
+        "sub": "Bonne expérience globale"
+      },
+      "rating5": {
+        "label": "Excellent !",
+        "sub": "Expérience exceptionnelle"
+      },
+      "choose_rating": "Veuillez choisir une note",
+      "already_reviewed": "Vous avez déjà laissé un avis pour cet utilisateur",
+      "error": "Une erreur est survenue",
+      "leave_review": "Laisser un avis",
+      "sent": "Avis envoyé !",
+      "sent_hint": "Il sera publié lorsque l'autre utilisateur vous évaluera.",
+      "your_rating": "Votre note",
+      "comment": "Commentaire",
+      "optional": "(optionnel)",
+      "comment_placeholder": "Décrivez votre expérience avec cet utilisateur…",
+      "related_listing": "Annonce concernée",
+      "no_specific_listing": "— Aucune annonce spécifique —",
+      "mutual_before": "Votre avis sera visible uniquement après que",
+      "mutual_after": "vous ait évalué à son tour (accord mutuel).",
+      "sending": "Envoi en cours…",
+      "submit": "Publier l'avis",
+      "loading": "Chargement des avis…",
+      "empty": "Aucun avis pour le moment",
+      "out_of_5": "sur 5",
+      "verified_count": "{{count}} avis vérifiés"
+    },
+    "badges": {
+      "email_verified": "Email vérifié",
+      "phone_verified": "Téléphone vérifié",
+      "identity_verified": "Identité vérifiée",
+      "background_checked": "Background check",
+      "premium": "Premium"
+    },
+    "compatibility": {
+      "excellent": "Excellent match !",
+      "good": "Bon match",
+      "potential": "Match potentiel",
+      "limited": "Compatibilité limitée",
+      "label": "Score de compatibilité"
+    }
+  }
+}

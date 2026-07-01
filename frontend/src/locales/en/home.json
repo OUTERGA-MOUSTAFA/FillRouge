@@ -1,0 +1,51 @@
+{
+  "home": {
+    "loading": "Loading...",
+    "stats": {
+      "activeListings": "Active listings",
+      "users": "Users",
+      "citiesCovered": "Cities covered",
+      "satisfactionRate": "Satisfaction rate"
+    },
+    "features": {
+      "title": "Why choose Semsar?",
+      "subtitle": "A complete platform for your roommate search",
+      "smartSearch": {
+        "name": "Smart search",
+        "description": "Find the ideal roommate thanks to our advanced matching algorithm."
+      },
+      "verifiedListings": {
+        "name": "Verified listings",
+        "description": "All our listings are verified for your safety."
+      },
+      "secureMessaging": {
+        "name": "Secure messaging",
+        "description": "Communicate safely with your future roommates."
+      },
+      "largeSelection": {
+        "name": "Wide selection",
+        "description": "Thousands of listings in every city in Morocco."
+      }
+    },
+    "sliders": {
+      "discover": "Discover",
+      "slide1": {
+        "title": "Find your ideal space",
+        "subtitle": "Thousands of listings in Casablanca, Rabat and all over Morocco"
+      },
+      "slide2": {
+        "title": "Secure shared housing",
+        "subtitle": "Verified listings and authenticated profiles for your peace of mind"
+      },
+      "slide3": {
+        "title": "The Semsar community",
+        "subtitle": "Join over 10,000 members looking for the perfect roommate"
+      }
+    },
+    "cta": {
+      "title": "Ready to find your roommate?",
+      "subtitle": "Join the largest shared housing community in Morocco",
+      "button": "Get started now"
+    }
+  }
+}

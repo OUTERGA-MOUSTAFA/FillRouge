@@ -1,0 +1,285 @@
+{
+  "profile": {
+    "me": {
+      "load_error": "Error loading profile",
+      "logout_success": "Logged out successfully",
+      "smoking": {
+        "no": "Non-smoker",
+        "occasionally": "Occasional",
+        "yes": "Smoker"
+      },
+      "pets": {
+        "no": "No",
+        "maybe": "Maybe",
+        "yes": "Yes"
+      },
+      "sleep": {
+        "early_bird": "Early bird",
+        "flexible": "Flexible",
+        "night_owl": "Night owl"
+      },
+      "cleanliness": {
+        "relaxed": "Relaxed",
+        "moderate": "Moderate",
+        "very_clean": "Very clean"
+      },
+      "social": {
+        "introvert": "Introvert",
+        "ambivert": "Ambivert",
+        "extrovert": "Extrovert"
+      },
+      "gender": {
+        "male": "Male",
+        "female": "Female",
+        "other": "Other",
+        "any": "No preference"
+      },
+      "interests": {
+        "cooking": "Cooking",
+        "fitness": "Fitness",
+        "tech": "Technology",
+        "travel": "Travel",
+        "study": "Studies",
+        "remote_work": "Remote work",
+        "music": "Music",
+        "sports": "Sports",
+        "reading": "Reading",
+        "art": "Art",
+        "gaming": "Gaming",
+        "outdoors": "Outdoors"
+      },
+      "plan": {
+        "premium": "Premium",
+        "standard": "Standard",
+        "free": "Free"
+      },
+      "features": {
+        "unlimited_messages": "Unlimited messages",
+        "unlimited_listings": "Unlimited listings",
+        "featured_profile": "Featured profile",
+        "vip_support": "VIP support",
+        "messages_50_day": "50 messages/day",
+        "listings_10_max": "10 listings max",
+        "priority_support": "Priority support",
+        "messages_5_day": "5 messages/day",
+        "listings_2_max": "2 listings max",
+        "basic_profile": "Basic profile"
+      },
+      "email_verified": "Email verified",
+      "identity_verified": "Identity verified",
+      "subscription_valid": "{{plan}} subscription valid until {{date}}",
+      "days_left": "({{count}} days left)",
+      "edit": "Edit",
+      "logout": "Log out",
+      "plan_benefit": "You enjoy the {{plan}} plan!",
+      "upgrade_premium": "Upgrade to Premium →",
+      "manage_subscription": "Manage my subscription →",
+      "completion": "Profile completion",
+      "complete_profile": "Complete my profile",
+      "tabs": {
+        "info": "Information",
+        "interests": "Interests",
+        "lifestyle": "Lifestyle",
+        "preferences": "Preferences",
+        "security": "Security"
+      },
+      "member_since": "Member since",
+      "na": "N/A",
+      "listings": "Listings",
+      "reviews": "Reviews",
+      "average_rating": "Average rating",
+      "about": "About",
+      "personal_info": "Personal information",
+      "full_name": "Full name",
+      "gender_label": "Gender",
+      "birth_date": "Date of birth",
+      "profession": "Profession",
+      "city": "City",
+      "neighborhood": "Neighborhood",
+      "budget": "Budget",
+      "monthly_budget": "Monthly budget",
+      "budget_range": "{{min}} - {{max}} MAD",
+      "budget_from": "From {{min}} MAD",
+      "budget_up_to": "Up to {{max}} MAD",
+      "interests_title": "Interests",
+      "no_interests": "No interests provided",
+      "lifestyle_title": "Lifestyle",
+      "tobacco": "Tobacco",
+      "pets_label": "Pets",
+      "sleep_label": "Sleep",
+      "cleanliness_label": "Cleanliness",
+      "social_label": "Social level",
+      "no_lifestyle": "No lifestyle preference provided",
+      "roommate_prefs": "Roommate preferences",
+      "preferred_gender": "Preferred gender",
+      "accepts_pets": "Accepts pets",
+      "accepts_smokers": "Accepts smokers",
+      "yes": "Yes",
+      "no": "No",
+      "preferred_age_range": "Preferred age range",
+      "no_preferences": "No preferences provided",
+      "verifications": "Verifications",
+      "email": "Email",
+      "verified": "Verified",
+      "verify": "Verify",
+      "phone": "Phone",
+      "not_provided": "Not provided",
+      "identity_cin": "Identity (ID card)",
+      "official_document": "Official document",
+      "submit": "Submit",
+      "two_factor_title": "Two-factor authentication",
+      "two_factor_short": "2FA",
+      "secure_account": "Secure your account",
+      "disable": "Disable",
+      "enable": "Enable"
+    },
+    "user": {
+      "type": {
+        "room": "Room",
+        "apartment": "Apartment",
+        "house": "House"
+      },
+      "per_month": "MAD/month",
+      "status_active": "Active",
+      "load_error": "Error loading profile",
+      "loading": "Loading profile…",
+      "lifestyle": {
+        "smoking": "Tobacco",
+        "pets": "Pets",
+        "sleep": "Rhythm",
+        "cleanliness": "Cleanliness",
+        "social": "Social"
+      },
+      "smoking": {
+        "yes": "Smoker",
+        "no": "Non-smoker",
+        "occasional": "Occasional"
+      },
+      "pets": {
+        "yes": "Accepts",
+        "no": "No",
+        "maybe": "Maybe"
+      },
+      "sleep": {
+        "early_bird": "Early bird",
+        "night_owl": "Night owl",
+        "flexible": "Flexible"
+      },
+      "cleanliness": {
+        "very_clean": "Very clean",
+        "clean": "Clean",
+        "moderate": "Relaxed"
+      },
+      "social": {
+        "extrovert": "Extrovert",
+        "introvert": "Introvert",
+        "ambivert": "Ambivert"
+      },
+      "tabs": {
+        "about": "About",
+        "listings": "Listings ({{count}})",
+        "reviews": "Reviews ({{count}})"
+      },
+      "verification": {
+        "email": "Email",
+        "phone": "Phone",
+        "identity": "Identity"
+      },
+      "back": "Back",
+      "gender": {
+        "male": "Male",
+        "female": "Female",
+        "any": "No preference"
+      },
+      "age_suffix": " · {{age}} years old",
+      "rating_summary": "{{rating}} · {{count}} reviews",
+      "message": "Message",
+      "leave_review": "Leave a review",
+      "edit_profile": "Edit profile",
+      "accept": "Accept",
+      "refuse": "Refuse",
+      "pending_demand": "Pending rental request",
+      "pending_demand_for": "Rental request for \"{{listing}}\"",
+      "demand_accepted": "Request accepted",
+      "demand_refused": "Request refused",
+      "demand_error": "Error while responding",
+      "lifestyle_title": "Lifestyle",
+      "budget": "Budget",
+      "compatibility": "Compatibility",
+      "match_score": "Match score",
+      "about": "About",
+      "interests": "Interests",
+      "roommate_prefs": "Roommate preferences",
+      "pref_gender": "Gender",
+      "pref_age": "Age",
+      "age_range": "{{min}}–{{max}} years old",
+      "pref_pets": "Pets",
+      "accepts": "Accepts",
+      "refuses": "Refuses",
+      "pref_smokers": "Smokers",
+      "info": "Information",
+      "member_since": "Member since",
+      "active_listings": "Active listings",
+      "occupation": "Occupation",
+      "self_employed": "Self-employed",
+      "no_listings": "No listings published",
+      "leave_review_to": "Leave a review for {{name}}"
+    },
+    "reviews": {
+      "rating1": {
+        "label": "Very disappointing",
+        "sub": "Very negative experience"
+      },
+      "rating2": {
+        "label": "Disappointing",
+        "sub": "Below expectations"
+      },
+      "rating3": {
+        "label": "Okay",
+        "sub": "Decent experience"
+      },
+      "rating4": {
+        "label": "Good",
+        "sub": "Good overall experience"
+      },
+      "rating5": {
+        "label": "Excellent!",
+        "sub": "Exceptional experience"
+      },
+      "choose_rating": "Please choose a rating",
+      "already_reviewed": "You have already left a review for this user",
+      "error": "An error occurred",
+      "leave_review": "Leave a review",
+      "sent": "Review sent!",
+      "sent_hint": "It will be published once the other user reviews you.",
+      "your_rating": "Your rating",
+      "comment": "Comment",
+      "optional": "(optional)",
+      "comment_placeholder": "Describe your experience with this user…",
+      "related_listing": "Related listing",
+      "no_specific_listing": "— No specific listing —",
+      "mutual_before": "Your review will only be visible once",
+      "mutual_after": "has reviewed you in turn (mutual agreement).",
+      "sending": "Sending…",
+      "submit": "Publish review",
+      "loading": "Loading reviews…",
+      "empty": "No reviews yet",
+      "out_of_5": "out of 5",
+      "verified_count": "{{count}} verified reviews"
+    },
+    "badges": {
+      "email_verified": "Email verified",
+      "phone_verified": "Phone verified",
+      "identity_verified": "Identity verified",
+      "background_checked": "Background check",
+      "premium": "Premium"
+    },
+    "compatibility": {
+      "excellent": "Excellent match!",
+      "good": "Good match",
+      "potential": "Potential match",
+      "limited": "Limited compatibility",
+      "label": "Compatibility score"
+    }
+  }
+}

@@ -1,8 +1,10 @@
 import { useRef, useEffect, useState } from 'react'; // useState ajouté
 import { PaperAirplaneIcon, PhotoIcon, UserCircleIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 import MessageBubble from './MessageBubble';
 
 export default function ChatWindow({ messages, currentUserId, otherUser, onSendMessage, onSendAttachment, sending }) {
+  const { t } = useTranslation();
   const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -51,7 +53,7 @@ export default function ChatWindow({ messages, currentUserId, otherUser, onSendM
         <div>
           <h3 className="font-semibold text-gray-900">{otherUser?.full_name}</h3>
           <p className="text-xs text-gray-500">
-            {otherUser?.is_online ? 'En ligne' : 'Hors ligne'}
+            {otherUser?.is_online ? t('messages.chat.online') : t('messages.chat.offline')}
           </p>
         </div>
       </div>
@@ -60,7 +62,7 @@ export default function ChatWindow({ messages, currentUserId, otherUser, onSendM
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 ? (
           <div className="text-center text-gray-500 py-8">
-            Aucun message. Commencez la conversation !
+            {t('messages.chat.no_messages')}
           </div>
         ) : (
           messages.map((message) => (
@@ -94,7 +96,7 @@ export default function ChatWindow({ messages, currentUserId, otherUser, onSendM
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Écrivez votre message..."
+            placeholder={t('messages.chat.write_placeholder')}
             className="flex-1 input resize-none"
             rows="1"
             disabled={sending}

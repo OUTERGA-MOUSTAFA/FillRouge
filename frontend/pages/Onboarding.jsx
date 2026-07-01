@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../src/store/authStore';
 import { authService } from '../src/services/auth';
@@ -23,6 +24,7 @@ const ageRanges = [
 ];
 
 export default function Onboarding() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, setUser } = useAuthStore();
   const [loading, setLoading] = useState(false);
@@ -130,7 +132,7 @@ export default function Onboarding() {
       // 3. Upload du document d'identité si présent
       if (idDocument) {
         await authService.uploadIdDocument(idDocument, 'cin');
-        toast.success('Document d\'identité soumis pour vérification');
+        toast.success(t('onboarding.toastIdSubmitted'));
       }
       
       // 4. Mettre à jour les détails du profil
@@ -144,10 +146,10 @@ export default function Onboarding() {
         social_level: formData.social_level,
       });
       
-      toast.success('Profil complété avec succès !');
+      toast.success(t('onboarding.toastProfileCompleted'));
       navigate('/');
     } catch (error) {
-      const message = error.response?.data?.message || 'Erreur lors de la mise à jour';
+      const message = error.response?.data?.message || t('onboarding.errorUpdate');
       toast.error(message);
     } finally {
       setLoading(false);
@@ -183,8 +185,8 @@ export default function Onboarding() {
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           {/* Header */}
           <div className="bg-[#009966] px-8 py-6 text-white">
-            <h1 className="text-2xl font-bold">Set Up Your Profile</h1>
-            <p className="text-[#ccefeb] mt-1">Tell us about yourself to find the best match.</p>
+            <h1 className="text-2xl font-bold">{t('onboarding.title')}</h1>
+            <p className="text-[#ccefeb] mt-1">{t('onboarding.subtitle')}</p>
             <div className="mt-4">
               <div className="flex items-center gap-3">
                 <div className="flex-1 bg-white/20 rounded-full h-2">
@@ -202,15 +204,15 @@ export default function Onboarding() {
             {/* Photo Upload */}
             <div className="mb-8">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Upload Photo
+                {t('onboarding.uploadPhoto')}
               </label>
               <div className="flex items-center gap-4">
                 <div className="relative">
                   {avatarPreview ? (
                     <div className="relative">
-                      <img 
-                        src={avatarPreview} 
-                        alt="Preview" 
+                      <img
+                        src={avatarPreview}
+                        alt={t('onboarding.previewAlt')}
                         className="h-24 w-24 rounded-full object-cover border-2 border-[#00BBA7]"
                       />
                       <button
@@ -231,7 +233,7 @@ export default function Onboarding() {
                   )}
                 </div>
                 <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 transition-colors">
-                  Choose Photo
+                  {t('onboarding.choosePhoto')}
                   <input
                     type="file"
                     accept="image/*"
@@ -239,17 +241,17 @@ export default function Onboarding() {
                     className="hidden"
                   />
                 </label>
-                <p className="text-xs text-gray-500">Recommended: Clear face photo</p>
+                <p className="text-xs text-gray-500">{t('onboarding.photoHint')}</p>
               </div>
             </div>
 
             {/* Basic Information */}
             <div className="mb-8">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">Basic Information</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">{t('onboarding.basicInfo')}</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Full Name *
+                    {t('onboarding.fullName')} *
                   </label>
                   <input
                     type="text"
@@ -258,12 +260,12 @@ export default function Onboarding() {
                     value={formData.full_name}
                     onChange={handleChange}
                     className="input"
-                    placeholder="Enter your full name"
+                    placeholder={t('onboarding.fullNamePlaceholder')}
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Gender *
+                    {t('onboarding.gender')} *
                   </label>
                   <select
                     name="gender"
@@ -272,15 +274,15 @@ export default function Onboarding() {
                     onChange={handleChange}
                     className="input"
                   >
-                    <option value="">Select gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
+                    <option value="">{t('onboarding.selectGender')}</option>
+                    <option value="male">{t('onboarding.male')}</option>
+                    <option value="female">{t('onboarding.female')}</option>
+                    <option value="other">{t('onboarding.other')}</option>
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Age Range *
+                    {t('onboarding.ageRange')} *
                   </label>
                   <select
                     name="age_range"
@@ -289,7 +291,7 @@ export default function Onboarding() {
                     onChange={handleChange}
                     className="input"
                   >
-                    <option value="">Select age range</option>
+                    <option value="">{t('onboarding.selectAgeRange')}</option>
                     {ageRanges.map(range => (
                       <option key={range} value={range}>{range}</option>
                     ))}
@@ -297,7 +299,7 @@ export default function Onboarding() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number
+                    {t('onboarding.phoneNumber')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -315,7 +317,7 @@ export default function Onboarding() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email Address
+                    {t('onboarding.emailAddress')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -335,7 +337,7 @@ export default function Onboarding() {
 
             {/* Preferred Languages */}
             <div className="mb-8">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">Preferred Languages</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">{t('onboarding.preferredLanguages')}</h2>
               <div className="flex flex-wrap gap-3">
                 {languagesList.map((lang) => (
                   <button
@@ -357,20 +359,20 @@ export default function Onboarding() {
 
             {/* About You */}
             <div className="mb-8">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">About You</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">{t('onboarding.aboutYou')}</h2>
               <textarea
                 name="bio"
                 value={formData.bio}
                 onChange={handleChange}
                 rows="4"
                 className="input"
-                placeholder="Tell us about yourself, your lifestyle, hobbies, and what you're looking for in a roommate..."
+                placeholder={t('onboarding.bioPlaceholder')}
               />
             </div>
 
             {/* Interests */}
             <div className="mb-8">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">Interests</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">{t('onboarding.interests')}</h2>
               <div className="flex flex-wrap gap-2">
                 {interestsList.map((interest) => (
                   <button
@@ -383,7 +385,7 @@ export default function Onboarding() {
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
-                    {interest}
+                    {t(`onboarding.interestLabels.${interest}`)}
                   </button>
                 ))}
               </div>
@@ -391,12 +393,12 @@ export default function Onboarding() {
 
             {/* Lifestyle Preferences */}
             <div className="mb-8">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">Lifestyle Preferences</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">{t('onboarding.lifestylePreferences')}</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Sleep Schedule */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Sleep Schedule
+                    {t('onboarding.sleepSchedule')}
                   </label>
                   <div className="flex gap-3">
                     {['early_bird', 'night_owl', 'flexible'].map(schedule => (
@@ -410,7 +412,7 @@ export default function Onboarding() {
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
-                        {schedule === 'early_bird' ? 'Early Bird' : schedule === 'night_owl' ? 'Night Owl' : 'Flexible'}
+                        {schedule === 'early_bird' ? t('onboarding.earlyBird') : schedule === 'night_owl' ? t('onboarding.nightOwl') : t('onboarding.flexible')}
                       </button>
                     ))}
                   </div>
@@ -419,7 +421,7 @@ export default function Onboarding() {
                 {/* Pets */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Do you have pets?
+                    {t('onboarding.havePets')}
                   </label>
                   <div className="flex gap-3">
                     {['yes', 'no', 'maybe'].map(option => (
@@ -433,7 +435,7 @@ export default function Onboarding() {
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
-                        {option === 'yes' ? 'Yes' : option === 'no' ? 'No' : 'Maybe'}
+                        {option === 'yes' ? t('onboarding.yes') : option === 'no' ? t('onboarding.no') : t('onboarding.maybe')}
                       </button>
                     ))}
                   </div>
@@ -442,7 +444,7 @@ export default function Onboarding() {
                 {/* Smoking */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Are you a smoker?
+                    {t('onboarding.areYouSmoker')}
                   </label>
                   <div className="flex gap-3">
                     {['yes', 'no', 'occasionally'].map(option => (
@@ -456,7 +458,7 @@ export default function Onboarding() {
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
-                        {option === 'yes' ? 'Yes' : option === 'no' ? 'No' : 'Occasionally'}
+                        {option === 'yes' ? t('onboarding.yes') : option === 'no' ? t('onboarding.no') : t('onboarding.occasionally')}
                       </button>
                     ))}
                   </div>
@@ -465,7 +467,7 @@ export default function Onboarding() {
                 {/* Cleanliness */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Cleanliness Level
+                    {t('onboarding.cleanlinessLevel')}
                   </label>
                   <div className="flex gap-2">
                     {['relaxed', 'moderate', 'very_clean'].map(level => (
@@ -479,7 +481,7 @@ export default function Onboarding() {
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
-                        {level === 'relaxed' ? 'Relaxed' : level === 'moderate' ? 'Moderate' : 'Very Clean'}
+                        {level === 'relaxed' ? t('onboarding.relaxed') : level === 'moderate' ? t('onboarding.moderate') : t('onboarding.veryClean')}
                       </button>
                     ))}
                   </div>
@@ -488,7 +490,7 @@ export default function Onboarding() {
                 {/* Social Level */}
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Social Level
+                    {t('onboarding.socialLevel')}
                   </label>
                   <div className="flex gap-3">
                     {['introvert', 'ambivert', 'extrovert'].map(level => (
@@ -502,7 +504,7 @@ export default function Onboarding() {
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
-                        {level === 'introvert' ? 'Introvert' : level === 'ambivert' ? 'Balanced' : 'Extrovert'}
+                        {level === 'introvert' ? t('onboarding.introvert') : level === 'ambivert' ? t('onboarding.balanced') : t('onboarding.extrovert')}
                       </button>
                     ))}
                   </div>
@@ -512,9 +514,9 @@ export default function Onboarding() {
 
             {/* Identity Verification */}
             <div className="mb-8 p-4 bg-gray-50 rounded-lg">
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">Identity Verification</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('onboarding.identityVerification')}</h2>
               <p className="text-sm text-gray-600 mb-4">
-                Your identity is securely verified for safety and trust.
+                {t('onboarding.identityVerificationDesc')}
               </p>
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
                 <input
@@ -529,15 +531,15 @@ export default function Onboarding() {
                   className="cursor-pointer inline-flex flex-col items-center"
                 >
                   <PhotoIcon className="h-8 w-8 text-gray-400 mb-2" />
-                  <span className="text-sm text-gray-600">Upload National ID or Passport</span>
-                  <span className="text-xs text-gray-400 mt-1">Drag and drop your ID or browse</span>
+                  <span className="text-sm text-gray-600">{t('onboarding.uploadId')}</span>
+                  <span className="text-xs text-gray-400 mt-1">{t('onboarding.dragDropId')}</span>
                 </label>
               </div>
               <div className="mt-2 flex items-center gap-2 text-sm">
                 {idDocumentPreview ? (
                   <>
-                    <img src={idDocumentPreview} alt="ID Preview" className="h-10 w-10 rounded object-cover" />
-                    <span className="text-green-600">Document uploaded</span>
+                    <img src={idDocumentPreview} alt={t('onboarding.idPreviewAlt')} className="h-10 w-10 rounded object-cover" />
+                    <span className="text-green-600">{t('onboarding.documentUploaded')}</span>
                     <button
                       type="button"
                       onClick={() => {
@@ -546,13 +548,13 @@ export default function Onboarding() {
                       }}
                       className="text-red-500 hover:text-red-700"
                     >
-                      Remove
+                      {t('onboarding.remove')}
                     </button>
                   </>
                 ) : (
                   <div className="flex items-center gap-2 text-red-600">
                     <XMarkIcon className="h-4 w-4" />
-                    <span>Not Verified</span>
+                    <span>{t('onboarding.notVerified')}</span>
                   </div>
                 )}
               </div>
@@ -560,7 +562,7 @@ export default function Onboarding() {
 
             {/* Note */}
             <div className="mb-6 text-sm text-gray-500">
-              You can change this information anytime in your profile settings.
+              {t('onboarding.changeAnytime')}
             </div>
 
             {/* Submit Button */}
@@ -570,14 +572,14 @@ export default function Onboarding() {
                 disabled={loading}
                 className="flex-1 btn-primary py-3"
               >
-                {loading ? 'Saving...' : 'Save & Continue'}
+                {loading ? t('onboarding.saving') : t('onboarding.saveContinue')}
               </button>
               <button
                 type="button"
                 onClick={() => navigate('/')}
                 className="flex-1 btn-secondary py-3"
               >
-                Skip for now
+                {t('onboarding.skipForNow')}
               </button>
             </div>
           </form>

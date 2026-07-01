@@ -109,12 +109,110 @@ class MessageController extends Controller
             ->get()
             ->each->markAsRead();
 
+        // Demande de location dans cette conversation (la plus récente, s'il y en a une)
+        $otherUser->loadMissing('profile');
+        $demandMessage = Message::betweenUsers($currentUserId, $otherUserId)
+            ->whereNotNull('rental_status')
+            ->with('listing:id,title,city')
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        $demand = $demandMessage ? [
+            'id'           => $demandMessage->id,
+            'status'       => $demandMessage->rental_status,
+            'chercheur_id' => $demandMessage->sender_id,   // la demande part toujours du chercheur
+            'semsar_id'    => $demandMessage->receiver_id,
+            'listing'      => $demandMessage->listing ? [
+                'id'    => $demandMessage->listing->id,
+                'title' => $demandMessage->listing->title,
+                'city'  => $demandMessage->listing->city,
+            ] : null,
+        ] : null;
+
         return response()->json([
             'success' => true,
             'data' => [
-                'user'     => $otherUser->only(['id', 'full_name', 'avatar']),
+                'user' => [
+                    'id'                   => $otherUser->id,
+                    'full_name'            => $otherUser->full_name,
+                    'avatar'               => $otherUser->avatar,
+                    'role'                 => $otherUser->role,
+                    'profession'           => $otherUser->profession,
+                    'average_rating'       => round((float) $otherUser->average_rating, 1),
+                    'is_premium'           => $otherUser->is_premium,
+                    'is_identity_verified' => (bool) ($otherUser->profile?->is_identity_verified ?? false),
+                ],
                 'messages' => $messages,
+                'demand'   => $demand,
             ]
+        ]);
+    }
+
+    /**
+     * Le semsar accepte ou refuse une demande de location.
+     * La demande est le message (du chercheur) portant un rental_status.
+     */
+    public function respondDemand(Request $request, Message $message)
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'action' => 'required|in:accept,refuse',
+        ]);
+
+        // Seul le destinataire de la demande (le semsar) peut répondre
+        if ($message->receiver_id !== $user->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vous n\'êtes pas autorisé à répondre à cette demande.',
+            ], 403);
+        }
+
+        if (is_null($message->rental_status)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ce message n\'est pas une demande de location.',
+            ], 422);
+        }
+
+        if ($message->rental_status !== 'pending') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cette demande a déjà reçu une réponse.',
+            ], 422);
+        }
+
+        $accepted = $request->action === 'accept';
+        $message->update(['rental_status' => $accepted ? 'accepted' : 'refused']);
+
+        $chercheur = $message->sender;
+        $listing   = $message->listing;
+        $titre     = $listing->title ?? 'votre annonce';
+
+        // Message automatique de réponse vers le chercheur
+        $auto = $accepted
+            ? "✅ Bonne nouvelle ! Votre demande de location pour « {$titre} » a été acceptée."
+            : "❌ Votre demande de location pour « {$titre} » n'a pas été retenue.";
+
+        Message::create([
+            'sender_id'   => $user->id,
+            'receiver_id' => $chercheur->id,
+            'listing_id'  => $message->listing_id,
+            'content'     => $auto,
+            'is_read'     => false,
+        ]);
+
+        // Notification au chercheur
+        try {
+            $this->notificationService->demandResponded($chercheur, $user, $listing, $accepted);
+        } catch (\Exception $e) {
+            Log::warning('Notification demande échouée', ['error' => $e->getMessage()]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $accepted ? 'Demande acceptée' : 'Demande refusée',
+            'data'    => ['status' => $message->rental_status],
         ]);
     }
 
@@ -195,13 +293,16 @@ class MessageController extends Controller
         }
 
         // 6. Create message
+        // Une demande de location = message d'un chercheur rattaché à une annonce → statut "pending"
+        $isDemand = $request->listing_id && $sender->role === 'chercheur';
         $message = Message::create([
-            'sender_id'   => $sender->id,
-            'receiver_id' => $receiver->id,
-            'listing_id'  => $request->listing_id,
-            'content'     => trim($request->content ?? ''),
-            'attachments' => $attachments,
-            'is_read'     => false,
+            'sender_id'     => $sender->id,
+            'receiver_id'   => $receiver->id,
+            'listing_id'    => $request->listing_id,
+            'rental_status' => $isDemand ? 'pending' : null,
+            'content'       => trim($request->content ?? ''),
+            'attachments'   => $attachments,
+            'is_read'       => false,
         ]);
 
         // 7. Increment daily counter

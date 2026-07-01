@@ -15,6 +15,7 @@ class Message extends Model
         'sender_id',
         'receiver_id',
         'listing_id',
+        'rental_status',
         'content',
         'attachments',
         'is_read',

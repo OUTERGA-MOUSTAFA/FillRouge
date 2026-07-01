@@ -1,6 +1,8 @@
+import { useTranslation } from 'react-i18next';
 import ListingCard from './ListingCard';
 
 export default function ListingGrid({ listings, loading }) {
+  const { t } = useTranslation();
   if (loading) {
     return (
       <div className="flex justify-center py-12">
@@ -12,7 +14,7 @@ export default function ListingGrid({ listings, loading }) {
   if (listings.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Aucune annonce trouvée</p>
+        <p className="text-gray-500">{t('listingsPage.noListings')}</p>
       </div>
     );
   }

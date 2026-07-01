@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../src/services/auth';  // ← chemin corrigé
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export default function VerifyPhone() {
+  const { t } = useTranslation();
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
@@ -14,10 +16,10 @@ export default function VerifyPhone() {
     setLoading(true);
     try {
       await authService.verifyPhone(code);
-      toast.success('Téléphone vérifié avec succès');
+      toast.success(t('auth.verifyPhone.success'));
       navigate('/profile');
     } catch (error) {
-      const message = error.response?.data?.message || 'Code invalide ou expiré';
+      const message = error.response?.data?.message || t('auth.common.invalidOrExpiredCode');
       toast.error(message);
     } finally {
       setLoading(false);
@@ -28,9 +30,9 @@ export default function VerifyPhone() {
     setResendLoading(true);
     try {
       await authService.resendVerification();
-      toast.success('Nouveau code SMS envoyé');
+      toast.success(t('auth.verifyPhone.smsCodeResent'));
     } catch (error) {
-      const message = error.response?.data?.message || 'Erreur lors de l\'envoi';
+      const message = error.response?.data?.message || t('auth.common.sendError');
       toast.error(message);
     } finally {
       setResendLoading(false);
@@ -42,10 +44,10 @@ export default function VerifyPhone() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="text-center text-3xl font-bold text-gray-900">
-            Vérifiez votre téléphone
+            {t('auth.verifyPhone.title')}
           </h2>
           <p className="mt-2 text-center text-gray-600">
-            Entrez le code SMS reçu sur votre téléphone
+            {t('auth.verifyPhone.subtitle')}
           </p>
         </div>
         
@@ -67,16 +69,16 @@ export default function VerifyPhone() {
             disabled={loading}
             className="btn-primary w-full"
           >
-            {loading ? 'Vérification...' : 'Vérifier'}
+            {loading ? t('auth.common.verifying') : t('auth.common.verify')}
           </button>
-          
+
           <button
             type="button"
             onClick={handleResend}
             disabled={resendLoading}
             className="w-full text-center text-[#009966] hover:text-[#00BBA7]"
           >
-            {resendLoading ? 'Envoi...' : 'Renvoyer le code SMS'}
+            {resendLoading ? t('auth.common.sending') : t('auth.verifyPhone.resendSmsCode')}
           </button>
         </form>
       </div>

@@ -1,0 +1,129 @@
+{
+  "listingForm": {
+    "mad": "MAD",
+    "amenities": {
+      "wifi": "Wi-Fi",
+      "ac": "Climatisation",
+      "parking": "Parking",
+      "tv": "TV",
+      "kitchen": "Cuisine équipée",
+      "pets": "Animaux acceptés",
+      "washing_machine": "Machine à laver",
+      "furnished": "Meublé",
+      "heating": "Chauffage",
+      "balcony": "Balcon"
+    },
+    "types": {
+      "room": {
+        "name": "Chambre",
+        "description": "Chambre individuelle dans un appartement/maison"
+      },
+      "apartment": {
+        "name": "Appartement",
+        "description": "Appartement entier"
+      },
+      "looking_for_roommate": {
+        "name": "Maison",
+        "description": "Maison entière"
+      }
+    },
+    "create": {
+      "title": "Publier une annonce",
+      "subtitle": "Créez votre annonce en quelques étapes",
+      "steps": {
+        "typeInfo": "Type & Info",
+        "location": "Localisation",
+        "priceAvailability": "Prix & Disponibilité",
+        "photosDetails": "Photos & Détails"
+      },
+      "typeHeading": "Type d'annonce",
+      "typeQuestion": "Quel type de logement proposez-vous ?",
+      "generalInfo": "Informations générales",
+      "titlePlaceholder": "Titre de l'annonce *",
+      "descriptionPlaceholder": "Description détaillée *",
+      "locationHeading": "Localisation",
+      "selectCityRequired": "Sélectionnez une ville *",
+      "mapComingSoon": "Carte interactive bientôt disponible",
+      "mapComingSoonHint": "Pour l'instant, précisez simplement la ville",
+      "priceAvailabilityHeading": "Prix et disponibilité",
+      "monthlyPriceLabel": "Prix mensuel (MAD) *",
+      "pricePlaceholder": "ex: 2500",
+      "availableFromLabel": "Disponible à partir de *",
+      "furnishedCheckbox": "Logement meublé",
+      "amenitiesPhotosHeading": "Équipements & Photos",
+      "amenitiesOffered": "Équipements proposés",
+      "choosePhotos": "Choisir des photos",
+      "photosHint": "Minimum 3 photos • Max 10 photos",
+      "photosFormats": "Formats acceptés : JPG, PNG (max 5MB par photo)",
+      "photosRemaining": "Encore {{count}} photo(s) requise(s)",
+      "back": "Retour",
+      "continue": "Continuer",
+      "publishing": "Publication en cours...",
+      "publish": "Publier l'annonce",
+      "summaryType": "Type:",
+      "summaryCity": "Ville:",
+      "summaryPrice": "Prix:",
+      "notSelectedM": "Non sélectionné",
+      "notSelectedF": "Non sélectionnée",
+      "priceNotDefined": "Non défini",
+      "priceValue": "{{price}} MAD",
+      "toastMaxPhotos": "Maximum 10 photos",
+      "toastTypeRequired": "Veuillez choisir un type d'annonce",
+      "toastTitleRequired": "Le titre est requis",
+      "toastDescriptionRequired": "La description est requise",
+      "toastCityRequired": "Veuillez choisir une ville",
+      "toastPriceRequired": "Le prix est requis et doit être supérieur à 0",
+      "toastDateRequired": "La date de disponibilité est requise",
+      "toastMinPhotos": "Minimum 3 photos requises",
+      "toastSuccess": "Annonce créée avec succès !",
+      "toastCreateError": "Erreur lors de la création"
+    },
+    "edit": {
+      "backToListings": "Retour à mes annonces",
+      "title": "Modifier l'annonce",
+      "titleLabel": "Titre de l'annonce *",
+      "titlePlaceholder": "Ex: Chambre spacieuse dans colocation",
+      "descriptionLabel": "Description *",
+      "descriptionPlaceholder": "Décrivez votre logement, l'ambiance, les règles de la maison...",
+      "priceLabel": "Prix (MAD/mois) *",
+      "pricePlaceholder": "2500",
+      "roomTypeLabel": "Type de chambre *",
+      "roomType": {
+        "private": "Chambre privée",
+        "shared": "Chambre partagée",
+        "entire": "Logement entier"
+      },
+      "cityLabel": "Ville *",
+      "selectCity": "Sélectionnez une ville",
+      "addressLabel": "Adresse",
+      "addressPlaceholder": "Ex: Quartier Maarif, Rue X",
+      "availableFromLabel": "Disponible à partir de",
+      "durationLabel": "Durée de location",
+      "duration": {
+        "short": "Court séjour (1-3 mois)",
+        "medium": "Moyen séjour (3-6 mois)",
+        "long": "Long séjour (6+ mois)"
+      },
+      "maxTenantsLabel": "Nombre maximum de colocataires",
+      "amenitiesLabel": "Équipements",
+      "currentImages": "Images actuelles",
+      "addImages": "Ajouter des images",
+      "clickToAddImages": "Cliquez pour ajouter des images",
+      "imageFormats": "JPG, PNG, WebP - Max 5MB",
+      "saving": "Enregistrement...",
+      "saveChanges": "Enregistrer les modifications",
+      "cancel": "Annuler",
+      "toastNotAuthorized": "Vous n'êtes pas autorisé à modifier cette annonce",
+      "toastLoadError": "Erreur lors du chargement de l'annonce",
+      "toastMaxImages": "Maximum 10 images par annonce",
+      "toastImageTooLarge": "L'image {{name}} dépasse 5 Mo",
+      "toastTitleRequired": "Le titre est requis",
+      "toastDescriptionRequired": "La description est requise",
+      "toastPriceRequired": "Le prix est requis",
+      "toastCityRequired": "La ville est requise",
+      "toastImageRequired": "Au moins une image est requise",
+      "toastSuccess": "Annonce modifiée avec succès",
+      "toastUpdateError": "Erreur lors de la modification"
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "messages": {
+    "list": {
+      "title": "Messages",
+      "search_placeholder": "Rechercher des conversations...",
+      "no_conversations": "Aucune conversation pour le moment",
+      "tabs": {
+        "hosts": "Propriétaires",
+        "guests": "Chercheurs",
+        "unread": "Non lus"
+      }
+    },
+    "no_conv": {
+      "title": "Vos messages",
+      "subtitle": "Sélectionnez une conversation pour commencer à discuter"
+    },
+    "empty": {
+      "select_title": "Sélectionnez une conversation",
+      "select_subtitle": "Choisissez dans la liste à gauche"
+    },
+    "chat": {
+      "online": "En ligne",
+      "offline": "Hors ligne",
+      "no_messages": "Aucun message. Commencez la conversation !",
+      "write_placeholder": "Écrivez votre message...",
+      "sending": "Envoi...",
+      "attachment": "Pièce jointe {{number}}",
+      "safety_notice": "N'envoyez jamais de paiements en dehors de la plateforme. Restez prudent !"
+    },
+    "profile": {
+      "view_profile": "Voir le profil",
+      "profile": "Profil",
+      "listing_link": "Annonce",
+      "premium": "Premium",
+      "verified": "Vérifié"
+    },
+    "roles": {
+      "semsar": "Propriétaire",
+      "chercheur": "Chercheur",
+      "admin": "Admin"
+    },
+    "demand": {
+      "request_for": "Demande de location pour",
+      "accept": "Accepter",
+      "refuse": "Refuser",
+      "badge": {
+        "pending": "Demande en attente",
+        "accepted": "Demande acceptée",
+        "refused": "Demande refusée"
+      }
+    },
+    "review": {
+      "leave": "Laisser une recommandation",
+      "success": "Merci pour votre recommandation !"
+    },
+    "toast": {
+      "load_error": "Erreur lors du chargement de la conversation",
+      "send_error": "Erreur lors de l'envoi du message",
+      "attachment_error": "Erreur lors de l'envoi de la pièce jointe",
+      "respond_error": "Erreur lors de la réponse"
+    }
+  }
+}

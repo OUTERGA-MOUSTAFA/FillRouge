@@ -7,6 +7,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useNotifications } from '../src/hooks/useNotifications';
 import { notificationsService } from '../src/services/notifications';
+import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 
 // ─── Notification type config ────────────────────────────────────────────────
@@ -15,31 +16,31 @@ const TYPE_CONFIG = {
     icon: ChatBubbleLeftRightIcon,
     bg: 'bg-blue-50',
     iconColor: 'text-blue-500',
-    label: 'Message',
+    label: 'message',
   },
   match: {
     icon: HeartIcon,
     bg: 'bg-pink-50',
     iconColor: 'text-pink-500',
-    label: 'Match',
+    label: 'match',
   },
   listing_match: {
     icon: HomeIcon,
     bg: 'bg-[#e6f7f5]',
     iconColor: 'text-[#009966]',
-    label: 'Annonce',
+    label: 'listing',
   },
   subscription_expiring: {
     icon: ExclamationTriangleIcon,
     bg: 'bg-amber-50',
     iconColor: 'text-amber-500',
-    label: 'Abonnement',
+    label: 'subscription',
   },
   profile_reminder: {
     icon: DocumentTextIcon,
     bg: 'bg-purple-50',
     iconColor: 'text-purple-500',
-    label: 'Profil',
+    label: 'profile',
   },
 };
 
@@ -47,23 +48,23 @@ const DEFAULT_CONFIG = {
   icon: BellIcon,
   bg: 'bg-gray-100',
   iconColor: 'text-gray-500',
-  label: 'Notification',
+  label: 'notification',
 };
 
 // ─── Time formatter ──────────────────────────────────────────────────────────
-function formatTime(date) {
+function formatTime(date, t, lng) {
   const now = new Date();
   const d = new Date(date);
   const diffMin = Math.floor((now - d) / 60000);
-  if (diffMin < 1) return 'à l\'instant';
-  if (diffMin < 60) return `il y a ${diffMin} min`;
-  if (diffMin < 1440) return `il y a ${Math.floor(diffMin / 60)}h`;
-  if (diffMin < 10080) return `il y a ${Math.floor(diffMin / 1440)}j`;
-  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+  if (diffMin < 1) return t('notifications.time.now');
+  if (diffMin < 60) return t('notifications.time.minutesAgo', { count: diffMin });
+  if (diffMin < 1440) return t('notifications.time.hoursAgo', { count: Math.floor(diffMin / 60) });
+  if (diffMin < 10080) return t('notifications.time.daysAgo', { count: Math.floor(diffMin / 1440) });
+  return d.toLocaleDateString(lng, { day: 'numeric', month: 'short' });
 }
 
 // ─── Group notifications by date ─────────────────────────────────────────────
-function groupByDate(notifications) {
+function groupByDate(notifications, t, lng) {
   const groups = {};
   notifications.forEach(n => {
     const d = new Date(n.created_at);
@@ -72,9 +73,9 @@ function groupByDate(notifications) {
     yesterday.setDate(yesterday.getDate() - 1);
 
     let key;
-    if (d.toDateString() === today.toDateString()) key = "Aujourd'hui";
-    else if (d.toDateString() === yesterday.toDateString()) key = 'Hier';
-    else key = d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+    if (d.toDateString() === today.toDateString()) key = t('notifications.today');
+    else if (d.toDateString() === yesterday.toDateString()) key = t('notifications.yesterday');
+    else key = d.toLocaleDateString(lng, { weekday: 'long', day: 'numeric', month: 'long' });
 
     if (!groups[key]) groups[key] = [];
     groups[key].push(n);
@@ -84,6 +85,7 @@ function groupByDate(notifications) {
 
 // ─── Single notification card ─────────────────────────────────────────────────
 function NotificationItem({ notification, onMarkRead, onDelete }) {
+  const { t, i18n } = useTranslation();
   const config = TYPE_CONFIG[notification.type] || DEFAULT_CONFIG;
   const Icon = config.icon;
   const [deleting, setDeleting] = useState(false);
@@ -95,7 +97,7 @@ function NotificationItem({ notification, onMarkRead, onDelete }) {
       await notificationsService.delete(notification.id);
       onDelete(notification.id, !notification.is_read);
     } catch {
-      toast.error('Erreur suppression');
+      toast.error(t('notifications.deleteError'));
       setDeleting(false);
     }
   };
@@ -136,7 +138,7 @@ function NotificationItem({ notification, onMarkRead, onDelete }) {
             {notification.title}
           </p>
           <div className="flex items-center gap-1 shrink-0">
-            <span className="text-xs text-gray-400 whitespace-nowrap">{formatTime(notification.created_at)}</span>
+            <span className="text-xs text-gray-400 whitespace-nowrap">{formatTime(notification.created_at, t, i18n.language)}</span>
             {!notification.is_read && (
               <span className="h-2 w-2 rounded-full bg-[#009966] shrink-0"></span>
             )}
@@ -151,7 +153,7 @@ function NotificationItem({ notification, onMarkRead, onDelete }) {
         <div className="flex items-center gap-3 mt-2">
           {/* Type badge */}
           <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${config.bg} ${config.iconColor}`}>
-            {config.label}
+            {t(`notifications.types.${config.label}`)}
           </span>
 
           {/* Mark as read */}
@@ -160,7 +162,7 @@ function NotificationItem({ notification, onMarkRead, onDelete }) {
               onClick={(e) => { e.stopPropagation(); onMarkRead(notification.id); }}
               className="text-xs text-[#009966] hover:text-[#00734d] flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
             >
-              <CheckIcon className="h-3 w-3" /> Marquer comme lu
+              <CheckIcon className="h-3 w-3" /> {t('notifications.markAsRead')}
             </button>
           )}
 
@@ -171,7 +173,7 @@ function NotificationItem({ notification, onMarkRead, onDelete }) {
               onClick={(e) => e.stopPropagation()}
               className="text-xs text-gray-400 hover:text-[#009966] transition-colors opacity-0 group-hover:opacity-100"
             >
-              Voir →
+              {t('notifications.view')} →
             </Link>
           )}
         </div>
@@ -181,7 +183,7 @@ function NotificationItem({ notification, onMarkRead, onDelete }) {
       <button
         onClick={handleDelete}
         className="shrink-0 p-1.5 rounded-lg text-gray-300 hover:text-red-400 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"
-        title="Supprimer"
+        title={t('notifications.delete')}
       >
         <TrashIcon className="h-4 w-4" />
       </button>
@@ -198,6 +200,7 @@ function NotificationItem({ notification, onMarkRead, onDelete }) {
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 export default function Notifications() {
+  const { t, i18n } = useTranslation();
   const {
     notifications, unreadCount, loading,
     markAsRead, markAllAsRead, fetchNotifications,
@@ -215,7 +218,7 @@ export default function Notifications() {
     ? notifications.filter(n => !n.is_read)
     : notifications;
 
-  const grouped = groupByDate(filtered);
+  const grouped = groupByDate(filtered, t, i18n.language);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -228,9 +231,9 @@ export default function Notifications() {
               <BellIcon className="h-5 w-5 text-[#009966]" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Notifications</h1>
+              <h1 className="text-xl font-bold text-gray-900">{t('notifications.title')}</h1>
               {unreadCount > 0 && (
-                <p className="text-xs text-gray-500">{unreadCount} non lue{unreadCount > 1 ? 's' : ''}</p>
+                <p className="text-xs text-gray-500">{t('notifications.unreadCount', { count: unreadCount })}</p>
               )}
             </div>
           </div>
@@ -241,7 +244,7 @@ export default function Notifications() {
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-[#009966] hover:text-[#00734d] border border-[#009966]/30 hover:bg-[#e6f7f5] rounded-lg transition-all"
             >
               <CheckIcon className="h-4 w-4" />
-              Tout marquer lu
+              {t('notifications.markAllAsRead')}
             </button>
           )}
         </div>
@@ -249,8 +252,8 @@ export default function Notifications() {
         {/* ── Filter tabs ── */}
         <div className="flex gap-2 mb-6">
           {[
-            { key: 'all', label: 'Toutes', count: notifications.length },
-            { key: 'unread', label: 'Non lues', count: unreadCount },
+            { key: 'all', label: t('notifications.filterAll'), count: notifications.length },
+            { key: 'unread', label: t('notifications.filterUnread'), count: unreadCount },
           ].map(tab => (
             <button
               key={tab.key}
@@ -285,10 +288,10 @@ export default function Notifications() {
               <BellIcon className="h-8 w-8 text-gray-300" />
             </div>
             <p className="text-gray-500 font-medium">
-              {filter === 'unread' ? 'Aucune notification non lue' : 'Aucune notification pour le moment'}
+              {filter === 'unread' ? t('notifications.emptyUnread') : t('notifications.emptyAll')}
             </p>
             <p className="text-gray-400 text-sm mt-1">
-              Vous serez notifié ici des nouveaux messages, matches et mises à jour.
+              {t('notifications.emptyHint')}
             </p>
           </div>
 

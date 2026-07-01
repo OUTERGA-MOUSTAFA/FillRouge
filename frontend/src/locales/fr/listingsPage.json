@@ -1,0 +1,11 @@
+{
+  "listingsPage": {
+    "title": "Annonces de colocation",
+    "available": "{{count}} annonces disponibles",
+    "filters": "Filtres",
+    "list": "Liste",
+    "mapComingSoon": "Carte interactive - À venir",
+    "loadError": "Erreur lors du chargement des annonces",
+    "noListings": "Aucune annonce trouvée"
+  }
+}

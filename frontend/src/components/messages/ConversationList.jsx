@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { UserCircleIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 
 export default function ConversationList({ conversations, currentUserId, loading, activeUserId }) {
+  const { t } = useTranslation();
   const formatTime = (date) => {
     if (!date) return '';
     const now = new Date();
@@ -24,7 +26,7 @@ export default function ConversationList({ conversations, currentUserId, loading
   if (conversations.length === 0) {
     return (
       <div className="p-8 text-center text-gray-500 text-sm">
-        No conversations yet
+        {t('messages.list.no_conversations')}
       </div>
     );
   }

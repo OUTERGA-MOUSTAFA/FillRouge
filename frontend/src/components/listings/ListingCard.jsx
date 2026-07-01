@@ -1,15 +1,16 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { MapPinIcon, HomeIcon, UserIcon, StarIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarSolid } from '@heroicons/react/24/solid';
 
 export default function ListingCard({ listing, featured = false }) {
+  const { t, i18n } = useTranslation();
   const mainPhoto = listing.main_photo || listing.photos?.[0];
 
-  const typeLabel = {
-    room: 'Chambre',
-    apartment: 'Appartement',
-    looking_for_roommate: 'Cherche coloc',
-  }[listing.type] || listing.type;
+  // Libellé du type traduit ; repli sur la valeur brute si type inconnu
+  const typeLabel = i18n.exists(`listings.types.${listing.type}`)
+    ? t(`listings.types.${listing.type}`)
+    : listing.type;
 
   return (
     <Link to={`/listings/${listing.id}`} className="block group">
@@ -35,7 +36,7 @@ export default function ListingCard({ listing, featured = false }) {
           <div className="absolute top-3 left-3 flex gap-1.5">
             {featured && (
               <span className="bg-[#009966] text-white text-xs font-medium px-2.5 py-1 rounded-full">
-                ⭐ En avant
+                ⭐ {t('card.featured')}
               </span>
             )}
             <span className="bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium px-2.5 py-1 rounded-full">
@@ -48,7 +49,7 @@ export default function ListingCard({ listing, featured = false }) {
             <span className="text-[#009966] font-bold text-sm">
               {listing.price?.toLocaleString()} MAD
             </span>
-            <span className="text-gray-400 text-xs">/mois</span>
+            <span className="text-gray-400 text-xs">{t('card.per_month')}</span>
           </div>
         </div>
 
@@ -97,7 +98,7 @@ export default function ListingCard({ listing, featured = false }) {
 
               <div className="flex items-center gap-1">
                 {listing.user.is_premium && (
-                  <span className="text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Premium</span>
+                  <span className="text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">{t('card.premium')}</span>
                 )}
                 {listing.user.average_rating > 0 && (
                   <div className="flex items-center gap-0.5 text-xs text-gray-500">

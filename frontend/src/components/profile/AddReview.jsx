@@ -1,18 +1,21 @@
 import { useState } from 'react';
 import { XMarkIcon, StarIcon, CheckCircleIcon } from '@heroicons/react/24/solid';
 import { StarIcon as StarOutline } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 import { reviewsService } from '../../services/reviews';
 import toast from 'react-hot-toast';
 
-const MESSAGES = {
-  1: { label: 'Très décevant', sub: 'Expérience très négative' },
-  2: { label: 'Décevant',      sub: 'En dessous des attentes' },
-  3: { label: 'Correct',       sub: 'Expérience correcte' },
-  4: { label: 'Bien',          sub: 'Bonne expérience globale' },
-  5: { label: 'Excellent !',   sub: 'Expérience exceptionnelle' },
-};
-
 export default function AddRevie({ targetUser, listings = [], onClose, onSuccess }) {
+  const { t } = useTranslation();
+
+  const MESSAGES = {
+    1: { label: t('profile.reviews.rating1.label'), sub: t('profile.reviews.rating1.sub') },
+    2: { label: t('profile.reviews.rating2.label'), sub: t('profile.reviews.rating2.sub') },
+    3: { label: t('profile.reviews.rating3.label'), sub: t('profile.reviews.rating3.sub') },
+    4: { label: t('profile.reviews.rating4.label'), sub: t('profile.reviews.rating4.sub') },
+    5: { label: t('profile.reviews.rating5.label'), sub: t('profile.reviews.rating5.sub') },
+  };
+
   const [rating,    setRating]    = useState(0);
   const [hovered,   setHovered]   = useState(0);
   const [comment,   setComment]   = useState('');
@@ -24,7 +27,7 @@ export default function AddRevie({ targetUser, listings = [], onClose, onSuccess
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!rating) { toast.error('Veuillez choisir une note'); return; }
+    if (!rating) { toast.error(t('profile.reviews.choose_rating')); return; }
 
     setLoading(true);
     try {
@@ -41,8 +44,8 @@ export default function AddRevie({ targetUser, listings = [], onClose, onSuccess
       }, 1800);
     } catch (err) {
       const msg = err?.response?.data?.message;
-      if (msg?.includes('déjà')) toast.error('Vous avez déjà laissé un avis pour cet utilisateur');
-      else toast.error(msg || 'Une erreur est survenue');
+      if (msg?.includes('déjà')) toast.error(t('profile.reviews.already_reviewed'));
+      else toast.error(msg || t('profile.reviews.error'));
     } finally {
       setLoading(false);
     }
@@ -72,7 +75,7 @@ export default function AddRevie({ targetUser, listings = [], onClose, onSuccess
               </div>
             )}
             <div>
-              <p className="text-[11px] font-semibold text-[#009966] uppercase tracking-widest">Laisser un avis</p>
+              <p className="text-[11px] font-semibold text-[#009966] uppercase tracking-widest">{t('profile.reviews.leave_review')}</p>
               <h2 className="text-base font-bold text-gray-900 leading-tight">{targetUser.full_name}</h2>
             </div>
           </div>
@@ -91,9 +94,9 @@ export default function AddRevie({ targetUser, listings = [], onClose, onSuccess
             <div className="w-16 h-16 rounded-full bg-[#e6f7f5] flex items-center justify-center mb-4 animate-bounce">
               <CheckCircleIcon className="w-9 h-9 text-[#00BBA7]" />
             </div>
-            <p className="text-lg font-bold text-gray-900">Avis envoyé !</p>
+            <p className="text-lg font-bold text-gray-900">{t('profile.reviews.sent')}</p>
             <p className="text-sm text-gray-400 mt-1">
-              Il sera publié lorsque l'autre utilisateur vous évaluera.
+              {t('profile.reviews.sent_hint')}
             </p>
           </div>
         ) : (
@@ -101,7 +104,7 @@ export default function AddRevie({ targetUser, listings = [], onClose, onSuccess
 
             {/* ── star picker ── */}
             <div className="text-center">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Votre note</p>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">{t('profile.reviews.your_rating')}</p>
               <div
                 className="flex items-center justify-center gap-2"
                 onMouseLeave={() => setHovered(0)}
@@ -137,14 +140,14 @@ export default function AddRevie({ targetUser, listings = [], onClose, onSuccess
             {/* ── comment ── */}
             <div>
               <label className="block text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">
-                Commentaire <span className="normal-case font-normal text-gray-400">(optionnel)</span>
+                {t('profile.reviews.comment')} <span className="normal-case font-normal text-gray-400">{t('profile.reviews.optional')}</span>
               </label>
               <textarea
                 rows={3}
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 maxLength={1000}
-                placeholder="Décrivez votre expérience avec cet utilisateur…"
+                placeholder={t('profile.reviews.comment_placeholder')}
                 className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm text-gray-800 placeholder-gray-300 resize-none focus:outline-none focus:ring-2 focus:ring-[#66cfc3] focus:border-[#00BBA7] transition"
               />
               <p className="text-[11px] text-gray-300 text-right mt-1">{comment.length}/1000</p>
@@ -154,14 +157,14 @@ export default function AddRevie({ targetUser, listings = [], onClose, onSuccess
             {listings.length > 0 && (
               <div>
                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">
-                  Annonce concernée <span className="normal-case font-normal text-gray-400">(optionnel)</span>
+                  {t('profile.reviews.related_listing')} <span className="normal-case font-normal text-gray-400">{t('profile.reviews.optional')}</span>
                 </label>
                 <select
                   value={listingId}
                   onChange={(e) => setListingId(e.target.value)}
                   className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#66cfc3] focus:border-[#00BBA7] transition bg-white"
                 >
-                  <option value="">— Aucune annonce spécifique —</option>
+                  <option value="">{t('profile.reviews.no_specific_listing')}</option>
                   {listings.map(l => (
                     <option key={l.id} value={l.id}>
                       {l.title} · {l.city}
@@ -175,7 +178,7 @@ export default function AddRevie({ targetUser, listings = [], onClose, onSuccess
             <div className="flex gap-2.5 bg-[#e6f7f5] rounded-2xl px-4 py-3">
               <span className="text-[#00BBA7] text-base mt-0.5 flex-shrink-0">ℹ</span>
               <p className="text-xs text-[#00734d] leading-relaxed">
-                Votre avis sera visible uniquement après que <strong>{targetUser.full_name?.split(' ')[0]}</strong> vous ait évalué à son tour (accord mutuel).
+                {t('profile.reviews.mutual_before')} <strong>{targetUser.full_name?.split(' ')[0]}</strong> {t('profile.reviews.mutual_after')}
               </p>
             </div>
 
@@ -193,9 +196,9 @@ export default function AddRevie({ targetUser, listings = [], onClose, onSuccess
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
-                  Envoi en cours…
+                  {t('profile.reviews.sending')}
                 </span>
-              ) : 'Publier l\'avis'}
+              ) : t('profile.reviews.submit')}
             </button>
           </form>
         )}

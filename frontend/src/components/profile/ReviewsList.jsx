@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { StarIcon } from '@heroicons/react/24/solid';
 import { StarIcon as StarOutlineIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 import { reviewsService } from '../../services/reviews';
 
 const Stars = ({ rating, size = 'sm' }) => {
@@ -17,6 +18,7 @@ const Stars = ({ rating, size = 'sm' }) => {
 };
 
 export default function ReviewsList({ userId }) {
+  const { t } = useTranslation();
   const [reviews, setReviews] = useState([]);
   const [stats, setStats]     = useState({ average_rating: 0, total_reviews: 0 });
   const [loading, setLoading] = useState(true);
@@ -39,7 +41,7 @@ export default function ReviewsList({ userId }) {
   if (loading) return (
     <div className="flex items-center justify-center py-8 gap-2">
       <div className="w-5 h-5 rounded-full border-2 border-[#00BBA7] border-t-transparent animate-spin" />
-      <span className="text-sm text-gray-400">Chargement des avis…</span>
+      <span className="text-sm text-gray-400">{t('profile.reviews.loading')}</span>
     </div>
   );
 
@@ -48,7 +50,7 @@ export default function ReviewsList({ userId }) {
       <div className="w-12 h-12 rounded-full bg-[#e6f7f5] flex items-center justify-center mx-auto mb-3">
         <StarOutlineIcon className="w-6 h-6 text-[#00BBA7]" />
       </div>
-      <p className="text-sm text-gray-500 font-medium">Aucun avis pour le moment</p>
+      <p className="text-sm text-gray-500 font-medium">{t('profile.reviews.empty')}</p>
     </div>
   );
 
@@ -60,12 +62,12 @@ export default function ReviewsList({ userId }) {
           <div className="text-3xl font-black text-[#00BBA7] leading-none">
             {Number(stats.average_rating).toFixed(1)}
           </div>
-          <div className="text-[10px] text-[#009966] font-semibold uppercase tracking-wide mt-0.5">sur 5</div>
+          <div className="text-[10px] text-[#009966] font-semibold uppercase tracking-wide mt-0.5">{t('profile.reviews.out_of_5')}</div>
         </div>
         <div className="h-10 w-px bg-[#99dfd7]" />
         <div>
           <Stars rating={Math.round(stats.average_rating)} size="lg" />
-          <p className="text-xs text-[#00734d] mt-1 font-medium">{stats.total_reviews} avis vérifiés</p>
+          <p className="text-xs text-[#00734d] mt-1 font-medium">{t('profile.reviews.verified_count', { count: stats.total_reviews })}</p>
         </div>
       </div>
 

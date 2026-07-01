@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Listing;
+use App\Models\Message;
 use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -84,6 +85,15 @@ class ListingController extends Controller
         $listing->incrementViews();
 
         $listing->load(['user', 'user.profile', 'reviews']);
+
+        // L'utilisateur connecté a-t-il déjà envoyé une demande de location pour cette annonce ?
+        // (résolu via le guard sanctum car cette route est publique)
+        $viewerId = auth('sanctum')->id();
+        $listing->has_requested = $viewerId
+            ? Message::where('sender_id', $viewerId)
+                ->where('listing_id', $listing->id)
+                ->exists()
+            : false;
 
         return response()->json([
             'success' => true,

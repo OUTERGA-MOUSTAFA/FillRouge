@@ -1,17 +1,19 @@
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import { useTranslation } from 'react-i18next';
 
 export default function PricingTable({ currentPlan, onSelect }) {
+  const { t } = useTranslation();
   const features = [
-    { name: 'Profil', free: true, standard: true, premium: true },
-    { name: 'Annonces publiées', free: '2 max', standard: '10', premium: 'Illimité' },
-    { name: 'Messages par jour', free: '5', standard: '50', premium: 'Illimité' },
-    { name: 'Voir qui a vu mon profil', free: false, standard: true, premium: true },
-    { name: 'Filtres avancés', free: false, standard: true, premium: true },
-    { name: 'Badge "Premium"', free: false, standard: false, premium: true },
-    { name: 'Profil mis en avant', free: false, standard: false, premium: true },
-    { name: 'Pas de publicités', free: false, standard: true, premium: true },
-    { name: 'Support prioritaire', free: false, standard: false, premium: true },
-    { name: 'Background check', free: false, standard: false, premium: '1 gratuit/an' },
+    { name: t('subscription.table.profile'), free: true, standard: true, premium: true },
+    { name: t('subscription.table.listingsPublished'), free: t('subscription.table.maxCount', { n: 2 }), standard: '10', premium: t('subscription.table.unlimited') },
+    { name: t('subscription.table.messagesPerDay'), free: '5', standard: '50', premium: t('subscription.table.unlimited') },
+    { name: t('subscription.table.whoViewedProfile'), free: false, standard: true, premium: true },
+    { name: t('subscription.features.advancedFilters'), free: false, standard: true, premium: true },
+    { name: t('subscription.table.premiumBadge'), free: false, standard: false, premium: true },
+    { name: t('subscription.features.featuredProfile'), free: false, standard: false, premium: true },
+    { name: t('subscription.table.noAds'), free: false, standard: true, premium: true },
+    { name: t('subscription.features.prioritySupport'), free: false, standard: false, premium: true },
+    { name: t('subscription.table.backgroundCheck'), free: false, standard: false, premium: t('subscription.table.oneFreePerYear') },
   ];
 
   console.log("plan");
@@ -21,10 +23,10 @@ export default function PricingTable({ currentPlan, onSelect }) {
       <table className="w-full">
         <thead>
           <tr className="border-b">
-            <th className="p-4 text-left">Fonctionnalité</th>
-            <th className="p-4 text-center bg-gray-50 rounded-t-lg">Gratuit</th>
-            <th className="p-4 text-center bg-gray-50 rounded-t-lg">Standard</th>
-            <th className="p-4 text-center bg-[#e6f7f5] rounded-t-lg">Premium</th>
+            <th className="p-4 text-left">{t('subscription.table.featureHeader')}</th>
+            <th className="p-4 text-center bg-gray-50 rounded-t-lg">{t('subscription.plans.free')}</th>
+            <th className="p-4 text-center bg-gray-50 rounded-t-lg">{t('subscription.plans.standard')}</th>
+            <th className="p-4 text-center bg-[#e6f7f5] rounded-t-lg">{t('subscription.plans.premium')}</th>
           </tr>
         </thead>
         <tbody>
@@ -62,7 +64,7 @@ export default function PricingTable({ currentPlan, onSelect }) {
                 disabled={currentPlan === 'free'}
                 className="btn-secondary w-full text-sm"
               >
-                {currentPlan === 'free' ? 'Actuel' : 'Gratuit'}
+                {currentPlan === 'free' ? t('subscription.table.current') : t('subscription.plans.free')}
               </button>
             </td>
             <td className="p-4 text-center">
@@ -71,7 +73,7 @@ export default function PricingTable({ currentPlan, onSelect }) {
                 disabled={currentPlan === 'standard'}
                 className="btn-secondary w-full text-sm"
               >
-                {currentPlan === 'standard' ? 'Actuel' : '99 MAD/mois'}
+                {currentPlan === 'standard' ? t('subscription.table.current') : t('subscription.table.pricePerMonth', { price: 99 })}
               </button>
             </td>
             <td className="p-4 text-center">
@@ -80,7 +82,7 @@ export default function PricingTable({ currentPlan, onSelect }) {
                 disabled={currentPlan === 'premium'}
                 className="btn-primary w-full text-sm"
               >
-                {currentPlan === 'premium' ? 'Actuel' : '199 MAD/mois'}
+                {currentPlan === 'premium' ? t('subscription.table.current') : t('subscription.table.pricePerMonth', { price: 199 })}
               </button>
             </td>
           </tr>

@@ -4,6 +4,40 @@
     "tagline": "ابحث عن رفيق السكن المثالي",
     "description": "أول منصة مغربية مخصصة لسكن المشاركة الموثوقة"
   },
+  "navbar": {
+    "publish": "نشر",
+    "publish_listing": "نشر إعلان",
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "logout": "تسجيل الخروج",
+    "logout_success": "تم تسجيل الخروج بنجاح"
+  },
+  "userMenu": {
+    "profile": "ملفي الشخصي",
+    "notifications": "الإشعارات",
+    "my_listings": "إعلاناتي",
+    "subscription": "الاشتراك",
+    "favorites": "مفضلتي"
+  },
+  "roles": {
+    "admin": "مدير",
+    "semsar": "سمسار",
+    "chercheur": "باحث"
+  },
+  "plans": {
+    "premium": "بريميوم",
+    "standard": "ستاندرد",
+    "free": "مجاني"
+  },
+  "language": {
+    "label": "اللغة",
+    "changed": "اللغة: {{name}}"
+  },
+  "card": {
+    "featured": "مميز",
+    "per_month": "/شهر",
+    "premium": "بريميوم"
+  },
   "nav": {
     "home": "الرئيسية",
     "listings": "الإعلانات",
@@ -116,7 +150,8 @@
       "room": "غرفة",
       "apartment": "شقة",
       "house": "منزل",
-      "studio": "استوديو"
+      "studio": "استوديو",
+      "looking_for_roommate": "يبحث عن شريك سكن"
     },
     "form": {
       "type": "نوع الإعلان",

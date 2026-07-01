@@ -1,0 +1,85 @@
+{
+  "profileComplete": {
+    "title": "Détails du profil",
+    "subtitle": "Aidez les autres à mieux vous connaître",
+    "savingShort": "Enreg…",
+    "save": "Enregistrer",
+    "aboutSection": "À propos",
+    "bioLabel": "Présentation courte",
+    "bioPlaceholder": "Décrivez-vous en quelques mots…",
+    "descriptionLabel": "Description détaillée",
+    "descriptionPlaceholder": "Parlez de vos habitudes, vos attentes, votre style de vie…",
+    "occupationLabel": "Situation professionnelle",
+    "selectOption": "Sélectionner",
+    "occupation": {
+      "student": "Étudiant(e)",
+      "employed": "Salarié(e)",
+      "self_employed": "Indépendant(e)",
+      "unemployed": "Sans emploi",
+      "retired": "Retraité(e)"
+    },
+    "interestsSection": "Centres d'intérêt",
+    "interest": {
+      "cooking": "Cuisine",
+      "fitness": "Sport",
+      "tech": "Technologie",
+      "travel": "Voyage",
+      "study": "Études",
+      "remote_work": "Télétravail",
+      "music": "Musique",
+      "sports": "Sports",
+      "reading": "Lecture",
+      "art": "Art",
+      "gaming": "Jeux vidéo",
+      "outdoors": "Plein air"
+    },
+    "lifestyleSection": "Mode de vie",
+    "smokingLabel": "Tabac",
+    "smoking": {
+      "no": "Non-fumeur",
+      "occasionally": "Occasionnel",
+      "yes": "Fumeur"
+    },
+    "petsLabel": "Animaux domestiques",
+    "no": "Non",
+    "maybe": "Peut-être",
+    "yes": "Oui",
+    "sleepLabel": "Horaire de sommeil",
+    "sleep": {
+      "early_bird": "Lève-tôt",
+      "flexible": "Normal / Flexible",
+      "night_owl": "Couche-tard"
+    },
+    "cleanlinessLabel": "Niveau de propreté",
+    "cleanliness": {
+      "relaxed": "Relax",
+      "moderate": "Modéré",
+      "very_clean": "Très propre"
+    },
+    "socialLabel": "Niveau social",
+    "social": {
+      "introvert": "Introverti",
+      "ambivert": "Ambiverti",
+      "extrovert": "Extraverti"
+    },
+    "preferencesSection": "Préférences colocataire",
+    "preferredGenderLabel": "Genre préféré",
+    "male": "Homme",
+    "female": "Femme",
+    "any": "Peu importe",
+    "acceptsPetsLabel": "Accepte les animaux",
+    "acceptsSmokersLabel": "Accepte les fumeurs",
+    "preferredAgeRange": "Tranche d'âge préférée",
+    "minAgePlaceholder": "Âge min (18)",
+    "maxAgePlaceholder": "Âge max (100)",
+    "identitySection": "Vérification d'identité",
+    "uploadIdHint": "Déposer une CIN ou un passeport",
+    "identityDisclaimer": "Vos documents ne seront utilisés qu'à des fins de vérification confidentielle.",
+    "saving": "Enregistrement…",
+    "saveDetails": "Enregistrer les détails",
+    "cancel": "Annuler",
+    "toastUpdated": "Profil détaillé mis à jour",
+    "toastFixErrors": "Veuillez corriger les erreurs ou changer la photo",
+    "errorUpdate": "Erreur lors de la mise à jour"
+  }
+}

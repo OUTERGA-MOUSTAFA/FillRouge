@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import MapComponent from './MapComponent';
 import { listingsService } from '../../services/listings';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export default function MapWithListings({ filters = {}, onListingSelect }) {
+  const { t } = useTranslation();
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedListing, setSelectedListing] = useState(null);
@@ -27,7 +29,7 @@ export default function MapWithListings({ filters = {}, onListingSelect }) {
       const response = await listingsService.getAll(params);
       setListings(response.data.data || []);
     } catch (error) {
-      toast.error('Erreur chargement des annonces');
+      toast.error(t('map.loadError'));
     } finally {
       setLoading(false);
     }
@@ -69,12 +71,12 @@ export default function MapWithListings({ filters = {}, onListingSelect }) {
       {/* Liste des annonces */}
       <div className="bg-white rounded-xl shadow-sm p-4 h-[600px] overflow-y-auto">
         <h3 className="font-semibold text-gray-900 mb-4">
-          Annonces à proximité ({listings.length})
+          {t('map.nearbyListings', { count: listings.length })}
         </h3>
-        
+
         {listings.length === 0 ? (
           <p className="text-gray-500 text-center py-8">
-            Aucune annonce dans cette zone
+            {t('map.noListingsInArea')}
           </p>
         ) : (
           <div className="space-y-3">
@@ -102,7 +104,7 @@ export default function MapWithListings({ filters = {}, onListingSelect }) {
                     </h4>
                     <p className="text-sm text-gray-500">{listing.city}</p>
                     <p className="text-primary-600 font-semibold mt-1">
-                      {listing.price.toLocaleString()} MAD
+                      {listing.price.toLocaleString()} {t('map.mad')}
                     </p>
                   </div>
                 </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../src/store/authStore';
 import { authService } from '../src/services/auth';
@@ -20,6 +21,7 @@ const TRANCHES_AGE = [
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function EditProfile() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, setUser } = useAuthStore();
 
@@ -70,7 +72,7 @@ export default function EditProfile() {
     const file = e.target.files[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('La photo ne doit pas dépasser 5 Mo');
+      toast.error(t('profileEdit.toastPhotoTooLarge'));
       return;
     }
     setAvatar(file);
@@ -100,16 +102,16 @@ export default function EditProfile() {
       // Sync store if setUser is available
       if (setUser && res?.data?.data) setUser(res.data.data);
 
-      toast.success('Profil mis à jour avec succès');
+      toast.success(t('profileEdit.toastProfileUpdated'));
       navigate('/profile');
     } catch (error) {
       if (error.response?.status === 422) {
         // Map Laravel validation errors
         const laravelErrors = error.response.data?.errors ?? {};
         setErrors(laravelErrors);
-        toast.error('Veuillez corriger les erreurs');
+        toast.error(t('profileEdit.toastFixErrors'));
       } else {
-        toast.error(error.response?.data?.message || 'Erreur lors de la mise à jour');
+        toast.error(error.response?.data?.message || t('profileEdit.errorUpdate'));
       }
     } finally {
       setLoading(false);
@@ -132,14 +134,14 @@ export default function EditProfile() {
             </svg>
           </button>
           <div className="text-center">
-            <h1 className="text-base font-semibold text-gray-900">Modifier mon profil</h1>
+            <h1 className="text-base font-semibold text-gray-900">{t('profileEdit.title')}</h1>
           </div>
           <button
             onClick={handleSubmit}
             disabled={loading}
             className="text-sm font-semibold text-[#009966] hover:text-[#00BBA7] disabled:opacity-40 transition-colors"
           >
-            {loading ? 'Enreg…' : 'Enregistrer'}
+            {loading ? t('profileEdit.savingShort') : t('profileEdit.save')}
           </button>
         </div>
       </div>
@@ -152,7 +154,7 @@ export default function EditProfile() {
             {avatarPreview ? (
               <img
                 src={avatarPreview}
-                alt="Avatar"
+                alt={t('profileEdit.avatarAlt')}
                 className="h-24 w-24 rounded-full object-cover border-4 border-white shadow-md"
               />
             ) : (
@@ -168,19 +170,19 @@ export default function EditProfile() {
           <label className="cursor-pointer">
             <span className="inline-flex items-center gap-1.5 border border-[#00BBA7] text-[#00BBA7] text-sm font-medium px-4 py-1.5 rounded-full hover:bg-[#e6f7f5] transition-colors">
               <ArrowUpTrayIcon className="h-3.5 w-3.5" />
-              Choisir une photo
+              {t('profileEdit.choosePhoto')}
             </span>
             <input type="file" accept="image/*" onChange={handleAvatar} className="hidden" />
           </label>
-          <p className="text-xs text-gray-400">JPG, PNG — max 5 Mo</p>
+          <p className="text-xs text-gray-400">{t('profileEdit.photoHint')}</p>
         </div>
 
         {/* ── Informations de base ── */}
-        <Section titre="Informations de base">
+        <Section titre={t('profileEdit.basicInfo')}>
           <div className="space-y-4">
 
             {/* Nom complet */}
-            <Field label="Nom complet" required error={errors.full_name?.[0]}>
+            <Field label={t('profileEdit.fullName')} required error={errors.full_name?.[0]}>
               <input
                 name="full_name"
                 value={formData.full_name}
@@ -191,7 +193,7 @@ export default function EditProfile() {
             </Field>
 
             {/* Téléphone */}
-            <Field label="Téléphone" error={errors.phone?.[0]}>
+            <Field label={t('profileEdit.phone')} error={errors.phone?.[0]}>
               <input
                 name="phone"
                 value={formData.phone}
@@ -203,7 +205,7 @@ export default function EditProfile() {
 
             {/* Genre + Date de naissance */}
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Genre" error={errors.gender?.[0]}>
+              <Field label={t('profileEdit.gender')} error={errors.gender?.[0]}>
                 <div className="relative">
                   <select
                     name="gender"
@@ -211,16 +213,16 @@ export default function EditProfile() {
                     onChange={handleChange}
                     className={inputClass(!!errors.gender) + ' appearance-none'}
                   >
-                    <option value="">Non précisé</option>
-                    <option value="male">Homme</option>
-                    <option value="female">Femme</option>
-                    <option value="other">Autre</option>
+                    <option value="">{t('profileEdit.genderUnspecified')}</option>
+                    <option value="male">{t('profileEdit.male')}</option>
+                    <option value="female">{t('profileEdit.female')}</option>
+                    <option value="other">{t('profileEdit.other')}</option>
                   </select>
                   <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 </div>
               </Field>
 
-              <Field label="Date de naissance" error={errors.birth_date?.[0]}>
+              <Field label={t('profileEdit.birthDate')} error={errors.birth_date?.[0]}>
                 <input
                   type="date"
                   name="birth_date"
@@ -233,12 +235,12 @@ export default function EditProfile() {
             </div>
 
             {/* Profession */}
-            <Field label="Profession" error={errors.profession?.[0]}>
+            <Field label={t('profileEdit.profession')} error={errors.profession?.[0]}>
               <input
                 name="profession"
                 value={formData.profession}
                 onChange={handleChange}
-                placeholder="Ingénieur, Étudiant, Freelance…"
+                placeholder={t('profileEdit.professionPlaceholder')}
                 className={inputClass(!!errors.profession)}
               />
             </Field>
@@ -247,9 +249,9 @@ export default function EditProfile() {
         </Section>
 
         {/* ── Budget ── */}
-        <Section titre="Budget mensuel (MAD)">
+        <Section titre={t('profileEdit.budgetTitle')}>
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Minimum" error={errors.budget_min?.[0]}>
+            <Field label={t('profileEdit.min')} error={errors.budget_min?.[0]}>
               <input
                 type="number"
                 name="budget_min"
@@ -260,7 +262,7 @@ export default function EditProfile() {
                 className={inputClass(!!errors.budget_min)}
               />
             </Field>
-            <Field label="Maximum" error={errors.budget_max?.[0]}>
+            <Field label={t('profileEdit.max')} error={errors.budget_max?.[0]}>
               <input
                 type="number"
                 name="budget_max"
@@ -280,15 +282,15 @@ export default function EditProfile() {
         </Section>
 
         {/* ── E-mail (read-only) ── */}
-        <Section titre="Compte">
-          <Field label="E-mail">
+        <Section titre={t('profileEdit.account')}>
+          <Field label={t('profileEdit.email')}>
             <input
               value={user?.email || ''}
               readOnly
               className="w-full px-4 py-2.5 border border-gray-100 rounded-xl text-sm bg-gray-50 text-gray-400 cursor-not-allowed"
             />
             <p className="text-xs text-gray-400 mt-1.5">
-              L'adresse e-mail ne peut pas être modifiée ici.
+              {t('profileEdit.emailReadonly')}
             </p>
           </Field>
         </Section>
@@ -306,14 +308,14 @@ export default function EditProfile() {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                 </svg>
-                Enregistrement…
+                {t('profileEdit.saving')}
               </>
             ) : (
               <>
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                Enregistrer
+                {t('profileEdit.save')}
               </>
             )}
           </button>
@@ -322,7 +324,7 @@ export default function EditProfile() {
             onClick={() => navigate('/profile')}
             className="w-full bg-white text-gray-600 py-3.5 rounded-xl font-medium text-base border border-gray-200 hover:bg-gray-50 transition-colors"
           >
-            Annuler
+            {t('profileEdit.cancel')}
           </button>
         </div>
 

@@ -1,0 +1,33 @@
+{
+  "profileEdit": {
+    "title": "تعديل ملفي الشخصي",
+    "savingShort": "حفظ…",
+    "save": "حفظ",
+    "avatarAlt": "الصورة الرمزية",
+    "choosePhoto": "اختيار صورة",
+    "photoHint": "JPG، PNG — بحد أقصى 5 ميغابايت",
+    "basicInfo": "المعلومات الأساسية",
+    "fullName": "الاسم الكامل",
+    "phone": "الهاتف",
+    "gender": "الجنس",
+    "genderUnspecified": "غير محدد",
+    "male": "ذكر",
+    "female": "أنثى",
+    "other": "آخر",
+    "birthDate": "تاريخ الميلاد",
+    "profession": "المهنة",
+    "professionPlaceholder": "مهندس، طالب، عمل حر…",
+    "budgetTitle": "الميزانية الشهرية (درهم)",
+    "min": "الحد الأدنى",
+    "max": "الحد الأقصى",
+    "account": "الحساب",
+    "email": "البريد الإلكتروني",
+    "emailReadonly": "لا يمكن تغيير البريد الإلكتروني هنا.",
+    "saving": "جارٍ الحفظ…",
+    "cancel": "إلغاء",
+    "toastPhotoTooLarge": "يجب ألا تتجاوز الصورة 5 ميغابايت",
+    "toastProfileUpdated": "تم تحديث الملف الشخصي بنجاح",
+    "toastFixErrors": "يرجى تصحيح الأخطاء",
+    "errorUpdate": "حدث خطأ أثناء التحديث"
+  }
+}

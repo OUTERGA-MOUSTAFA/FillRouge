@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
 import { Outlet, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useMessages } from '../src/hooks/useMessages';
 import { useAuthStore } from '../src/store/authStore';
 import ConversationList from '../src/components/messages/ConversationList';
 
 export default function Messages() {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const { conversations, fetchConversations, loading } = useMessages();
   const { userId } = useParams();
@@ -20,21 +22,21 @@ export default function Messages() {
         <div className={`${userId ? 'hidden md:flex' : 'flex'} w-full md:w-80 lg:w-96 flex-col border-r border-gray-200 bg-white`}>
           {/* Header */}
           <div className="px-4 py-4 border-b border-gray-100">
-            <h1 className="text-xl font-semibold text-gray-900">Messages</h1>
+            <h1 className="text-xl font-semibold text-gray-900">{t('messages.list.title')}</h1>
             <div className="mt-3">
               <input
                 type="text"
-                placeholder="Search chats..."
+                placeholder={t('messages.list.search_placeholder')}
                 className="w-full px-3 py-2 bg-gray-100 rounded-lg text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#009966]/20"
               />
             </div>
             <div className="flex gap-2 mt-3">
-              {['Hosts', 'Guests', 'Unread'].map(tab => (
+              {['hosts', 'guests', 'unread'].map(tab => (
                 <button
                   key={tab}
                   className="px-4 py-1.5 text-sm rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
                 >
-                  {tab}
+                  {t(`messages.list.tabs.${tab}`)}
                 </button>
               ))}
             </div>

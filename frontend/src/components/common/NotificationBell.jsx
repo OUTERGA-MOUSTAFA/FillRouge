@@ -1,11 +1,23 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { BellIcon } from '@heroicons/react/24/outline';
 import { useNotifications } from '../../hooks/useNotifications';
+
+// Destination d'une notification selon son type + data (même logique que la page Notifications)
+function getNotificationLink(notification) {
+  const data = notification.data || {};
+  if (notification.type === 'message' && data.sender_id) return `/messages/${data.sender_id}`;
+  if (notification.type === 'listing_match' && data.listing_id) return `/listings/${data.listing_id}`;
+  if (notification.type === 'match' && data.matched_user_id) return `/users/${data.matched_user_id}`;
+  if (notification.type === 'subscription_expiring') return '/subscription/plans';
+  if (notification.type === 'profile_reminder') return '/profile/edit';
+  return null;
+}
 
 export default function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
   const { notifications, unreadCount, markAsRead } = useNotifications();
 
   useEffect(() => {
@@ -82,8 +94,10 @@ export default function NotificationBell() {
                     !notification.is_read ? 'bg-[#e6f7f5]' : ''
                   }`}
                   onClick={() => {
-                    markAsRead(notification.id);
+                    if (!notification.is_read) markAsRead(notification.id);
                     setIsOpen(false);
+                    const link = getNotificationLink(notification);
+                    if (link) navigate(link);
                   }}
                 >
                   <div className="flex items-start gap-3">

@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { authService } from '../../src/services/auth';  // ← chemin corrigé
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export default function ResetPassword() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
   const [password, setPassword] = useState('');
@@ -15,22 +17,22 @@ export default function ResetPassword() {
     e.preventDefault();
     
     if (password !== passwordConfirmation) {
-      toast.error('Les mots de passe ne correspondent pas');
+      toast.error(t('auth.common.passwordsDoNotMatch'));
       return;
     }
-    
+
     if (password.length < 8) {
-      toast.error('Le mot de passe doit contenir au moins 8 caractères');
+      toast.error(t('auth.reset.passwordTooShort'));
       return;
     }
-    
+
     setLoading(true);
     try {
       await authService.resetPassword(token, password, passwordConfirmation);
-      toast.success('Mot de passe réinitialisé avec succès');
+      toast.success(t('auth.reset.success'));
       navigate('/login');
     } catch (error) {
-      const message = error.response?.data?.message || 'Erreur lors de la réinitialisation';
+      const message = error.response?.data?.message || t('auth.reset.error');
       toast.error(message);
     } finally {
       setLoading(false);
@@ -41,9 +43,9 @@ export default function ResetPassword() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <p className="text-red-600">Token invalide ou manquant</p>
+          <p className="text-red-600">{t('auth.reset.invalidToken')}</p>
           <Link to="/forgot-password" className="text-[#009966] mt-4 inline-block">
-            Demander un nouveau lien
+            {t('auth.reset.requestNewLink')}
           </Link>
         </div>
       </div>
@@ -55,10 +57,10 @@ export default function ResetPassword() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="text-center text-3xl font-bold text-gray-900">
-            Nouveau mot de passe
+            {t('auth.reset.title')}
           </h2>
           <p className="mt-2 text-center text-gray-600">
-            Choisissez un nouveau mot de passe sécurisé
+            {t('auth.reset.subtitle')}
           </p>
         </div>
         
@@ -66,7 +68,7 @@ export default function ResetPassword() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Nouveau mot de passe
+                {t('auth.common.newPassword')}
               </label>
               <input
                 type="password"
@@ -74,13 +76,13 @@ export default function ResetPassword() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="input mt-1"
-                placeholder="••••••••"
+                placeholder={t('auth.common.passwordPlaceholder')}
               />
             </div>
             
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Confirmer le mot de passe
+                {t('auth.common.confirmPassword')}
               </label>
               <input
                 type="password"
@@ -88,7 +90,7 @@ export default function ResetPassword() {
                 value={passwordConfirmation}
                 onChange={(e) => setPasswordConfirmation(e.target.value)}
                 className="input mt-1"
-                placeholder="••••••••"
+                placeholder={t('auth.common.passwordPlaceholder')}
               />
             </div>
           </div>
@@ -98,7 +100,7 @@ export default function ResetPassword() {
             disabled={loading}
             className="btn-primary w-full"
           >
-            {loading ? 'Réinitialisation...' : 'Réinitialiser'}
+            {loading ? t('auth.reset.resetting') : t('auth.reset.resetButton')}
           </button>
         </form>
       </div>

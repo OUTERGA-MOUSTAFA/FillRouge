@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\UserProfile;
+use App\Models\Message;
 use App\Services\MatchingService;
 use App\Services\ImageService;
 use App\Models\Report;
@@ -372,6 +373,31 @@ class UserController extends Controller
         $publicData['reviews_count']  = $user->reviews()->where('is_visible', true)->count();
         $publicData['listings']       = $user->listings;
         $publicData['is_online']      = $user->isOnline(); // true si actif dans les 5 dernières minutes
+
+        // Demande de location en attente : si le visiteur (semsar) consulte le profil
+        // d'un chercheur qui lui a envoyé une demande encore en attente.
+        $viewer = auth('sanctum')->user();
+        $publicData['pending_demand'] = null;
+        if ($viewer && $viewer->id !== $user->id) {
+            $demandMessage = Message::where('sender_id', $user->id)     // la demande part du chercheur (profil consulté)
+                ->where('receiver_id', $viewer->id)                      // vers le semsar (visiteur)
+                ->where('rental_status', 'pending')
+                ->with('listing:id,title,city')
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            if ($demandMessage) {
+                $publicData['pending_demand'] = [
+                    'id'      => $demandMessage->id,
+                    'status'  => $demandMessage->rental_status,
+                    'listing' => $demandMessage->listing ? [
+                        'id'    => $demandMessage->listing->id,
+                        'title' => $demandMessage->listing->title,
+                        'city'  => $demandMessage->listing->city,
+                    ] : null,
+                ];
+            }
+        }
 
         return response()->json([
             'success' => true,

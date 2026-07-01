@@ -1,0 +1,63 @@
+{
+  "messages": {
+    "list": {
+      "title": "Messages",
+      "search_placeholder": "Search chats...",
+      "no_conversations": "No conversations yet",
+      "tabs": {
+        "hosts": "Hosts",
+        "guests": "Guests",
+        "unread": "Unread"
+      }
+    },
+    "no_conv": {
+      "title": "Your messages",
+      "subtitle": "Select a conversation to start chatting"
+    },
+    "empty": {
+      "select_title": "Select a conversation",
+      "select_subtitle": "Choose from the list on the left"
+    },
+    "chat": {
+      "online": "Online",
+      "offline": "Offline",
+      "no_messages": "No messages yet. Start the conversation!",
+      "write_placeholder": "Write your message...",
+      "sending": "Sending...",
+      "attachment": "Attachment {{number}}",
+      "safety_notice": "Never send payments outside the platform. Stay safe!"
+    },
+    "profile": {
+      "view_profile": "View profile",
+      "profile": "Profile",
+      "listing_link": "Listing",
+      "premium": "Premium",
+      "verified": "Verified"
+    },
+    "roles": {
+      "semsar": "Owner",
+      "chercheur": "Seeker",
+      "admin": "Admin"
+    },
+    "demand": {
+      "request_for": "Rental request for",
+      "accept": "Accept",
+      "refuse": "Refuse",
+      "badge": {
+        "pending": "Pending request",
+        "accepted": "Accepted request",
+        "refused": "Refused request"
+      }
+    },
+    "review": {
+      "leave": "Leave a recommendation",
+      "success": "Thank you for your recommendation!"
+    },
+    "toast": {
+      "load_error": "Error loading the conversation",
+      "send_error": "Error sending the message",
+      "attachment_error": "Error sending the attachment",
+      "respond_error": "Error while responding"
+    }
+  }
+}

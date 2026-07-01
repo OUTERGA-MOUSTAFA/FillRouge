@@ -15,6 +15,7 @@ import {
   CpuChipIcon,
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 const citiesList = [
   "Casablanca",
@@ -28,25 +29,25 @@ const citiesList = [
 ];
 
 const amenitiesList = [
-  { id: "wifi", name: "WiFi", icon: WifiIcon },
-  { id: "ac", name: "Climatisation", icon: FireIcon },
-  { id: "parking", name: "Parking", icon: BuildingStorefrontIcon },
-  { id: "tv", name: "TV", icon: DevicePhoneMobileIcon },
-  { id: "kitchen", name: "Cuisine équipée", icon: HomeIcon },
-  { id: "pets", name: "Animaux acceptés", icon: UserIcon },
-  { id: "washing_machine", name: "Machine à laver", icon: CpuChipIcon },
+  { id: "wifi", icon: WifiIcon },
+  { id: "ac", icon: FireIcon },
+  { id: "parking", icon: BuildingStorefrontIcon },
+  { id: "tv", icon: DevicePhoneMobileIcon },
+  { id: "kitchen", icon: HomeIcon },
+  { id: "pets", icon: UserIcon },
+  { id: "washing_machine", icon: CpuChipIcon },
 ];
 
 // Types d'annonces disponibles
 const listingTypes = [
-  { id: "room", name: "Chambre", icon: HomeIcon, description: "Chambre individuelle dans un appartement/maison" },
-  { id: "apartment", name: "Appartement", icon: BuildingOffice2Icon, description: "Appartement entier" },
-  { id: "looking_for_roommate", name: "Maison", icon: HomeModernIcon, description: "Maison entière" },
-  // { id: "studio", name: "Studio", icon: HomeIcon, description: "Studio meublé" },
+  { id: "room", icon: HomeIcon },
+  { id: "apartment", icon: BuildingOffice2Icon },
+  { id: "looking_for_roommate", icon: HomeModernIcon },
 ];
 
 export default function CreateListing() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const fileInputRef = useRef(null);
 
@@ -94,7 +95,7 @@ export default function CreateListing() {
     const files = Array.from(e.target.files);
 
     if (files.length + photos.length > 10) {
-      toast.error("Maximum 10 photos");
+      toast.error(t("listingForm.create.toastMaxPhotos"));
       return;
     }
 
@@ -112,39 +113,39 @@ export default function CreateListing() {
   const validateStep = () => {
     if (step === 1) {
       if (!form.type) {
-        toast.error("Veuillez choisir un type d'annonce");
+        toast.error(t("listingForm.create.toastTypeRequired"));
         return false;
       }
       if (!form.title || !form.title.trim()) {
-        toast.error("Le titre est requis");
+        toast.error(t("listingForm.create.toastTitleRequired"));
         return false;
       }
       if (!form.description || !form.description.trim()) {
-        toast.error("La description est requise");
+        toast.error(t("listingForm.create.toastDescriptionRequired"));
         return false;
       }
     }
 
     if (step === 2) {
       if (!form.city) {
-        toast.error("Veuillez choisir une ville");
+        toast.error(t("listingForm.create.toastCityRequired"));
         return false;
       }
     }
 
     if (step === 3) {
       if (!form.price || form.price <= 0) {
-        toast.error("Le prix est requis et doit être supérieur à 0");
+        toast.error(t("listingForm.create.toastPriceRequired"));
         return false;
       }
       if (!form.available_from) {
-        toast.error("La date de disponibilité est requise");
+        toast.error(t("listingForm.create.toastDateRequired"));
         return false;
       }
     }
 
     if (step === 4 && photos.length < 3) {
-      toast.error("Minimum 3 photos requises");
+      toast.error(t("listingForm.create.toastMinPhotos"));
       return false;
     }
 
@@ -187,21 +188,26 @@ export default function CreateListing() {
 
     try {
       await listingsService.create(fd);
-      toast.success("Annonce créée avec succès !");
+      toast.success(t("listingForm.create.toastSuccess"));
       navigate("/MyListings");
     } catch (error) {
       const errors = error.response?.data?.errors;
       if (errors) {
         Object.values(errors).flat().forEach(msg => toast.error(msg));
       } else {
-        toast.error(error.response?.data?.message || "Erreur lors de la création");
+        toast.error(error.response?.data?.message || t("listingForm.create.toastCreateError"));
       }
     } finally {
       setLoading(false);
     }
   };
 
-  const steps = ["Type & Info", "Localisation", "Prix & Disponibilité", "Photos & Détails"];
+  const steps = [
+    t("listingForm.create.steps.typeInfo"),
+    t("listingForm.create.steps.location"),
+    t("listingForm.create.steps.priceAvailability"),
+    t("listingForm.create.steps.photosDetails"),
+  ];
 
   // Trouver l'icône du type sélectionné
   // const getSelectedTypeIcon = () => {
@@ -216,10 +222,10 @@ export default function CreateListing() {
         {/* Header */}
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold text-slate-900">
-            Publier une annonce
+            {t("listingForm.create.title")}
           </h1>
           <p className="text-slate-500 mt-2">
-            Créez votre annonce en quelques étapes
+            {t("listingForm.create.subtitle")}
           </p>
         </div>
 
@@ -243,8 +249,8 @@ export default function CreateListing() {
           {/* STEP 1: Type & Basic Info */}
           {step === 1 && (
             <>
-              <h2 className="text-2xl font-bold">Type d'annonce</h2>
-              <p className="text-slate-500 -mt-2">Quel type de logement proposez-vous ?</p>
+              <h2 className="text-2xl font-bold">{t("listingForm.create.typeHeading")}</h2>
+              <p className="text-slate-500 -mt-2">{t("listingForm.create.typeQuestion")}</p>
 
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {listingTypes.map((type) => {
@@ -268,10 +274,10 @@ export default function CreateListing() {
                       <p className={`font-semibold ${
                         isSelected ? "text-emerald-700" : "text-slate-700"
                       }`}>
-                        {type.name}
+                        {t(`listingForm.types.${type.id}.name`)}
                       </p>
                       <p className="text-xs text-slate-400 mt-1">
-                        {type.description}
+                        {t(`listingForm.types.${type.id}.description`)}
                       </p>
                     </button>
                   );
@@ -280,11 +286,11 @@ export default function CreateListing() {
 
               <div className="h-px bg-slate-100 my-4" />
 
-              <h2 className="text-2xl font-bold mt-6">Informations générales</h2>
+              <h2 className="text-2xl font-bold mt-6">{t("listingForm.create.generalInfo")}</h2>
 
               <input
                 name="title"
-                placeholder="Titre de l'annonce *"
+                placeholder={t("listingForm.create.titlePlaceholder")}
                 value={form.title}
                 onChange={handleChange}
                 className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
@@ -293,7 +299,7 @@ export default function CreateListing() {
               <textarea
                 rows="6"
                 name="description"
-                placeholder="Description détaillée *"
+                placeholder={t("listingForm.create.descriptionPlaceholder")}
                 value={form.description}
                 onChange={handleChange}
                 className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
@@ -304,7 +310,7 @@ export default function CreateListing() {
           {/* STEP 2: Location */}
           {step === 2 && (
             <>
-              <h2 className="text-2xl font-bold">Localisation</h2>
+              <h2 className="text-2xl font-bold">{t("listingForm.create.locationHeading")}</h2>
 
               <select
                 name="city"
@@ -312,7 +318,7 @@ export default function CreateListing() {
                 onChange={handleChange}
                 className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               >
-                <option value="">Sélectionnez une ville *</option>
+                <option value="">{t("listingForm.create.selectCityRequired")}</option>
                 {citiesList.map((city) => (
                   <option key={city}>{city}</option>
                 ))}
@@ -321,10 +327,10 @@ export default function CreateListing() {
               <div className="bg-slate-50 rounded-2xl p-8 text-center border border-slate-100">
                 <MapPinIcon className="w-12 h-12 mx-auto text-emerald-500" />
                 <p className="mt-3 text-slate-500 font-medium">
-                  Carte interactive bientôt disponible
+                  {t("listingForm.create.mapComingSoon")}
                 </p>
                 <p className="text-sm text-slate-400 mt-1">
-                  Pour l'instant, précisez simplement la ville
+                  {t("listingForm.create.mapComingSoonHint")}
                 </p>
               </div>
             </>
@@ -333,17 +339,17 @@ export default function CreateListing() {
           {/* STEP 3: Pricing & Availability */}
           {step === 3 && (
             <>
-              <h2 className="text-2xl font-bold">Prix et disponibilité</h2>
+              <h2 className="text-2xl font-bold">{t("listingForm.create.priceAvailabilityHeading")}</h2>
 
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Prix mensuel (MAD) *
+                    {t("listingForm.create.monthlyPriceLabel")}
                   </label>
                   <input
                     type="number"
                     name="price"
-                    placeholder="ex: 2500"
+                    placeholder={t("listingForm.create.pricePlaceholder")}
                     value={form.price}
                     onChange={handleChange}
                     className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -352,7 +358,7 @@ export default function CreateListing() {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Disponible à partir de *
+                    {t("listingForm.create.availableFromLabel")}
                   </label>
                   <input
                     type="date"
@@ -372,7 +378,7 @@ export default function CreateListing() {
                   onChange={handleChange}
                   className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
                 />
-                <span className="text-slate-700">Logement meublé</span>
+                <span className="text-slate-700">{t("listingForm.create.furnishedCheckbox")}</span>
               </label>
             </>
           )}
@@ -380,12 +386,12 @@ export default function CreateListing() {
           {/* STEP 4: Photos & Amenities */}
           {step === 4 && (
             <>
-              <h2 className="text-2xl font-bold">Équipements & Photos</h2>
+              <h2 className="text-2xl font-bold">{t("listingForm.create.amenitiesPhotosHeading")}</h2>
 
               {/* Amenities */}
               <div>
                 <p className="font-semibold text-slate-700 mb-3">
-                  Équipements proposés
+                  {t("listingForm.create.amenitiesOffered")}
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                   {amenitiesList.map((item) => {
@@ -404,7 +410,7 @@ export default function CreateListing() {
                         }`}
                       >
                         <Icon className="w-5 h-5" />
-                        <span className="text-sm font-medium">{item.name}</span>
+                        <span className="text-sm font-medium">{t(`listingForm.amenities.${item.id}`)}</span>
                       </button>
                     );
                   })}
@@ -427,14 +433,14 @@ export default function CreateListing() {
                   onClick={() => fileInputRef.current.click()}
                   className="bg-emerald-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-emerald-700 transition-colors"
                 >
-                  📸 Choisir des photos
+                  📸 {t("listingForm.create.choosePhotos")}
                 </button>
 
                 <p className="text-sm text-slate-500 mt-3">
-                  Minimum 3 photos • Max 10 photos
+                  {t("listingForm.create.photosHint")}
                 </p>
                 <p className="text-xs text-slate-400 mt-1">
-                  Formats acceptés : JPG, PNG (max 5MB par photo)
+                  {t("listingForm.create.photosFormats")}
                 </p>
               </div>
 
@@ -462,7 +468,7 @@ export default function CreateListing() {
 
               {photos.length < 3 && (
                 <p className="text-amber-600 text-sm flex items-center gap-2">
-                  ⚠️ Encore {3 - photos.length} photo(s) requise(s)
+                  ⚠️ {t("listingForm.create.photosRemaining", { count: 3 - photos.length })}
                 </p>
               )}
             </>
@@ -476,7 +482,7 @@ export default function CreateListing() {
                 onClick={prev}
                 className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200 transition-colors"
               >
-                ← Retour
+                ← {t("listingForm.create.back")}
               </button>
             )}
 
@@ -486,7 +492,7 @@ export default function CreateListing() {
                 onClick={next}
                 className="flex-1 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-colors"
               >
-                Continuer →
+                {t("listingForm.create.continue")} →
               </button>
             ) : (
               <button
@@ -494,7 +500,7 @@ export default function CreateListing() {
                 disabled={loading}
                 className="flex-1 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Publication en cours..." : "Publier l'annonce"}
+                {loading ? t("listingForm.create.publishing") : t("listingForm.create.publish")}
               </button>
             )}
           </div>
@@ -504,12 +510,12 @@ export default function CreateListing() {
         {step > 1 && (
           <div className="mt-6 p-4 bg-white rounded-xl shadow-sm border border-slate-100">
             <p className="text-sm text-slate-500 flex items-center gap-2">
-              <span className="font-medium">📋 Type:</span> 
-              {listingTypes.find(t => t.id === form.type)?.name || "Non sélectionné"}
+              <span className="font-medium">📋 {t("listingForm.create.summaryType")}</span>{" "}
+              {listingTypes.some(lt => lt.id === form.type) ? t(`listingForm.types.${form.type}.name`) : t("listingForm.create.notSelectedM")}
               <span className="mx-2">•</span>
-              <span className="font-medium">📍 Ville:</span> {form.city || "Non sélectionnée"}
+              <span className="font-medium">📍 {t("listingForm.create.summaryCity")}</span> {form.city || t("listingForm.create.notSelectedF")}
               <span className="mx-2">•</span>
-              <span className="font-medium">💰 Prix:</span> {form.price ? `${form.price} MAD` : "Non défini"}
+              <span className="font-medium">💰 {t("listingForm.create.summaryPrice")}</span> {form.price ? t("listingForm.create.priceValue", { price: form.price }) : t("listingForm.create.priceNotDefined")}
             </p>
           </div>
         )}

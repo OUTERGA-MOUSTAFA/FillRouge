@@ -1,0 +1,89 @@
+{
+  "subscription": {
+    "currency": "درهم",
+    "perMonthShort": "/شهرياً",
+    "free": "مجاني",
+    "choose": "اختر {{plan}}",
+    "startFree": "ابدأ مجاناً",
+    "currentPlanLabel": "الباقة الحالية",
+    "loading": "جارٍ تحميل الباقات…",
+    "planWord": "الباقة",
+    "heroBadge": "سمسار بريميوم",
+    "upgradeToPremium": "الترقية إلى بريميوم",
+    "expiresIn": "— ينتهي خلال",
+    "currentSubscriptionTitle": "اشتراكك الحالي",
+    "viewCards": "بطاقات",
+    "viewTable": "جدول المقارنة",
+    "plans": {
+      "free": "مجاني",
+      "standard": "ستاندرد",
+      "premium": "بريميوم"
+    },
+    "taglines": {
+      "free": "للبداية",
+      "standard": "الأكثر شيوعاً",
+      "premium": "كل شيء مشمول"
+    },
+    "badges": {
+      "standard": "شائع",
+      "premium": "أفضل اختيار"
+    },
+    "features": {
+      "messages5": "5 رسائل في اليوم",
+      "messages50": "50 رسالة في اليوم",
+      "messagesUnlimited": "رسائل غير محدودة",
+      "viewBasicProfiles": "عرض الملفات الأساسية",
+      "createListing": "إنشاء إعلان",
+      "featuredProfile": "ملف شخصي مميز",
+      "viewProfileVisitors": "معرفة من زار ملفك الشخصي",
+      "advancedFilters": "فلاتر متقدمة",
+      "prioritySupport": "دعم ذو أولوية"
+    },
+    "hero": {
+      "titleMain": "اعثر على شريك السكن المثالي،",
+      "titleAccent": "بشكل أسرع",
+      "subtitle": "اشترك في باقة مدفوعة لفتح جميع الميزات وزيادة فرصك."
+    },
+    "time": {
+      "oneHour": "ساعة واحدة",
+      "hours": "{{n}} ساعات",
+      "oneDay": "يوم واحد",
+      "days": "{{n}} أيام",
+      "daysAndHours": "{{days}} و {{hours}}"
+    },
+    "toast": {
+      "loadError": "خطأ في تحميل الباقات",
+      "freeAlreadyActive": "الباقة المجانية مفعّلة بالفعل"
+    },
+    "table": {
+      "featureHeader": "الميزة",
+      "profile": "الملف الشخصي",
+      "listingsPublished": "الإعلانات المنشورة",
+      "messagesPerDay": "الرسائل في اليوم",
+      "whoViewedProfile": "معرفة من شاهد ملفي الشخصي",
+      "premiumBadge": "شارة \"بريميوم\"",
+      "noAds": "بدون إعلانات",
+      "backgroundCheck": "فحص الخلفية",
+      "unlimited": "غير محدود",
+      "maxCount": "{{n}} كحد أقصى",
+      "oneFreePerYear": "مجاني مرة في السنة",
+      "current": "الحالية",
+      "pricePerMonth": "{{price}} درهم/شهر"
+    },
+    "checkout": {
+      "title": "إتمام الاشتراك",
+      "summary": "أنت على وشك الاشتراك في باقة {{plan}} مقابل {{price}} درهم/شهر",
+      "paymentMethod": "طريقة الدفع",
+      "creditCard": "بطاقة بنكية",
+      "cmi": "CMI (المغرب)",
+      "cardNumber": "رقم البطاقة",
+      "cardExpiry": "تاريخ الانتهاء",
+      "cvc": "CVC",
+      "total": "المجموع",
+      "processing": "جارٍ المعالجة...",
+      "pay": "ادفع {{price}} درهم",
+      "success": "تم تفعيل الاشتراك بنجاح",
+      "paymentError": "خطأ أثناء الدفع"
+    }
+  }
+}

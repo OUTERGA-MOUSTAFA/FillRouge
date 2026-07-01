@@ -1,0 +1,32 @@
+{
+  "notifications": {
+    "title": "Notifications",
+    "unreadCount": "{{count}} non lue(s)",
+    "markAllAsRead": "Tout marquer lu",
+    "markAsRead": "Marquer comme lu",
+    "view": "Voir",
+    "delete": "Supprimer",
+    "deleteError": "Erreur suppression",
+    "filterAll": "Toutes",
+    "filterUnread": "Non lues",
+    "emptyUnread": "Aucune notification non lue",
+    "emptyAll": "Aucune notification pour le moment",
+    "emptyHint": "Vous serez notifié ici des nouveaux messages, matches et mises à jour.",
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "types": {
+      "message": "Message",
+      "match": "Match",
+      "listing": "Annonce",
+      "subscription": "Abonnement",
+      "profile": "Profil",
+      "notification": "Notification"
+    },
+    "time": {
+      "now": "à l'instant",
+      "minutesAgo": "il y a {{count}} min",
+      "hoursAgo": "il y a {{count}}h",
+      "daysAgo": "il y a {{count}}j"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "matches": {
+    "title": "التطابقات والتوصيات",
+    "tabMatches": "تطابقاتي ({{count}})",
+    "tabRecommendations": "التوصيات ({{count}})",
+    "noMatches": "لا توجد تطابقات حتى الآن",
+    "completeProfileRecommendations": "أكمل ملفك الشخصي لتلقي التوصيات",
+    "noRecommendations": "لا توجد توصيات حتى الآن",
+    "completeProfileSuggestions": "أكمل ملفك الشخصي لتلقي الاقتراحات",
+    "completeMyProfile": "إكمال ملفي الشخصي",
+    "matchAccepted": "تم قبول التطابق!",
+    "matchDeclined": "تم رفض التطابق",
+    "interestSent": "تم إرسال الاهتمام!",
+    "error": "خطأ",
+    "errorLoading": "خطأ في تحميل البيانات",
+    "ageYears": "{{age}} سنة",
+    "accept": "قبول",
+    "decline": "رفض",
+    "sendMessage": "إرسال رسالة",
+    "compatibilityScore": "{{score}}% التوافق",
+    "commonInterests": "الاهتمامات المشتركة"
+  }
+}

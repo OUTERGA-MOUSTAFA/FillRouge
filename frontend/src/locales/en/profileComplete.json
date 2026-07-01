@@ -1,0 +1,85 @@
+{
+  "profileComplete": {
+    "title": "Profile details",
+    "subtitle": "Help others get to know you better",
+    "savingShort": "Saving…",
+    "save": "Save",
+    "aboutSection": "About",
+    "bioLabel": "Short introduction",
+    "bioPlaceholder": "Describe yourself in a few words…",
+    "descriptionLabel": "Detailed description",
+    "descriptionPlaceholder": "Talk about your habits, your expectations, your lifestyle…",
+    "occupationLabel": "Professional situation",
+    "selectOption": "Select",
+    "occupation": {
+      "student": "Student",
+      "employed": "Employed",
+      "self_employed": "Self-employed",
+      "unemployed": "Unemployed",
+      "retired": "Retired"
+    },
+    "interestsSection": "Interests",
+    "interest": {
+      "cooking": "Cooking",
+      "fitness": "Fitness",
+      "tech": "Technology",
+      "travel": "Travel",
+      "study": "Study",
+      "remote_work": "Remote work",
+      "music": "Music",
+      "sports": "Sports",
+      "reading": "Reading",
+      "art": "Art",
+      "gaming": "Gaming",
+      "outdoors": "Outdoors"
+    },
+    "lifestyleSection": "Lifestyle",
+    "smokingLabel": "Smoking",
+    "smoking": {
+      "no": "Non-smoker",
+      "occasionally": "Occasional",
+      "yes": "Smoker"
+    },
+    "petsLabel": "Pets",
+    "no": "No",
+    "maybe": "Maybe",
+    "yes": "Yes",
+    "sleepLabel": "Sleep schedule",
+    "sleep": {
+      "early_bird": "Early bird",
+      "flexible": "Normal / Flexible",
+      "night_owl": "Night owl"
+    },
+    "cleanlinessLabel": "Cleanliness level",
+    "cleanliness": {
+      "relaxed": "Relaxed",
+      "moderate": "Moderate",
+      "very_clean": "Very clean"
+    },
+    "socialLabel": "Social level",
+    "social": {
+      "introvert": "Introvert",
+      "ambivert": "Ambivert",
+      "extrovert": "Extrovert"
+    },
+    "preferencesSection": "Roommate preferences",
+    "preferredGenderLabel": "Preferred gender",
+    "male": "Male",
+    "female": "Female",
+    "any": "Any",
+    "acceptsPetsLabel": "Accepts pets",
+    "acceptsSmokersLabel": "Accepts smokers",
+    "preferredAgeRange": "Preferred age range",
+    "minAgePlaceholder": "Min age (18)",
+    "maxAgePlaceholder": "Max age (100)",
+    "identitySection": "Identity verification",
+    "uploadIdHint": "Upload a national ID or passport",
+    "identityDisclaimer": "Your documents will only be used for confidential verification purposes.",
+    "saving": "Saving…",
+    "saveDetails": "Save details",
+    "cancel": "Cancel",
+    "toastUpdated": "Profile details updated",
+    "toastFixErrors": "Please correct the errors or change the photo",
+    "errorUpdate": "Error during update"
+  }
+}

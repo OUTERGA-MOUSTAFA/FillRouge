@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { adminService } from '../../src/services/admin'; 
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { adminService } from '../../src/services/admin';
+import { useAuthStore } from '../../src/store/authStore';
 import toast from 'react-hot-toast';
 
 export default function AdminUserDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { user: currentUser } = useAuthStore();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetchUser();
@@ -21,6 +25,55 @@ export default function AdminUserDetail() {
       toast.error('Erreur chargement utilisateur');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleVerify = async () => {
+    try {
+      await adminService.verifyUser(id);
+      toast.success('Utilisateur vérifié avec succès');
+      fetchUser();
+    } catch (error) {
+      toast.error('Erreur lors de la vérification');
+    }
+  };
+
+  const handleSuspend = async () => {
+    if (!confirm('Suspendre cet utilisateur pour 30 jours ?')) return;
+    try {
+      await adminService.suspendUser(id, 30, 'Comportement inapproprié');
+      toast.success('Utilisateur suspendu avec succès');
+      fetchUser();
+    } catch (error) {
+      toast.error('Erreur lors de la suspension');
+    }
+  };
+
+  const handleUnsuspend = async () => {
+    try {
+      await adminService.unsuspendUser(id);
+      toast.success('Suspension levée avec succès');
+      fetchUser();
+    } catch (error) {
+      toast.error('Erreur lors de la réactivation');
+    }
+  };
+
+  const handleDelete = async () => {
+    // Garde-fou : l'admin ne peut pas supprimer son propre compte
+    if (currentUser && String(currentUser.id) === String(id)) {
+      toast.error('Vous ne pouvez pas supprimer votre propre compte');
+      return;
+    }
+    if (!confirm(`Supprimer définitivement le compte de ${user?.full_name} ? Cette action est irréversible.`)) return;
+    setDeleting(true);
+    try {
+      await adminService.deleteUser(id);
+      toast.success('Utilisateur supprimé avec succès');
+      navigate('/admin/users');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Erreur lors de la suppression');
+      setDeleting(false);
     }
   };
 
@@ -123,22 +176,31 @@ export default function AdminUserDetail() {
             <h3 className="text-lg font-semibold mb-4">Actions</h3>
             <div className="space-y-3">
               {!user.email_verified_at && (
-                <button className="btn-primary w-full">Vérifier l'utilisateur</button>
+                <button onClick={handleVerify} className="btn-primary w-full">
+                  Vérifier l'utilisateur
+                </button>
               )}
-              {user.suspended_until ? (
-                <button className="btn-primary w-full bg-green-500 hover:bg-green-600">
+              {user.suspended_until && new Date(user.suspended_until) > new Date() ? (
+                <button
+                  onClick={handleUnsuspend}
+                  className="btn-primary w-full bg-green-500 hover:bg-green-600"
+                >
                   Lever la suspension
                 </button>
               ) : (
-                <button className="btn-primary w-full bg-red-500 hover:bg-red-600">
+                <button
+                  onClick={handleSuspend}
+                  className="btn-primary w-full bg-red-500 hover:bg-red-600"
+                >
                   Suspendre l'utilisateur
                 </button>
               )}
-              <button className="btn-secondary w-full">
-                Envoyer un message
-              </button>
-              <button className="btn-secondary w-full text-red-600 hover:bg-red-50">
-                Supprimer le compte
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="btn-secondary w-full text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {deleting ? 'Suppression...' : 'Supprimer le compte'}
               </button>
             </div>
           </div>

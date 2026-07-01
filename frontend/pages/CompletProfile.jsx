@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../src/store/authStore';
 import { usersService } from '../src/services/users';
@@ -13,32 +14,16 @@ import { authService } from '../src/services/auth';
 
 
 const CENTRES_INTERET = [
-  { id: 'cooking',     label: 'Cuisine' },
-  { id: 'fitness',     label: 'Sport' },
-  { id: 'tech',        label: 'Technologie' },
-  { id: 'travel',      label: 'Voyage' },
-  { id: 'study',       label: 'Études' },
-  { id: 'remote_work', label: 'Télétravail' },
-  { id: 'music',       label: 'Musique' },
-  { id: 'sports',      label: 'Sports' },
-  { id: 'reading',     label: 'Lecture' },
-  { id: 'art',         label: 'Art' },
-  { id: 'gaming',      label: 'Jeux vidéo' },
-  { id: 'outdoors',    label: 'Plein air' },
+  'cooking', 'fitness', 'tech', 'travel', 'study', 'remote_work',
+  'music', 'sports', 'reading', 'art', 'gaming', 'outdoors',
 ];
 
-const OCCUPATIONS = [
-  { value: '',              label: 'Sélectionner' },
-  { value: 'student',       label: 'Étudiant(e)' },
-  { value: 'employed',      label: 'Salarié(e)' },
-  { value: 'self_employed', label: 'Indépendant(e)' },
-  { value: 'unemployed',    label: 'Sans emploi' },
-  { value: 'retired',       label: 'Retraité(e)' },
-];
+const OCCUPATIONS = ['', 'student', 'employed', 'self_employed', 'unemployed', 'retired'];
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function EditProfileDetails() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuthStore();
 
@@ -152,14 +137,14 @@ export default function EditProfileDetails() {
         await authService.uploadIdDocument(identityFile, 'cin');
       }
 
-      toast.success('Profil détaillé mis à jour');
+      toast.success(t('profileComplete.toastUpdated'));
       navigate('/profile');
     } catch (error) {
       if (error.response?.status === 422) {
         setErrors(error.response.data?.errors ?? {});
-        toast.error('Veuillez corriger les erreurs ou bien changé photo');
+        toast.error(t('profileComplete.toastFixErrors'));
       } else {
-        toast.error(error.response?.data?.message || 'Erreur lors de la mise à jour');
+        toast.error(error.response?.data?.message || t('profileComplete.errorUpdate'));
       }
     } finally {
       setLoading(false);
@@ -182,15 +167,15 @@ export default function EditProfileDetails() {
             </svg>
           </button>
           <div className="text-center">
-            <h1 className="text-base font-semibold text-gray-900">Détails du profil</h1>
-            <p className="text-xs text-gray-400">Aidez les autres à mieux vous connaître</p>
+            <h1 className="text-base font-semibold text-gray-900">{t('profileComplete.title')}</h1>
+            <p className="text-xs text-gray-400">{t('profileComplete.subtitle')}</p>
           </div>
           <button
             onClick={handleSubmit}
             disabled={loading}
             className="text-sm font-semibold text-[#009966] hover:text-[#00BBA7] disabled:opacity-40 transition-colors"
           >
-            {loading ? 'Enreg…' : 'Enregistrer'}
+            {loading ? t('profileComplete.savingShort') : t('profileComplete.save')}
           </button>
         </div>
       </div>
@@ -198,36 +183,36 @@ export default function EditProfileDetails() {
       <div className="max-w-2xl mx-auto px-4 py-8 space-y-5">
 
         {/* ── 1. Bio ── */}
-        <Section titre="À propos" icone={<DocumentTextIcon className="h-4 w-4" />}>
+        <Section titre={t('profileComplete.aboutSection')} icone={<DocumentTextIcon className="h-4 w-4" />}>
           <div className="space-y-4">
-            <Field label="Présentation courte" error={errors.bio?.[0]}>
+            <Field label={t('profileComplete.bioLabel')} error={errors.bio?.[0]}>
               <textarea
                 name="bio"
                 value={formData.bio}
                 onChange={handleChange}
                 rows={3}
                 maxLength={1000}
-                placeholder="Décrivez-vous en quelques mots…"
+                placeholder={t('profileComplete.bioPlaceholder')}
                 className={textareaClass(!!errors.bio)}
               />
               <p className="text-xs text-gray-400 text-right mt-0.5">{formData.bio.length}/1000</p>
             </Field>
 
-            <Field label="Description détaillée" error={errors.description?.[0]}>
+            <Field label={t('profileComplete.descriptionLabel')} error={errors.description?.[0]}>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
                 rows={4}
                 maxLength={2000}
-                placeholder="Parlez de vos habitudes, vos attentes, votre style de vie…"
+                placeholder={t('profileComplete.descriptionPlaceholder')}
                 className={textareaClass(!!errors.description)}
               />
               <p className="text-xs text-gray-400 text-right mt-0.5">{formData.description.length}/2000</p>
             </Field>
 
             {/* Occupation — must match enum */}
-            <Field label="Situation professionnelle" error={errors.occupation?.[0]}>
+            <Field label={t('profileComplete.occupationLabel')} error={errors.occupation?.[0]}>
               <div className="relative">
                 <select
                   name="occupation"
@@ -235,8 +220,10 @@ export default function EditProfileDetails() {
                   onChange={handleChange}
                   className={selectClass(!!errors.occupation)}
                 >
-                  {OCCUPATIONS.map(o => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
+                  {OCCUPATIONS.map(value => (
+                    <option key={value} value={value}>
+                      {value === '' ? t('profileComplete.selectOption') : t(`profileComplete.occupation.${value}`)}
+                    </option>
                   ))}
                 </select>
                 <ChevronIcon />
@@ -248,33 +235,33 @@ export default function EditProfileDetails() {
         
 
         {/* ── 3. Centres d'intérêt ── */}
-        <Section titre="Centres d'intérêt" icone={<HeartIcon className="h-4 w-4" />}>
+        <Section titre={t('profileComplete.interestsSection')} icone={<HeartIcon className="h-4 w-4" />}>
           {errors.interests && (
             <p className="text-xs text-red-500 mb-3">{errors['interests.0']?.[0] || errors.interests?.[0]}</p>
           )}
           <div className="flex flex-wrap gap-2">
-            {CENTRES_INTERET.map(({ id, label }) => (
+            {CENTRES_INTERET.map((id) => (
               <ChipToggle
                 key={id}
                 active={formData.interests.includes(id)}
                 onClick={() => toggleInterest(id)}
-                label={label}
+                label={t(`profileComplete.interest.${id}`)}
               />
             ))}
           </div>
         </Section>
 
         {/* ── 4. Mode de vie ── */}
-        <Section titre="Mode de vie" icone={<SparklesIcon className="h-4 w-4" />}>
+        <Section titre={t('profileComplete.lifestyleSection')} icone={<SparklesIcon className="h-4 w-4" />}>
           <div className="space-y-5">
 
-            <LigneVie titre="Tabac" icone={<FireIcon className="h-4 w-4 text-gray-400" />}>
+            <LigneVie titre={t('profileComplete.smokingLabel')} icone={<FireIcon className="h-4 w-4 text-gray-400" />}>
               <RadioGroup
                 name="smoking"
                 options={[
-                  { value: 'no',           label: 'Non-fumeur' },
-                  { value: 'occasionally', label: 'Occasionnel' },
-                  { value: 'yes',          label: 'Fumeur' },
+                  { value: 'no',           label: t('profileComplete.smoking.no') },
+                  { value: 'occasionally', label: t('profileComplete.smoking.occasionally') },
+                  { value: 'yes',          label: t('profileComplete.smoking.yes') },
                 ]}
                 value={formData.smoking}
                 onChange={v => setField('smoking', v)}
@@ -282,13 +269,13 @@ export default function EditProfileDetails() {
               />
             </LigneVie>
 
-            <LigneVie titre="Animaux domestiques" icone={<HeartIcon className="h-4 w-4 text-gray-400" />}>
+            <LigneVie titre={t('profileComplete.petsLabel')} icone={<HeartIcon className="h-4 w-4 text-gray-400" />}>
               <RadioGroup
                 name="pets"
                 options={[
-                  { value: 'no',    label: 'Non' },
-                  { value: 'maybe', label: 'Peut-être' },
-                  { value: 'yes',   label: 'Oui' },
+                  { value: 'no',    label: t('profileComplete.no') },
+                  { value: 'maybe', label: t('profileComplete.maybe') },
+                  { value: 'yes',   label: t('profileComplete.yes') },
                 ]}
                 value={formData.pets}
                 onChange={v => setField('pets', v)}
@@ -296,12 +283,12 @@ export default function EditProfileDetails() {
               />
             </LigneVie>
 
-            <LigneVie titre="Horaire de sommeil" icone={<MoonIcon className="h-4 w-4 text-gray-400" />}>
+            <LigneVie titre={t('profileComplete.sleepLabel')} icone={<MoonIcon className="h-4 w-4 text-gray-400" />}>
               <div className="space-y-2">
                 {[
-                  { value: 'early_bird', label: 'Lève-tôt' },
-                  { value: 'flexible',   label: 'Normal / Flexible' },
-                  { value: 'night_owl',  label: 'Couche-tard' },
+                  { value: 'early_bird', label: t('profileComplete.sleep.early_bird') },
+                  { value: 'flexible',   label: t('profileComplete.sleep.flexible') },
+                  { value: 'night_owl',  label: t('profileComplete.sleep.night_owl') },
                 ].map(opt => (
                   <RadioLine
                     key={opt.value}
@@ -314,12 +301,12 @@ export default function EditProfileDetails() {
               </div>
             </LigneVie>
 
-            <LigneVie titre="Niveau de propreté" icone={<SparklesIcon className="h-4 w-4 text-gray-400" />}>
+            <LigneVie titre={t('profileComplete.cleanlinessLabel')} icone={<SparklesIcon className="h-4 w-4 text-gray-400" />}>
               <div className="space-y-2">
                 {[
-                  { value: 'relaxed',    label: 'Relax' },
-                  { value: 'moderate',   label: 'Modéré' },
-                  { value: 'very_clean', label: 'Très propre' },
+                  { value: 'relaxed',    label: t('profileComplete.cleanliness.relaxed') },
+                  { value: 'moderate',   label: t('profileComplete.cleanliness.moderate') },
+                  { value: 'very_clean', label: t('profileComplete.cleanliness.very_clean') },
                 ].map(opt => (
                   <RadioLine
                     key={opt.value}
@@ -332,13 +319,13 @@ export default function EditProfileDetails() {
               </div>
             </LigneVie>
 
-            <LigneVie titre="Niveau social" icone={<UserGroupIcon className="h-4 w-4 text-gray-400" />}>
+            <LigneVie titre={t('profileComplete.socialLabel')} icone={<UserGroupIcon className="h-4 w-4 text-gray-400" />}>
               <RadioGroup
                 name="social_level"
                 options={[
-                  { value: 'introvert', label: 'Introverti' },
-                  { value: 'ambivert',  label: 'Ambiverti' },
-                  { value: 'extrovert', label: 'Extraverti' },
+                  { value: 'introvert', label: t('profileComplete.social.introvert') },
+                  { value: 'ambivert',  label: t('profileComplete.social.ambivert') },
+                  { value: 'extrovert', label: t('profileComplete.social.extrovert') },
                 ]}
                 value={formData.social_level}
                 onChange={v => setField('social_level', v)}
@@ -350,16 +337,16 @@ export default function EditProfileDetails() {
         </Section>
 
         {/* ── 5. Préférences colocataire ── */}
-        <Section titre="Préférences colocataire" icone={<UserGroupIcon className="h-4 w-4" />}>
+        <Section titre={t('profileComplete.preferencesSection')} icone={<UserGroupIcon className="h-4 w-4" />}>
           <div className="space-y-5">
 
-            <LigneVie titre="Genre préféré" icone={<UserIcon className="h-4 w-4 text-gray-400" />}>
+            <LigneVie titre={t('profileComplete.preferredGenderLabel')} icone={<UserIcon className="h-4 w-4 text-gray-400" />}>
               <RadioGroup
                 name="preferred_gender"
                 options={[
-                  { value: 'male',   label: 'Homme' },
-                  { value: 'female', label: 'Femme' },
-                  { value: 'any',    label: 'Peu importe' },
+                  { value: 'male',   label: t('profileComplete.male') },
+                  { value: 'female', label: t('profileComplete.female') },
+                  { value: 'any',    label: t('profileComplete.any') },
                 ]}
                 value={formData.preferred_gender}
                 onChange={v => setField('preferred_gender', v)}
@@ -367,12 +354,12 @@ export default function EditProfileDetails() {
               />
             </LigneVie>
 
-            <LigneVie titre="Accepte les animaux" icone={<HeartIcon className="h-4 w-4 text-gray-400" />}>
+            <LigneVie titre={t('profileComplete.acceptsPetsLabel')} icone={<HeartIcon className="h-4 w-4 text-gray-400" />}>
               <RadioGroup
                 name="accepts_pets"
                 options={[
-                  { value: 'no',  label: 'Non' },
-                  { value: 'yes', label: 'Oui' },
+                  { value: 'no',  label: t('profileComplete.no') },
+                  { value: 'yes', label: t('profileComplete.yes') },
                 ]}
                 value={formData.accepts_pets}
                 onChange={v => setField('accepts_pets', v)}
@@ -380,12 +367,12 @@ export default function EditProfileDetails() {
               />
             </LigneVie>
 
-            <LigneVie titre="Accepte les fumeurs" icone={<FireIcon className="h-4 w-4 text-gray-400" />}>
+            <LigneVie titre={t('profileComplete.acceptsSmokersLabel')} icone={<FireIcon className="h-4 w-4 text-gray-400" />}>
               <RadioGroup
                 name="accepts_smokers"
                 options={[
-                  { value: 'no',  label: 'Non' },
-                  { value: 'yes', label: 'Oui' },
+                  { value: 'no',  label: t('profileComplete.no') },
+                  { value: 'yes', label: t('profileComplete.yes') },
                 ]}
                 value={formData.accepts_smokers}
                 onChange={v => setField('accepts_smokers', v)}
@@ -396,7 +383,7 @@ export default function EditProfileDetails() {
             {/* Age range */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tranche d'âge préférée
+                {t('profileComplete.preferredAgeRange')}
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <Field error={errors.preferred_min_age?.[0]}>
@@ -406,7 +393,7 @@ export default function EditProfileDetails() {
                     value={formData.preferred_min_age}
                     onChange={handleChange}
                     min={18} max={100}
-                    placeholder="Âge min (18)"
+                    placeholder={t('profileComplete.minAgePlaceholder')}
                     className={inputClass(!!errors.preferred_min_age)}
                   />
                 </Field>
@@ -417,7 +404,7 @@ export default function EditProfileDetails() {
                     value={formData.preferred_max_age}
                     onChange={handleChange}
                     min={18} max={100}
-                    placeholder="Âge max (100)"
+                    placeholder={t('profileComplete.maxAgePlaceholder')}
                     className={inputClass(!!errors.preferred_max_age)}
                   />
                 </Field>
@@ -428,14 +415,14 @@ export default function EditProfileDetails() {
         </Section>
 
         {/* ── 6. Vérification d'identité ── */}
-        <Section titre="Vérification d'identité" icone={<ShieldCheckIcon className="h-4 w-4" />}>
+        <Section titre={t('profileComplete.identitySection')} icone={<ShieldCheckIcon className="h-4 w-4" />}>
           <div
             className="border-2 border-dashed border-[#b2e5df] rounded-xl bg-[#f0faf8] p-6 flex flex-col items-center gap-3 cursor-pointer hover:bg-[#e6f7f5] transition-colors"
             onClick={() => document.getElementById('identity-input').click()}
           >
             <ArrowUpTrayIcon className="h-8 w-8 text-[#00BBA7]" />
             <p className="text-sm font-medium text-[#00BBA7]">
-              {identityFile ? identityFile.name : 'Déposer une CIN ou un passeport'}
+              {identityFile ? identityFile.name : t('profileComplete.uploadIdHint')}
             </p>
             <input
               id="identity-input"
@@ -447,7 +434,7 @@ export default function EditProfileDetails() {
           </div>
           <p className="text-xs text-gray-400 mt-2 text-center flex items-center justify-center gap-1">
             <ShieldCheckIcon className="h-3.5 w-3.5" />
-            Vos documents ne seront utilisés qu'à des fins de vérification confidentielle.
+            {t('profileComplete.identityDisclaimer')}
           </p>
         </Section>
 
@@ -464,14 +451,14 @@ export default function EditProfileDetails() {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                 </svg>
-                Enregistrement…
+                {t('profileComplete.saving')}
               </>
             ) : (
               <>
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                Enregistrer les détails
+                {t('profileComplete.saveDetails')}
               </>
             )}
           </button>
@@ -480,7 +467,7 @@ export default function EditProfileDetails() {
             onClick={() => navigate('/profile')}
             className="w-full bg-white text-gray-600 py-3.5 rounded-xl font-medium text-base border border-gray-200 hover:bg-gray-50 transition-colors"
           >
-            Annuler
+            {t('profileComplete.cancel')}
           </button>
         </div>
 

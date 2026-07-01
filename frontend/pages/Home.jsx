@@ -8,46 +8,48 @@ import {
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import api from '../src/services/api';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
-// ==================== DONNÉES STATIQUES ====================
-const stats = [
-  { value: '5000+', label: 'Annonces actives' },
-  { value: '10000+', label: 'Utilisateurs' },
-  { value: '50+', label: 'Villes couvertes' },
-  { value: '95%', label: 'Taux de satisfaction' },
-];
-
-const features = [
-  {
-    name: 'Recherche intelligente',
-    description: 'Trouvez le colocataire idéal grâce à notre algorithme de matching avancé.',
-    icon: MagnifyingGlassIcon,
-  },
-  {
-    name: 'Annonces vérifiées',
-    description: 'Toutes nos annonces sont vérifiées pour votre sécurité.',
-    icon: ShieldCheckIcon,
-  },
-  {
-    name: 'Messagerie sécurisée',
-    description: 'Communiquez en toute sécurité avec vos futurs colocataires.',
-    icon: ChatBubbleLeftRightIcon,
-  },
-  {
-    name: 'Large sélection',
-    description: 'Des milliers d\'annonces dans toutes les villes du Maroc.',
-    icon: BuildingOfficeIcon,
-  },
-];
-
 // ==================== COMPOSANT ====================
 export default function Home() {
+  const { t } = useTranslation();
   const [sliders, setSliders] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // ==================== DONNÉES STATIQUES ====================
+  const stats = [
+    { value: '5000+', label: t('home.stats.activeListings') },
+    { value: '10000+', label: t('home.stats.users') },
+    { value: '50+', label: t('home.stats.citiesCovered') },
+    { value: '95%', label: t('home.stats.satisfactionRate') },
+  ];
+
+  const features = [
+    {
+      name: t('home.features.smartSearch.name'),
+      description: t('home.features.smartSearch.description'),
+      icon: MagnifyingGlassIcon,
+    },
+    {
+      name: t('home.features.verifiedListings.name'),
+      description: t('home.features.verifiedListings.description'),
+      icon: ShieldCheckIcon,
+    },
+    {
+      name: t('home.features.secureMessaging.name'),
+      description: t('home.features.secureMessaging.description'),
+      icon: ChatBubbleLeftRightIcon,
+    },
+    {
+      name: t('home.features.largeSelection.name'),
+      description: t('home.features.largeSelection.description'),
+      icon: BuildingOfficeIcon,
+    },
+  ];
 
   useEffect(() => {
     fetchSliders();
@@ -75,40 +77,40 @@ export default function Home() {
   const getDefaultSliders = () => [
     {
       id: 1,
-      title: 'Trouvez votre espace idéal',
-      subtitle: 'Des milliers d\'annonces à Casablanca, Rabat et partout au Maroc',
+      title: t('home.sliders.slide1.title'),
+      subtitle: t('home.sliders.slide1.subtitle'),
       image: 'https://via.placeholder.com/1920x1080/16a34a/ffffff?text=Semsar+1',
-      button_text: 'Découvrir',
+      button_text: t('home.sliders.discover'),
       button_link: '/listings',
     },
     {
       id: 2,
-      title: 'Colocation sécurisée',
-      subtitle: 'Annonces vérifiées et profils authentifiés pour votre tranquillité',
+      title: t('home.sliders.slide2.title'),
+      subtitle: t('home.sliders.slide2.subtitle'),
       image: 'https://via.placeholder.com/1920x1080/16a34a/ffffff?text=Semsar+2',
-      button_text: 'Découvrir',
+      button_text: t('home.sliders.discover'),
       button_link: '/listings',
     },
     {
       id: 3,
-      title: 'La communauté Semsar',
-      subtitle: 'Rejoignez plus de 10,000 membres à la recherche du colocataire parfait',
+      title: t('home.sliders.slide3.title'),
+      subtitle: t('home.sliders.slide3.subtitle'),
       image: 'https://via.placeholder.com/1920x1080/16a34a/ffffff?text=Semsar+3',
-      button_text: 'Découvrir',
+      button_text: t('home.sliders.discover'),
       button_link: '/listings',
     },{
       id: 4,
-      title: 'La communauté Semsar',
-      subtitle: 'Rejoignez plus de 10,000 membres à la recherche du colocataire parfait',
+      title: t('home.sliders.slide3.title'),
+      subtitle: t('home.sliders.slide3.subtitle'),
       image: 'https://via.placeholder.com/1920x1080/16a34a/ffffff?text=Semsar+3',
-      button_text: 'Découvrir',
+      button_text: t('home.sliders.discover'),
       button_link: '/listings',
     },{
       id: 5,
-      title: 'La communauté Semsar',
-      subtitle: 'Rejoignez plus de 10,000 membres à la recherche du colocataire parfait',
+      title: t('home.sliders.slide3.title'),
+      subtitle: t('home.sliders.slide3.subtitle'),
       image: 'https://via.placeholder.com/1920x1080/16a34a/ffffff?text=Semsar+3',
-      button_text: 'Découvrir',
+      button_text: t('home.sliders.discover'),
       button_link: '/listings',
     },
   ];
@@ -118,7 +120,7 @@ export default function Home() {
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#009966] mx-auto mb-4"></div>
-          <p className="text-gray-600">Chargement...</p>
+          <p className="text-gray-600">{t('home.loading')}</p>
         </div>
       </div>
     );
@@ -168,7 +170,7 @@ export default function Home() {
                       to={slide.button_link || '/listings'}
                       className="mt-8 bg-white text-gray-900 hover:bg-gray-100 px-6 py-3 rounded-lg font-semibold transition"
                     >
-                      {slide.button_text || 'Découvrir'}
+                      {slide.button_text || t('home.sliders.discover')}
                     </Link>
                   </div>
                 </div>
@@ -197,10 +199,10 @@ export default function Home() {
         <div className="container-custom">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Pourquoi choisir Semsar ?
+              {t('home.features.title')}
             </h2>
             <p className="text-xl text-gray-600">
-              Une plateforme complète pour votre recherche de colocataire
+              {t('home.features.subtitle')}
             </p>
           </div>
           
@@ -226,13 +228,13 @@ export default function Home() {
       <section className="bg-[#e6f7f5] py-16">
         <div className="container-custom text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Prêt à trouver votre colocataire ?
+            {t('home.cta.title')}
           </h2>
           <p className="text-xl text-gray-600 mb-8">
-            Rejoignez la plus grande communauté de colocation au Maroc
+            {t('home.cta.subtitle')}
           </p>
           <Link to="/register" className="btn-primary px-8 py-3 text-lg">
-            Commencer maintenant
+            {t('home.cta.button')}
           </Link>
         </div>
       </section>

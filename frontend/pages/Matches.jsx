@@ -5,9 +5,11 @@ import { usersService } from '../src/services/users';
 import MatchCard from '../src/components/matches/MatchCard';
 import RecommendationCard from '../src/components/matches/RecommendationCard';
 import { useAuthStore } from '../src/store/authStore';
+import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 
 export default function Matches() {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const [matches, setMatches] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
@@ -30,7 +32,7 @@ export default function Matches() {
       setRecommendations(recosRes.data || []);
     } catch (error) {
       console.error('Error fetching data:', error);
-      const message = error.response?.data?.message || 'Erreur chargement des données';
+      const message = error.response?.data?.message || t('matches.errorLoading');
       toast.error(message);
     } finally {
       setLoading(false);
@@ -40,20 +42,20 @@ export default function Matches() {
   const handleAccept = async (userId) => {
     try {
       await matchesService.accept(userId);
-      toast.success('Match accepté !');
+      toast.success(t('matches.matchAccepted'));
       fetchData();
     } catch (error) {
-      toast.error('Erreur');
+      toast.error(t('matches.error'));
     }
   };
 
   const handleDecline = async (userId) => {
     try {
       await matchesService.decline(userId);
-      toast.success('Match refusé');
+      toast.success(t('matches.matchDeclined'));
       fetchData();
     } catch (error) {
-      toast.error('Erreur');
+      toast.error(t('matches.error'));
     }
   };
 
@@ -64,10 +66,10 @@ export default function Matches() {
   const handleLike = async (userId) => {
     try {
       // Ici vous pouvez implémenter la logique pour liker une recommandation
-      toast.success('Intérêt envoyé !');
+      toast.success(t('matches.interestSent'));
       fetchData();
     } catch (error) {
-      toast.error('Erreur');
+      toast.error(t('matches.error'));
     }
   };
 
@@ -81,7 +83,7 @@ export default function Matches() {
 
   return (
     <div className="container-custom py-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Matches & Recommandations</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">{t('matches.title')}</h1>
 
       {/* Tabs */}
       <div className="border-b mb-6">
@@ -90,13 +92,13 @@ export default function Matches() {
             onClick={() => setActiveTab('matches')}
             className={`pb-3 font-medium ${activeTab === 'matches' ? 'text-[#009966] border-b-2 border-[#009966]' : 'text-gray-500'}`}
           >
-            Mes matches ({matches.length})
+            {t('matches.tabMatches', { count: matches.length })}
           </button>
           <button
             onClick={() => setActiveTab('recommendations')}
             className={`pb-3 font-medium ${activeTab === 'recommendations' ? 'text-[#009966] border-b-2 border-[#009966]' : 'text-gray-500'}`}
           >
-            Recommandations ({recommendations.length})
+            {t('matches.tabRecommendations', { count: recommendations.length })}
           </button>
         </div>
       </div>
@@ -107,16 +109,16 @@ export default function Matches() {
           {matches.length === 0 ? (
             <div className="bg-white rounded-xl shadow-sm p-12 text-center">
               <div className="text-6xl mb-4">💔</div>
-              <p className="text-gray-500 mb-2">Aucun match pour le moment</p>
+              <p className="text-gray-500 mb-2">{t('matches.noMatches')}</p>
               <p className="text-sm text-gray-400">
-                Complétez votre profil pour recevoir des recommandations
+                {t('matches.completeProfileRecommendations')}
               </p>
               {(!user?.profile?.interests || user.profile.interests.length === 0) && (
                 <button
                   onClick={() => navigate('/profile/edit-details')}
                   className="mt-4 btn-primary text-sm"
                 >
-                  Compléter mon profil
+                  {t('matches.completeMyProfile')}
                 </button>
               )}
             </div>
@@ -140,16 +142,16 @@ export default function Matches() {
           {recommendations.length === 0 ? (
             <div className="bg-white rounded-xl shadow-sm p-12 text-center">
               <div className="text-6xl mb-4">🔍</div>
-              <p className="text-gray-500 mb-2">Aucune recommandation pour le moment</p>
+              <p className="text-gray-500 mb-2">{t('matches.noRecommendations')}</p>
               <p className="text-sm text-gray-400">
-                Complétez votre profil pour recevoir des suggestions
+                {t('matches.completeProfileSuggestions')}
               </p>
               {(!user?.profile?.interests || user.profile.interests.length === 0) && (
                 <button
                   onClick={() => navigate('/profile/edit-details')}
                   className="mt-4 btn-primary text-sm"
                 >
-                  Compléter mon profil
+                  {t('matches.completeMyProfile')}
                 </button>
               )}
             </div>

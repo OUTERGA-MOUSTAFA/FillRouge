@@ -6,8 +6,10 @@ import {
   EyeIcon, EyeSlashIcon,
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export default function Login() {
+  const { t } = useTranslation();
   const [email, setEmail]               = useState('');
   const [password, setPassword]         = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -18,7 +20,7 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email || !password) { toast.error('Veuillez remplir tous les champs'); return; }
+    if (!email || !password) { toast.error(t('auth.login.fillAllFields')); return; }
     setLoading(true);
     try {
       const result = await login(email, password);
@@ -26,10 +28,10 @@ export default function Login() {
         navigate('/2fa', { state: { twoFactorToken: result.twoFactorToken } });
         return;
       }
-      toast.success('Connexion réussie');
+      toast.success(t('auth.common.loginSuccess'));
       navigate('/');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Email ou mot de passe incorrect');
+      toast.error(error.response?.data?.message || t('auth.login.invalidCredentials'));
     } finally {
       setLoading(false);
     }
@@ -58,17 +60,17 @@ export default function Login() {
           {/* Tagline centrale */}
           <div>
             <h2 className="text-4xl font-extrabold leading-snug mb-4">
-              Trouvez votre<br />colocataire idéal<br />au Maroc.
+              {t('auth.login.heroTitle1')}<br />{t('auth.login.heroTitle2')}<br />{t('auth.login.heroTitle3')}
             </h2>
             <p className="text-[#ccefeb] text-base max-w-xs leading-relaxed">
-              Des milliers de profils vérifiés dans toutes les grandes villes — Casablanca, Rabat, Marrakech et plus.
+              {t('auth.login.heroSubtitle')}
             </p>
           </div>
 
           {/* Témoignage */}
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-5">
             <p className="text-sm text-[#e6f7f5] italic leading-relaxed mb-3">
-              "J'ai trouvé ma colocataire en moins d'une semaine grâce à Semsar. L'interface est simple et les profils sont fiables."
+              {t('auth.login.testimonialQuote')}
             </p>
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-full bg-white/30 flex items-center justify-center text-xs font-bold">S</div>
@@ -95,11 +97,11 @@ export default function Login() {
         <div className="max-w-md w-full mx-auto">
           {/* En-tête */}
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">Bon retour 👋</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-1">{t('auth.login.welcomeBack')} 👋</h1>
             <p className="text-sm text-gray-500">
-              Pas encore de compte ?{' '}
+              {t('auth.login.noAccount')}{' '}
               <Link to="/register" className="text-[#009966] font-medium hover:text-[#00734d] transition-colors">
-                Créer un compte
+                {t('auth.common.createAccount')}
               </Link>
             </p>
           </div>
@@ -135,7 +137,7 @@ export default function Login() {
               <div className="w-full border-t border-gray-200" />
             </div>
             <div className="relative flex justify-center">
-              <span className="px-3 bg-gray-50 text-xs text-gray-400">ou continuez avec votre email</span>
+              <span className="px-3 bg-gray-50 text-xs text-gray-400">{t('auth.login.orContinueWith')}</span>
             </div>
           </div>
 
@@ -145,7 +147,7 @@ export default function Login() {
             {/* Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
-                Adresse e-mail
+                {t('auth.common.emailAddress')}
               </label>
               <div className="relative">
                 <EnvelopeIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -156,7 +158,7 @@ export default function Login() {
                   required
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  placeholder="ahmed@exemple.com"
+                  placeholder={t('auth.login.emailPlaceholder')}
                   className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white
                     focus:outline-none focus:ring-2 focus:ring-[#00BBA7]/30 focus:border-[#00BBA7] transition-all"
                 />
@@ -167,13 +169,13 @@ export default function Login() {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                  Mot de passe
+                  {t('auth.common.password')}
                 </label>
                 <Link
                   to="/forgot-password"
                   className="text-xs text-[#009966] font-medium hover:text-[#00734d] transition-colors"
                 >
-                  Mot de passe oublié ?
+                  {t('auth.common.forgotPassword')}
                 </Link>
               </div>
               <div className="relative">
@@ -185,7 +187,7 @@ export default function Login() {
                   required
                   value={password}
                   onChange={e => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder={t('auth.common.passwordPlaceholder')}
                   className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl text-sm bg-white
                     focus:outline-none focus:ring-2 focus:ring-[#00BBA7]/30 focus:border-[#00BBA7] transition-all"
                 />
@@ -212,7 +214,7 @@ export default function Login() {
                 className="h-4 w-4 rounded border-gray-300 text-[#009966] focus:ring-[#00BBA7]"
               />
               <label htmlFor="remember-me" className="text-sm text-gray-600">
-                Se souvenir de moi
+                {t('auth.common.rememberMe')}
               </label>
             </div>
 
@@ -232,19 +234,19 @@ export default function Login() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                   </svg>
-                  Connexion…
+                  {t('auth.common.loggingIn')}
                 </>
               ) : (
-                'Se connecter'
+                t('auth.common.login')
               )}
             </button>
           </form>
 
           {/* Lien inscription (mobile) */}
           <p className="mt-6 text-center text-sm text-gray-500 lg:hidden">
-            Pas encore de compte ?{' '}
+            {t('auth.login.noAccount')}{' '}
             <Link to="/register" className="text-[#009966] font-medium hover:text-[#00734d]">
-              Créer un compte
+              {t('auth.common.createAccount')}
             </Link>
           </p>
         </div>

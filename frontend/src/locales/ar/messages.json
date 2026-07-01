@@ -1,0 +1,63 @@
+{
+  "messages": {
+    "list": {
+      "title": "الرسائل",
+      "search_placeholder": "ابحث في المحادثات...",
+      "no_conversations": "لا توجد محادثات بعد",
+      "tabs": {
+        "hosts": "الملاك",
+        "guests": "الباحثون",
+        "unread": "غير المقروءة"
+      }
+    },
+    "no_conv": {
+      "title": "رسائلك",
+      "subtitle": "اختر محادثة لبدء الدردشة"
+    },
+    "empty": {
+      "select_title": "اختر محادثة",
+      "select_subtitle": "اختر من القائمة على اليسار"
+    },
+    "chat": {
+      "online": "متصل",
+      "offline": "غير متصل",
+      "no_messages": "لا توجد رسائل بعد. ابدأ المحادثة!",
+      "write_placeholder": "اكتب رسالتك...",
+      "sending": "جارٍ الإرسال...",
+      "attachment": "مرفق {{number}}",
+      "safety_notice": "لا ترسل أبدًا أي مدفوعات خارج المنصة. ابقَ آمنًا!"
+    },
+    "profile": {
+      "view_profile": "عرض الملف",
+      "profile": "الملف الشخصي",
+      "listing_link": "الإعلان",
+      "premium": "بريميوم",
+      "verified": "موثّق"
+    },
+    "roles": {
+      "semsar": "مالك",
+      "chercheur": "باحث",
+      "admin": "مشرف"
+    },
+    "demand": {
+      "request_for": "طلب كراء لـ",
+      "accept": "قبول",
+      "refuse": "رفض",
+      "badge": {
+        "pending": "طلب قيد الانتظار",
+        "accepted": "طلب مقبول",
+        "refused": "طلب مرفوض"
+      }
+    },
+    "review": {
+      "leave": "اترك توصية",
+      "success": "شكرًا على توصيتك!"
+    },
+    "toast": {
+      "load_error": "خطأ في تحميل المحادثة",
+      "send_error": "خطأ في إرسال الرسالة",
+      "attachment_error": "خطأ في إرسال المرفق",
+      "respond_error": "خطأ أثناء الرد"
+    }
+  }
+}

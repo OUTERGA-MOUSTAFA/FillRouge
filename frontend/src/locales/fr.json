@@ -1,0 +1,93 @@
+{
+  "app": {
+    "name": "Semsar",
+    "tagline": "Trouvez le colocataire idéal",
+    "description": "La 1re plateforme marocaine dédiée à la colocation de confiance"
+  },
+  "nav": {
+    "home": "Accueil",
+    "listings": "Annonces",
+    "matches": "Matches",
+    "messages": "Messages",
+    "favorites": "Favoris",
+    "profile": "Profil",
+    "my_listings": "Mes annonces",
+    "notifications": "Notifications",
+    "subscription": "Abonnement",
+    "login": "Connexion",
+    "register": "Inscription",
+    "logout": "Déconnexion",
+    "admin": {
+      "dashboard": "Dashboard",
+      "users": "Utilisateurs",
+      "reports": "Signalements",
+      "verifications": "Vérifications",
+      "sliders": "Sliders"
+    }
+  },
+  "navbar": {
+    "publish": "Publier",
+    "publish_listing": "Publier une annonce",
+    "login": "Connexion",
+    "register": "Inscription",
+    "logout": "Déconnexion",
+    "logout_success": "Déconnecté avec succès"
+  },
+  "userMenu": {
+    "profile": "Mon profil",
+    "notifications": "Notifications",
+    "my_listings": "Mes annonces",
+    "subscription": "Abonnement",
+    "favorites": "Mes favoris"
+  },
+  "roles": {
+    "admin": "Administrateur",
+    "semsar": "Semsar",
+    "chercheur": "Chercheur"
+  },
+  "plans": {
+    "premium": "Premium",
+    "standard": "Standard",
+    "free": "Gratuit"
+  },
+  "language": {
+    "label": "Langue",
+    "changed": "Langue : {{name}}"
+  },
+  "listings": {
+    "title": "Annonces",
+    "create": "Publier une annonce",
+    "types": {
+      "room": "Chambre",
+      "apartment": "Appartement",
+      "house": "Maison",
+      "studio": "Studio",
+      "looking_for_roommate": "Cherche coloc"
+    }
+  },
+  "card": {
+    "featured": "En avant",
+    "per_month": "/mois",
+    "premium": "Premium"
+  },
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "view": "Voir",
+    "send": "Envoyer",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "reset": "Réinitialiser",
+    "loading": "Chargement...",
+    "no_data": "Aucune donnée",
+    "yes": "Oui",
+    "no": "Non",
+    "confirm": "Confirmer",
+    "back": "Retour",
+    "next": "Suivant",
+    "finish": "Terminer",
+    "skip": "Passer"
+  }
+}
