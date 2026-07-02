@@ -374,22 +374,24 @@ class UserController extends Controller
         $publicData['listings']       = $user->listings;
         $publicData['is_online']      = $user->isOnline(); // true si actif dans les 5 dernières minutes
 
-        // Demande de location en attente : si le visiteur (semsar) consulte le profil
-        // d'un chercheur qui lui a envoyé une demande encore en attente.
+        // Demande de location : quand un SEMSAR consulte le profil d'un CHERCHEUR
+        // qui l'a contacté, on expose la demande pour qu'il puisse l'accepter/refuser.
+        // La demande = le 1er message du chercheur vers ce semsar (contact initial,
+        // référence stable). Un statut NULL est traité comme « en attente » (demandes
+        // créées avant l'ajout du champ rental_status).
         $viewer = auth('sanctum')->user();
         $publicData['pending_demand'] = null;
-        if ($viewer && $viewer->id !== $user->id) {
-            $demandMessage = Message::where('sender_id', $user->id)     // la demande part du chercheur (profil consulté)
-                ->where('receiver_id', $viewer->id)                      // vers le semsar (visiteur)
-                ->where('rental_status', 'pending')
+        if ($viewer && $viewer->role === 'semsar' && $user->role === 'chercheur') {
+            $demandMessage = Message::where('sender_id', $user->id)
+                ->where('receiver_id', $viewer->id)
                 ->with('listing:id,title,city')
-                ->orderBy('created_at', 'desc')
+                ->orderBy('created_at', 'asc')
                 ->first();
 
             if ($demandMessage) {
                 $publicData['pending_demand'] = [
                     'id'      => $demandMessage->id,
-                    'status'  => $demandMessage->rental_status,
+                    'status'  => $demandMessage->rental_status ?? 'pending',
                     'listing' => $demandMessage->listing ? [
                         'id'    => $demandMessage->listing->id,
                         'title' => $demandMessage->listing->title,

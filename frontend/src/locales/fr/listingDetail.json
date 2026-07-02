@@ -52,6 +52,7 @@
     "contactsLabel": "contacts",
     "safetyNotice": "Rencontrez toujours dans un lieu public et ne payez jamais en dehors de la plateforme.",
     "photoGallery": {
+      "fullscreen": "Plein écran",
       "noPhotos": "Aucune photo disponible"
     },
     "stats": {

@@ -27,6 +27,23 @@
       "minutesAgo": "il y a {{count}} min",
       "hoursAgo": "il y a {{count}}h",
       "daysAgo": "il y a {{count}}j"
+    },
+    "render": {
+      "new_message": "Nouveau message de {{name}}",
+      "rent_request": "{{name}} est intéressé(e) par votre annonce",
+      "rent_request_body": "Demande de location pour « {{listing}} »",
+      "demand_accepted_title": "Demande de location acceptée",
+      "demand_accepted_body": "{{name}} a accepté votre demande pour « {{listing}} »",
+      "demand_refused_title": "Demande de location refusée",
+      "demand_refused_body": "{{name}} a refusé votre demande pour « {{listing}} »",
+      "new_match_title": "Nouveau match trouvé !",
+      "new_match_body": "Vous avez un match avec {{name}} — Compatibilité : {{score}}%",
+      "listing_match_title": "Nouvelle annonce pour vous",
+      "listing_match_body": "Une annonce correspond à vos critères : {{listing}} — {{city}}",
+      "subscription_expiring_title": "Votre abonnement expire bientôt",
+      "subscription_expiring_body": "Votre abonnement premium expirera dans {{count}} jour(s).",
+      "profile_incomplete_title": "Complétez votre profil",
+      "profile_incomplete_body": "Votre profil est complété à {{score}}%."
     }
   }
 }

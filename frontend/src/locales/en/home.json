@@ -1,6 +1,14 @@
 {
   "home": {
     "loading": "Loading...",
+    "listings": {
+      "premiumTitle": "Premium listings",
+      "premiumSubtitle": "Handpicked from our premium hosts",
+      "standardTitle": "Standard listings",
+      "standardSubtitle": "Verified listings you shouldn't miss",
+      "premiumBadge": "Premium",
+      "viewAll": "View all listings"
+    },
     "stats": {
       "activeListings": "Active listings",
       "users": "Users",

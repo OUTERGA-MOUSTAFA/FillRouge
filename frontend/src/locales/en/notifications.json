@@ -27,6 +27,23 @@
       "minutesAgo": "{{count}} min ago",
       "hoursAgo": "{{count}}h ago",
       "daysAgo": "{{count}}d ago"
+    },
+    "render": {
+      "new_message": "New message from {{name}}",
+      "rent_request": "{{name}} is interested in your listing",
+      "rent_request_body": "Rental request for \"{{listing}}\"",
+      "demand_accepted_title": "Rental request accepted",
+      "demand_accepted_body": "{{name}} accepted your request for \"{{listing}}\"",
+      "demand_refused_title": "Rental request refused",
+      "demand_refused_body": "{{name}} declined your request for \"{{listing}}\"",
+      "new_match_title": "New match found!",
+      "new_match_body": "You have a match with {{name}} — Compatibility: {{score}}%",
+      "listing_match_title": "New listing for you",
+      "listing_match_body": "A listing matches your criteria: {{listing}} — {{city}}",
+      "subscription_expiring_title": "Your subscription expires soon",
+      "subscription_expiring_body": "Your premium subscription expires in {{count}} day(s).",
+      "profile_incomplete_title": "Complete your profile",
+      "profile_incomplete_body": "Your profile is {{score}}% complete."
     }
   }
 }

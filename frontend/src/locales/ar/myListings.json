@@ -1,6 +1,10 @@
 {
   "myListings": {
     "title": "إعلاناتي",
+    "subtitle": "أدر إعلاناتك وتابع أداءها",
+    "statTotal": "الإعلانات",
+    "statActive": "نشطة",
+    "statViews": "إجمالي المشاهدات",
     "newListing": "إعلان جديد",
     "noListings": "ليس لديك أي إعلانات بعد",
     "createFirstListing": "إنشاء أول إعلان لي",

@@ -27,6 +27,23 @@
       "minutesAgo": "قبل {{count}} دقيقة",
       "hoursAgo": "قبل {{count}} ساعة",
       "daysAgo": "قبل {{count}} يوم"
+    },
+    "render": {
+      "new_message": "رسالة جديدة من {{name}}",
+      "rent_request": "{{name}} مهتم بإعلانك",
+      "rent_request_body": "طلب كراء لـ « {{listing}} »",
+      "demand_accepted_title": "تم قبول طلب الكراء",
+      "demand_accepted_body": "{{name}} قبل طلبك لـ « {{listing}} »",
+      "demand_refused_title": "تم رفض طلب الكراء",
+      "demand_refused_body": "{{name}} رفض طلبك لـ « {{listing}} »",
+      "new_match_title": "تم العثور على تطابق جديد!",
+      "new_match_body": "لديك تطابق مع {{name}} — التوافق: {{score}}%",
+      "listing_match_title": "إعلان جديد لك",
+      "listing_match_body": "إعلان يطابق معاييرك: {{listing}} — {{city}}",
+      "subscription_expiring_title": "اشتراكك ينتهي قريباً",
+      "subscription_expiring_body": "ينتهي اشتراكك المميز خلال {{count}} يوم/أيام.",
+      "profile_incomplete_title": "أكمل ملفك الشخصي",
+      "profile_incomplete_body": "ملفك الشخصي مكتمل بنسبة {{score}}%."
     }
   }
 }

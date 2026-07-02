@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\OAuthService;
+use App\Services\UserProvisioningService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -12,10 +13,12 @@ use Illuminate\Support\Str;
 class SocialAuthController extends Controller
 {
     protected $oauthService;
+    protected $provisioning;
 
-    public function __construct(OAuthService $oauthService)
+    public function __construct(OAuthService $oauthService, UserProvisioningService $provisioning)
     {
         $this->oauthService = $oauthService;
+        $this->provisioning = $provisioning;
     }
 
     /**
@@ -90,17 +93,14 @@ class SocialAuthController extends Controller
             $user = User::where('email', $userData['email'])->first();
             
             if (!$user) {
-                // Créer un nouvel utilisateur
-                $user = User::create([
-                    'full_name' => $userData['name'],
-                    'email' => $userData['email'],
-                    'password' => Hash::make(Str::random(24)),
-                    'email_verified_at' => now(),
-                    'avatar' => $userData['avatar'],
-                    'subscription_plan' => 'free',
-                    'remaining_ads' => 2,
+                // Création déléguée au service : rôle + email vérifié + abonnement
+                // gratuit posés via forceFill (jamais par mass-assignment).
+                $user = $this->provisioning->registerFromProvider([
+                    'name'   => $userData['name'],
+                    'email'  => $userData['email'],
+                    'avatar' => $userData['avatar'] ?? null,
                 ]);
-                
+
                 $user->profile()->create();
             }
             

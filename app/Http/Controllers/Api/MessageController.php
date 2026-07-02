@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class MessageController extends Controller
 {
@@ -109,25 +110,43 @@ class MessageController extends Controller
             ->get()
             ->each->markAsRead();
 
-        // Demande de location dans cette conversation (la plus récente, s'il y en a une)
+        // Demande de location de la conversation : le contact initial du CHERCHEUR
+        // vers le SEMSAR. Référence stable (le plus ancien message dans ce sens) ;
+        // un statut NULL est traité comme « en attente » (anciennes conversations).
         $otherUser->loadMissing('profile');
-        $demandMessage = Message::betweenUsers($currentUserId, $otherUserId)
-            ->whereNotNull('rental_status')
-            ->with('listing:id,title,city')
-            ->orderBy('created_at', 'desc')
-            ->first();
+        $currentUser = $request->user();
 
-        $demand = $demandMessage ? [
-            'id'           => $demandMessage->id,
-            'status'       => $demandMessage->rental_status,
-            'chercheur_id' => $demandMessage->sender_id,   // la demande part toujours du chercheur
-            'semsar_id'    => $demandMessage->receiver_id,
-            'listing'      => $demandMessage->listing ? [
-                'id'    => $demandMessage->listing->id,
-                'title' => $demandMessage->listing->title,
-                'city'  => $demandMessage->listing->city,
-            ] : null,
-        ] : null;
+        $chercheurId = $semsarId = null;
+        if ($currentUser->role === 'semsar' && $otherUser->role === 'chercheur') {
+            $chercheurId = $otherUserId;
+            $semsarId    = $currentUserId;
+        } elseif ($currentUser->role === 'chercheur' && $otherUser->role === 'semsar') {
+            $chercheurId = $currentUserId;
+            $semsarId    = $otherUserId;
+        }
+
+        $demand = null;
+        if ($chercheurId && $semsarId) {
+            $demandMessage = Message::where('sender_id', $chercheurId)
+                ->where('receiver_id', $semsarId)
+                ->with('listing:id,title,city')
+                ->orderBy('created_at', 'asc')
+                ->first();
+
+            if ($demandMessage) {
+                $demand = [
+                    'id'           => $demandMessage->id,
+                    'status'       => $demandMessage->rental_status ?? 'pending',
+                    'chercheur_id' => $chercheurId,
+                    'semsar_id'    => $semsarId,
+                    'listing'      => $demandMessage->listing ? [
+                        'id'    => $demandMessage->listing->id,
+                        'title' => $demandMessage->listing->title,
+                        'city'  => $demandMessage->listing->city,
+                    ] : null,
+                ];
+            }
+        }
 
         return response()->json([
             'success' => true,
@@ -149,60 +168,68 @@ class MessageController extends Controller
     }
 
     /**
-     * Le semsar accepte ou refuse une demande de location.
-     * La demande est le message (du chercheur) portant un rental_status.
+     * Le semsar accepte ou refuse la demande de location d'un chercheur.
+     *
+     * La « demande » est le message (envoyé par le chercheur au semsar) sur
+     * lequel on stocke le statut. Un message dont `rental_status` est NULL est
+     * traité comme une demande IMPLICITE en attente (compatibilité avec les
+     * conversations créées avant l'ajout du statut).
+     *
+     * @param  Message  $message  Le message-demande (chercheur → semsar).
      */
     public function respondDemand(Request $request, Message $message)
     {
         $user = $request->user();
 
-        $request->validate([
+        $data = $request->validate([
             'action' => 'required|in:accept,refuse',
+            'reason' => 'nullable|string|max:500', // motif optionnel (« pourquoi »)
         ]);
 
-        // Seul le destinataire de la demande (le semsar) peut répondre
-        if ($message->receiver_id !== $user->id) {
+        // Seul le semsar destinataire de la demande peut répondre.
+        if ($message->receiver_id !== $user->id || $user->role !== 'semsar') {
             return response()->json([
                 'success' => false,
-                'message' => 'Vous n\'êtes pas autorisé à répondre à cette demande.',
+                'message' => __('messages.demand.not_authorized'),
             ], 403);
         }
 
-        if (is_null($message->rental_status)) {
+        // Déjà traitée ? (on autorise NULL = en attente implicite)
+        if (in_array($message->rental_status, ['accepted', 'refused'], true)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ce message n\'est pas une demande de location.',
+                'message' => __('messages.demand.already_responded'),
             ], 422);
         }
 
-        if ($message->rental_status !== 'pending') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cette demande a déjà reçu une réponse.',
-            ], 422);
-        }
-
-        $accepted = $request->action === 'accept';
-        $message->update(['rental_status' => $accepted ? 'accepted' : 'refused']);
-
+        $accepted  = $data['action'] === 'accept';
+        $reason    = $data['reason'] ?? null;
         $chercheur = $message->sender;
         $listing   = $message->listing;
-        $titre     = $listing->title ?? 'votre annonce';
+        $suffixe   = $listing ? " pour « {$listing->title} »" : '';
 
-        // Message automatique de réponse vers le chercheur
+        // Message automatique de réponse (+ motif éventuel).
         $auto = $accepted
-            ? "✅ Bonne nouvelle ! Votre demande de location pour « {$titre} » a été acceptée."
-            : "❌ Votre demande de location pour « {$titre} » n'a pas été retenue.";
+            ? "✅ Bonne nouvelle ! Votre demande de location{$suffixe} a été acceptée."
+            : "❌ Votre demande de location{$suffixe} n'a pas été retenue.";
+        if ($reason) {
+            $auto .= "\n\n📝 Motif : {$reason}";
+        }
 
-        Message::create([
-            'sender_id'   => $user->id,
-            'receiver_id' => $chercheur->id,
-            'listing_id'  => $message->listing_id,
-            'content'     => $auto,
-            'is_read'     => false,
-        ]);
+        // Écritures multiples → atomiques.
+        DB::transaction(function () use ($message, $accepted, $user, $chercheur, $auto) {
+            $message->update(['rental_status' => $accepted ? 'accepted' : 'refused']);
 
-        // Notification au chercheur
+            Message::create([
+                'sender_id'   => $user->id,
+                'receiver_id' => $chercheur->id,
+                'listing_id'  => $message->listing_id,
+                'content'     => $auto,
+                'is_read'     => false,
+            ]);
+        });
+
+        // Notification hors transaction (effet de bord non critique).
         try {
             $this->notificationService->demandResponded($chercheur, $user, $listing, $accepted);
         } catch (\Exception $e) {
@@ -211,7 +238,7 @@ class MessageController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => $accepted ? 'Demande acceptée' : 'Demande refusée',
+            'message' => $accepted ? __('messages.demand.accepted') : __('messages.demand.refused'),
             'data'    => ['status' => $message->rental_status],
         ]);
     }

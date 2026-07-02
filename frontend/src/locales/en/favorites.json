@@ -1,0 +1,13 @@
+{
+  "favorites": {
+    "title": "My favorites",
+    "subtitle": "{{count}} saved listing(s)",
+    "loading": "Loading your favorites...",
+    "emptyTitle": "No favorites yet",
+    "emptyText": "Save the listings you like to find them here later.",
+    "browse": "Browse listings",
+    "remove": "Remove from favorites",
+    "removed": "Removed from favorites",
+    "error": "Something went wrong"
+  }
+}

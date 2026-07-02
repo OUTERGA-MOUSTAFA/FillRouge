@@ -1,6 +1,14 @@
 {
   "home": {
     "loading": "Chargement...",
+    "listings": {
+      "premiumTitle": "Annonces Premium",
+      "premiumSubtitle": "La sélection de nos propriétaires premium",
+      "standardTitle": "Annonces Standard",
+      "standardSubtitle": "Des annonces vérifiées à ne pas manquer",
+      "premiumBadge": "Premium",
+      "viewAll": "Voir toutes les annonces"
+    },
     "stats": {
       "activeListings": "Annonces actives",
       "users": "Utilisateurs",

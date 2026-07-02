@@ -6,6 +6,12 @@ export const listingsService = {
     return response.data;
   },
 
+  // Annonces vedettes pour la Home, groupées par plan du propriétaire (premium/standard)
+  home: async () => {
+    const response = await api.get('/listings/home');
+    return response.data;
+  },
+
   getOne: async (id) => {
     const response = await api.get(`/listings/${id}`);
     return response.data;

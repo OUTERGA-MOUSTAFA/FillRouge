@@ -1,6 +1,7 @@
 {
   "matches": {
     "title": "Matches & Recommendations",
+    "subtitle": "Your most compatible roommates, based on your profile",
     "tabMatches": "My matches ({{count}})",
     "tabRecommendations": "Recommendations ({{count}})",
     "noMatches": "No match yet",

@@ -8,6 +8,7 @@ use App\Models\UserProfile;
 use App\Models\VerificationCode;
 use App\Services\SmsService;
 use App\Services\TwoFactorService;
+use App\Services\UserProvisioningService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -18,11 +19,16 @@ class AuthController extends Controller
 {
     protected $smsService;
     protected $twoFactorService;
+    protected $provisioning;
 
-    public function __construct(SmsService $smsService, TwoFactorService $twoFactorService)
-    {
+    public function __construct(
+        SmsService $smsService,
+        TwoFactorService $twoFactorService,
+        UserProvisioningService $provisioning
+    ) {
         $this->smsService = $smsService;
         $this->twoFactorService = $twoFactorService;
+        $this->provisioning = $provisioning;
     }
 
     /**
@@ -47,38 +53,20 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-        
-        // Créer l'utilisateur
-        $user = User::create([
-            'full_name' => $request->full_name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'phone' => $request->phone,
-            'gender' => $request->gender,
-            'birth_date' => $request->birth_date,
-            'subscription_plan' => 'free',
-            'remaining_ads' => 2,
-            'role' => $request->role,
-        ]);
 
-        // Créer le profil utilisateur avec les intérêts et la bio
-        $profileData = [
-            'user_id' => $user->id,
-        ];
-        
-        if ($request->has('interests')) {
-            $profileData['interests'] = $request->interests;
-        }
-        
-        if ($request->has('bio')) {
-            $profileData['bio'] = $request->bio;
-        }
-        
-        $user->profile()->create($profileData);
+        // Création déléguée au service : rôle (privilège) et abonnement gratuit
+        // sont posés via forceFill(), jamais par mass-assignment.
+        $user = $this->provisioning->registerLocal($validator->validated(), $request->role);
+
+        // Profil (intérêts + bio) — la relation pose user_id automatiquement.
+        $user->profile()->create(array_filter([
+            'interests' => $request->interests,
+            'bio'       => $request->bio,
+        ], fn ($value) => !is_null($value)));
 
         // Vérification email (auto-vérifié en développement)
         if (app()->environment('local')) {
-            $user->update(['email_verified_at' => now()]);
+            $user->markEmailVerified();
         } else {
             $this->sendEmailVerification($user);
             $this->sendPhoneVerification($user);
@@ -91,7 +79,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Inscription réussie. Veuillez vérifier votre email et téléphone.',
+            'message' => __('messages.auth.register_success'),
             'user' => $user->only(['id', 'full_name', 'email', 'phone', 'role']),
             'profile' => $user->profile,
             'token' => $token
@@ -117,7 +105,7 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Email ou mot de passe incorrect'
+                'message' => __('messages.auth.invalid_credentials')
             ], 401);
         }
 
@@ -130,7 +118,7 @@ class AuthController extends Controller
                 'success' => true,
                 'requires_2fa' => true,
                 'two_factor_token' => $twoFactorToken,
-                'message' => 'Code 2FA requis'
+                'message' => __('messages.auth.twofactor_required')
             ]);
         }
 
@@ -163,7 +151,7 @@ class AuthController extends Controller
         if (!$userId) {
             return response()->json([
                 'success' => false,
-                'message' => 'Session 2FA expirée'
+                'message' => __('messages.auth.twofactor_expired')
             ], 401);
         }
 
@@ -172,7 +160,7 @@ class AuthController extends Controller
         if (!$this->twoFactorService->verifyCode($user->two_factor_secret, $request->code)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Code 2FA invalide'
+                'message' => __('messages.auth.twofactor_invalid')
             ], 401);
         }
 
@@ -197,7 +185,7 @@ class AuthController extends Controller
         
         return response()->json([
             'success' => true,
-            'message' => 'Déconnecté'
+            'message' => __('messages.auth.logged_out')
         ]);
     }
 
@@ -270,11 +258,11 @@ class AuthController extends Controller
         }
 
         $verification->markAsUsed();
-        $user->update(['email_verified_at' => now()]);
+        $user->markEmailVerified();
 
         return response()->json([
             'success' => true,
-            'message' => 'Email vérifié'
+            'message' => __('messages.auth.email_verified')
         ]);
     }
 
@@ -308,11 +296,11 @@ class AuthController extends Controller
         }
 
         $verification->markAsUsed();
-        $user->update(['phone_verified_at' => now()]);
+        $user->markPhoneVerified();
 
         return response()->json([
             'success' => true,
-            'message' => 'Téléphone vérifié'
+            'message' => __('messages.auth.phone_verified')
         ]);
     }
 

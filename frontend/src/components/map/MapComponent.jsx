@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Link } from 'react-router-dom';
@@ -69,16 +69,29 @@ function SearchMarker({ position, onDragEnd }) {
   ) : null;
 }
 
+// Sélecteur de localisation : un clic sur la carte pose/déplace le marqueur
+// et remonte les coordonnées (utilisé dans le formulaire d'annonce).
+function LocationPicker({ position, onSelect }) {
+  useMapEvents({
+    click(e) {
+      onSelect(e.latlng.lat, e.latlng.lng);
+    },
+  });
+  return position ? <Marker position={position} icon={customIcon} /> : null;
+}
+
 // Composant principal
-export default function MapComponent({ 
-  listings = [], 
+export default function MapComponent({
+  listings = [],
   center = [33.5731, -7.5898], // Centre du Maroc
   zoom = 6,
   onMarkerClick,
   onBoundsChange,
   height = "500px",
   showSearch = true,
-  showUserLocation = true
+  showUserLocation = true,
+  onLocationSelect,        // (lat, lng) => void — active le mode sélecteur
+  selectedPosition = null, // [lat, lng] du point choisi (contrôlé)
 }) {
   const { t } = useTranslation();
   const [userPosition, setUserPosition] = useState(null);
@@ -115,6 +128,10 @@ export default function MapComponent({
         setSearchPosition([parseFloat(lat), parseFloat(lon)]);
         setMapCenter([parseFloat(lat), parseFloat(lon)]);
         setMapZoom(15);
+        // En mode sélecteur, une adresse trouvée pose directement le point.
+        if (onLocationSelect) {
+          onLocationSelect(parseFloat(lat), parseFloat(lon));
+        }
       }
     } catch (error) {
       console.error('Erreur de recherche d\'adresse:', error);
@@ -204,13 +221,18 @@ export default function MapComponent({
         />
         
         {/* Marqueur de recherche */}
-        <SearchMarker 
-          position={searchPosition} 
+        <SearchMarker
+          position={searchPosition}
           onDragEnd={(latLng) => {
             setSearchPosition([latLng.lat, latLng.lng]);
           }}
         />
-        
+
+        {/* Mode sélecteur de localisation (clic = pose le point) */}
+        {onLocationSelect && (
+          <LocationPicker position={selectedPosition} onSelect={onLocationSelect} />
+        )}
+
         {/* Marqueur position utilisateur */}
         {userPosition && (
           <Circle

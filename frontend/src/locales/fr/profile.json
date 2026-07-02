@@ -203,6 +203,7 @@
       "demand_accepted": "Demande acceptée",
       "demand_refused": "Demande refusée",
       "demand_error": "Erreur lors de la réponse",
+      "demand_reason_placeholder": "Motif (optionnel) — pourquoi acceptez-vous / refusez-vous ?",
       "lifestyle_title": "Mode de vie",
       "budget": "Budget",
       "compatibility": "Compatibilité",

@@ -81,8 +81,13 @@ export default function Listings() {
           ))}
         </div>
       ) : (
-        <div className="bg-gray-200 rounded-xl h-96 flex items-center justify-center">
-          <p className="text-gray-500">{t('listingsPage.mapComingSoon')}</p>
+        <div className="overflow-hidden rounded-xl border border-gray-100 shadow-sm">
+          <MapComponent
+            listings={listings}
+            height="600px"
+            showSearch={true}
+            showUserLocation={true}
+          />
         </div>
       )}
 

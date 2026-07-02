@@ -35,9 +35,9 @@ export const messagesService = {
     return response.data;
   },
 
-  // Le semsar répond à une demande de location (action: 'accept' | 'refuse')
-  respondDemand: async (messageId, action) => {
-    const response = await api.post(`/demands/${messageId}/respond`, { action });
+  // Le semsar répond à une demande de location (action: 'accept' | 'refuse', motif optionnel)
+  respondDemand: async (messageId, action, reason = null) => {
+    const response = await api.post(`/demands/${messageId}/respond`, { action, reason });
     return response.data;
   },
 };

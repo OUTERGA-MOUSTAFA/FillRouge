@@ -43,6 +43,7 @@
       "request_for": "Rental request for",
       "accept": "Accept",
       "refuse": "Refuse",
+      "reason_placeholder": "Reason (optional) — why do you accept / refuse?",
       "badge": {
         "pending": "Pending request",
         "accepted": "Accepted request",

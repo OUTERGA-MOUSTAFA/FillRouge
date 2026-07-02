@@ -43,6 +43,7 @@
       "request_for": "Demande de location pour",
       "accept": "Accepter",
       "refuse": "Refuser",
+      "reason_placeholder": "Motif (optionnel) — pourquoi acceptez-vous / refusez-vous ?",
       "badge": {
         "pending": "Demande en attente",
         "accepted": "Demande acceptée",

@@ -1,0 +1,13 @@
+{
+  "favorites": {
+    "title": "Mes favoris",
+    "subtitle": "{{count}} annonce(s) sauvegardée(s)",
+    "loading": "Chargement de vos favoris...",
+    "emptyTitle": "Aucun favori pour l'instant",
+    "emptyText": "Enregistrez les annonces qui vous plaisent pour les retrouver ici.",
+    "browse": "Parcourir les annonces",
+    "remove": "Retirer des favoris",
+    "removed": "Retiré des favoris",
+    "error": "Une erreur est survenue"
+  }
+}

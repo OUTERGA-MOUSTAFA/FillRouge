@@ -45,6 +45,7 @@ export default function Conversation() {
   const [showPanel, setShowPanel] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [responding, setResponding] = useState(false);
+  const [demandReason, setDemandReason] = useState(''); // motif « pourquoi » (optionnel)
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
@@ -146,8 +147,9 @@ export default function Conversation() {
     if (!demand || responding) return;
     setResponding(true);
     try {
-      await messagesService.respondDemand(demand.id, action);
+      await messagesService.respondDemand(demand.id, action, demandReason.trim() || null);
       toast.success(action === 'accept' ? t('messages.demand.badge.accepted') : t('messages.demand.badge.refused'));
+      setDemandReason('');
       fetchConversation(true); // rafraîchit messages + statut de la demande
     } catch (error) {
       toast.error(error.response?.data?.message || t('messages.toast.respond_error'));
@@ -296,21 +298,32 @@ export default function Conversation() {
 
                   {/* Le semsar accepte / refuse */}
                   {iAmSemsarOfDemand && demandStatus === 'pending' && (
-                    <div className="flex gap-2 mt-3">
-                      <button
-                        onClick={() => handleRespondDemand('accept')}
-                        disabled={responding}
-                        className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-[#009966] text-white rounded-lg text-sm font-semibold hover:bg-[#00734d] disabled:opacity-50 transition-colors"
-                      >
-                        <CheckCircleIcon className="h-4 w-4" /> {t('messages.demand.accept')}
-                      </button>
-                      <button
-                        onClick={() => handleRespondDemand('refuse')}
-                        disabled={responding}
-                        className="flex-1 flex items-center justify-center gap-1.5 py-2 border border-red-200 text-red-600 rounded-lg text-sm font-semibold hover:bg-red-50 disabled:opacity-50 transition-colors"
-                      >
-                        <XCircleIcon className="h-4 w-4" /> {t('messages.demand.refuse')}
-                      </button>
+                    <div className="mt-3">
+                      {/* Champ « pourquoi » (motif optionnel) */}
+                      <textarea
+                        value={demandReason}
+                        onChange={(e) => setDemandReason(e.target.value)}
+                        rows={2}
+                        maxLength={500}
+                        placeholder={t('messages.demand.reason_placeholder')}
+                        className="w-full text-sm rounded-lg border border-gray-200 bg-white px-3 py-2 mb-2 resize-none focus:outline-none focus:ring-2 focus:ring-[#00BBA7]/40"
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleRespondDemand('accept')}
+                          disabled={responding}
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-[#009966] text-white rounded-lg text-sm font-semibold hover:bg-[#00734d] disabled:opacity-50 transition-colors"
+                        >
+                          <CheckCircleIcon className="h-4 w-4" /> {t('messages.demand.accept')}
+                        </button>
+                        <button
+                          onClick={() => handleRespondDemand('refuse')}
+                          disabled={responding}
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 border border-red-200 text-red-600 rounded-lg text-sm font-semibold hover:bg-red-50 disabled:opacity-50 transition-colors"
+                        >
+                          <XCircleIcon className="h-4 w-4" /> {t('messages.demand.refuse')}
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>

@@ -1,6 +1,10 @@
 {
   "myListings": {
     "title": "My listings",
+    "subtitle": "Manage your listings and track their performance",
+    "statTotal": "Listings",
+    "statActive": "Active",
+    "statViews": "Total views",
     "newListing": "New listing",
     "noListings": "You don't have any listings yet",
     "createFirstListing": "Create my first listing",

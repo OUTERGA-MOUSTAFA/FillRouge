@@ -203,6 +203,7 @@
       "demand_accepted": "تم قبول الطلب",
       "demand_refused": "تم رفض الطلب",
       "demand_error": "حدث خطأ أثناء الرد",
+      "demand_reason_placeholder": "السبب (اختياري) — لماذا تقبل / ترفض؟",
       "lifestyle_title": "نمط الحياة",
       "budget": "الميزانية",
       "compatibility": "التوافق",

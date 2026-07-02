@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { BellIcon } from '@heroicons/react/24/outline';
 import { useNotifications } from '../../hooks/useNotifications';
+import { renderNotification } from '../../utils/notifications';
 
 // Destination d'une notification selon son type + data (même logique que la page Notifications)
 function getNotificationLink(notification) {
@@ -15,6 +17,7 @@ function getNotificationLink(notification) {
 }
 
 export default function NotificationBell() {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
@@ -87,7 +90,9 @@ export default function NotificationBell() {
                 Aucune notification
               </div>
             ) : (
-              notifications.slice(0, 5).map((notification) => (
+              notifications.slice(0, 5).map((notification) => {
+                const { title, body } = renderNotification(notification, t);
+                return (
                 <div
                   key={notification.id}
                   className={`p-3 border-b hover:bg-gray-50 cursor-pointer transition-colors ${
@@ -103,8 +108,8 @@ export default function NotificationBell() {
                   <div className="flex items-start gap-3">
                     <div className="text-xl">{getNotificationIcon(notification.type)}</div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900">{notification.title}</p>
-                      <p className="text-xs text-gray-500 line-clamp-2">{notification.content}</p>
+                      <p className="text-sm font-medium text-gray-900">{title}</p>
+                      <p className="text-xs text-gray-500 line-clamp-2">{body}</p>
                       <p className="text-xs text-gray-400 mt-1">{formatTime(notification.created_at)}</p>
                     </div>
                     {!notification.is_read && (
@@ -112,7 +117,8 @@ export default function NotificationBell() {
                     )}
                   </div>
                 </div>
-              ))
+                );
+              })
             )}
           </div>
           

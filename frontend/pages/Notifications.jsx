@@ -7,6 +7,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useNotifications } from '../src/hooks/useNotifications';
 import { notificationsService } from '../src/services/notifications';
+import { renderNotification } from '../src/utils/notifications';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 
@@ -89,6 +90,8 @@ function NotificationItem({ notification, onMarkRead, onDelete }) {
   const config = TYPE_CONFIG[notification.type] || DEFAULT_CONFIG;
   const Icon = config.icon;
   const [deleting, setDeleting] = useState(false);
+  // Titre + corps rendus dans la langue courante (repli sur le texte stocké).
+  const { title, body } = renderNotification(notification, t);
 
   const handleDelete = async (e) => {
     e.stopPropagation();
@@ -135,7 +138,7 @@ function NotificationItem({ notification, onMarkRead, onDelete }) {
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <p className={`text-sm font-semibold leading-snug ${!notification.is_read ? 'text-gray-900' : 'text-gray-700'}`}>
-            {notification.title}
+            {title}
           </p>
           <div className="flex items-center gap-1 shrink-0">
             <span className="text-xs text-gray-400 whitespace-nowrap">{formatTime(notification.created_at, t, i18n.language)}</span>
@@ -146,7 +149,7 @@ function NotificationItem({ notification, onMarkRead, onDelete }) {
         </div>
 
         <p className="text-sm text-gray-500 mt-0.5 line-clamp-2 leading-relaxed">
-          {notification.content}
+          {body}
         </p>
 
         {/* Action row */}

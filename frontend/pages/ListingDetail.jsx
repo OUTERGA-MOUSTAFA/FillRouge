@@ -6,9 +6,11 @@ import {
   FlagIcon, ShieldCheckIcon, FireIcon, PencilIcon,
   StarIcon as StarOutline, CheckCircleIcon, EyeIcon,
   PhoneIcon, BoltIcon, XMarkIcon,
+  ChevronLeftIcon, ChevronRightIcon, ArrowsPointingOutIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon } from '@heroicons/react/24/solid';
 import { listingsService } from '../src/services/listings';
+import { favoritesService } from '../src/services/favorites';
 import { messagesService } from '../src/services/messages';
 import { useAuthStore } from '../src/store/authStore';
 import api from '../src/services/api';
@@ -99,64 +101,124 @@ function PhotoGallery({ photos, mainPhoto, title }) {
     );
   }
 
+  const goPrev = (e) => { e?.stopPropagation(); setSelected((p) => (p - 1 + allPhotos.length) % allPhotos.length); };
+  const goNext = (e) => { e?.stopPropagation(); setSelected((p) => (p + 1) % allPhotos.length); };
+
+  // Navigation clavier quand le plein écran est ouvert (← → Échap)
+  useEffect(() => {
+    if (!lightbox) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape') setLightbox(false);
+      else if (e.key === 'ArrowLeft') goPrev();
+      else if (e.key === 'ArrowRight') goNext();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [lightbox, allPhotos.length]);
+
   return (
     <>
-      <div className="relative h-[440px] bg-black">
-        {/* Main image */}
-        <div className="h-full cursor-zoom-in" onClick={() => setLightbox(true)}>
+      {/* Visionneuse : image ENTIÈRE (object-contain) posée sur un fond flou
+          de la même photo → plus de rognage ni de bandes noires. */}
+      <div className="relative h-[320px] sm:h-[460px] bg-gray-900 overflow-hidden">
+        {/* Fond flou */}
+        <img
+          src={allPhotos[selected]}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-40"
+        />
+        <div className="absolute inset-0 bg-black/20" />
+
+        {/* Image complète — clic = plein écran */}
+        <button
+          type="button"
+          onClick={() => setLightbox(true)}
+          className="absolute inset-0 flex items-center justify-center cursor-zoom-in group"
+        >
           <img
             src={allPhotos[selected]}
             alt={title}
-            className="w-full h-full object-cover transition-opacity duration-300"
+            className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-[1.015]"
           />
-        </div>
+        </button>
 
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+        {/* Indice plein écran */}
+        <span className="absolute top-4 left-4 inline-flex items-center gap-1.5 bg-black/50 text-white text-xs px-2.5 py-1.5 rounded-full backdrop-blur-sm pointer-events-none">
+          <ArrowsPointingOutIcon className="h-3.5 w-3.5" /> {t('listingDetail.photoGallery.fullscreen')}
+        </span>
 
-        {/* Photo count badge */}
-        <div className="absolute top-4 right-4 bg-black/60 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm">
+        {/* Compteur */}
+        <span className="absolute top-4 right-4 bg-black/60 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm">
           {selected + 1} / {allPhotos.length}
-        </div>
+        </span>
 
-        {/* Thumbnails strip */}
+        {/* Flèches */}
         {allPhotos.length > 1 && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+          <>
+            <button
+              onClick={goPrev}
+              className="absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 text-gray-800 flex items-center justify-center hover:bg-white shadow-md transition-colors"
+            >
+              <ChevronLeftIcon className="h-5 w-5" />
+            </button>
+            <button
+              onClick={goNext}
+              className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 text-gray-800 flex items-center justify-center hover:bg-white shadow-md transition-colors"
+            >
+              <ChevronRightIcon className="h-5 w-5" />
+            </button>
+          </>
+        )}
+
+        {/* Miniatures */}
+        {allPhotos.length > 1 && (
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 max-w-[92%] overflow-x-auto px-2 py-1">
             {allPhotos.map((p, i) => (
               <button
                 key={i}
                 onClick={(e) => { e.stopPropagation(); setSelected(i); }}
-                className={`h-14 w-20 rounded-lg overflow-hidden border-2 transition-all shrink-0 ${selected === i ? 'border-white scale-105 shadow-lg' : 'border-white/40 opacity-70 hover:opacity-100'
-                  }`}
+                className={`h-12 w-16 sm:h-14 sm:w-20 rounded-lg overflow-hidden border-2 shrink-0 transition-all ${
+                  selected === i ? 'border-white scale-105 shadow-lg' : 'border-white/40 opacity-70 hover:opacity-100'
+                }`}
               >
                 <img src={p} alt="" className="w-full h-full object-cover" />
               </button>
             ))}
           </div>
         )}
-
-        {/* Prev/Next arrows */}
-        {allPhotos.length > 1 && (
-          <>
-            <button
-              onClick={() => setSelected(p => (p - 1 + allPhotos.length) % allPhotos.length)}
-              className="absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition-colors backdrop-blur-sm"
-            >‹</button>
-            <button
-              onClick={() => setSelected(p => (p + 1) % allPhotos.length)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition-colors backdrop-blur-sm"
-            >›</button>
-          </>
-        )}
       </div>
 
-      {/* Lightbox */}
+      {/* Plein écran (lightbox) */}
       {lightbox && (
         <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center" onClick={() => setLightbox(false)}>
-          <button className="absolute top-4 right-4 text-white p-2 hover:bg-white/10 rounded-full">
+          <button
+            onClick={() => setLightbox(false)}
+            className="absolute top-4 right-4 z-10 text-white p-2 hover:bg-white/10 rounded-full"
+          >
             <XMarkIcon className="h-6 w-6" />
           </button>
-          <img src={allPhotos[selected]} alt="" className="max-h-[90vh] max-w-[90vw] object-contain" onClick={e => e.stopPropagation()} />
+
+          <img
+            src={allPhotos[selected]}
+            alt={title}
+            className="max-h-[90vh] max-w-[92vw] object-contain select-none"
+            onClick={(e) => e.stopPropagation()}
+          />
+
+          {allPhotos.length > 1 && (
+            <>
+              <button onClick={goPrev} className="absolute left-4 top-1/2 -translate-y-1/2 h-11 w-11 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center">
+                <ChevronLeftIcon className="h-6 w-6" />
+              </button>
+              <button onClick={goNext} className="absolute right-4 top-1/2 -translate-y-1/2 h-11 w-11 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center">
+                <ChevronRightIcon className="h-6 w-6" />
+              </button>
+              <span className="absolute bottom-5 left-1/2 -translate-x-1/2 bg-white/10 text-white text-sm px-3 py-1 rounded-full">
+                {selected + 1} / {allPhotos.length}
+              </span>
+            </>
+          )}
         </div>
       )}
     </>
@@ -479,6 +541,7 @@ export default function ListingDetail() {
     try {
       const res = await listingsService.getOne(id);
       setListing(res.data);
+      setFavorited(!!res.data.is_favorited);
       const revRes = await api.get(`/auth/users/${res.data.user_id}/reviews`);
       setReviews(revRes.data?.data?.reviews?.data || []);
     } catch {
@@ -492,6 +555,20 @@ export default function ListingDetail() {
   const handleSubmitReview = async (data) => {
     await api.post(`/reviews/${listing.user_id}`, data);
     fetchListing();
+  };
+
+  // Ajoute/retire l'annonce des favoris (avec mise à jour optimiste + rollback).
+  const handleToggleFavorite = async () => {
+    if (!user) { navigate('/login'); return; }
+    const next = !favorited;
+    setFavorited(next);
+    try {
+      const res = await favoritesService.toggle(listing.id);
+      setFavorited(res.favorited);
+    } catch (error) {
+      setFavorited(!next); // rollback
+      toast.error(error.response?.data?.message || t('listingDetail.loadError'));
+    }
   };
 
   if (loading) return (
@@ -880,7 +957,7 @@ export default function ListingDetail() {
                 )}
                 {!isOwner && (
                   <button
-                    onClick={() => setFavorited(f => !f)}
+                    onClick={handleToggleFavorite}
                     className={`w-full flex items-center justify-center gap-2 py-2.5 border rounded-xl text-sm font-medium transition-all ${favorited ? 'border-red-300 text-red-500 bg-red-50' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
                       }`}
                   >

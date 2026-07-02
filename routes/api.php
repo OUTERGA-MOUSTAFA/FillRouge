@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AdminSliderController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BackgroundCheckController;
+use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\IncomeVerificationController;
 use App\Http\Controllers\Api\ListingController;
 use App\Http\Controllers\Api\MatchController;
@@ -38,9 +39,10 @@ Route::prefix('auth')->group(function () {
     // Route publique pour le frontend
     Route::get('/sliders', [SliderController::class, 'index']);
 
-    // Profils publics
-    Route::get('/users/{user}', [UserController::class, 'show']);
-    Route::get('/users/{user}/reviews', [ReviewController::class, 'userReviews']); // ← Ajouter
+    // Avis publics d'un utilisateur (consommé par le front sous /api/auth/users/{user}/reviews).
+    // NB : le *profil* public est servi par /api/users/{user} (déclaré hors de ce groupe),
+    //      on ne le redéclare donc PAS ici pour éviter la route redondante /api/auth/users/{user}.
+    Route::get('/users/{user}/reviews', [ReviewController::class, 'userReviews']);
 
     // OAuth
     Route::get('/auth/google/redirect', [SocialAuthController::class, 'redirectToGoogle']);
@@ -76,9 +78,10 @@ Route::prefix('auth')->group(function () {
 // Annonces publiques
 Route::get('/listings', [ListingController::class, 'index']);
 Route::get('/listings/search', [ListingController::class, 'search']);
+Route::get('/listings/home', [ListingController::class, 'home']); // annonces vedettes (premium/standard)
 Route::get('/listings/{listing}', [ListingController::class, 'show']);
 
-// Profils publics
+// Profils publics (route réellement consommée par le frontend : /api/users/{user})
 Route::get('/users/{user}', [UserController::class, 'show']);
 
 // ========== ROUTES PROTÉGÉES (AUTHENTIFICATION REQUISE) ==========
@@ -119,6 +122,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/listings/{listing}', [ListingController::class, 'destroy']);
     Route::post('/listings/{listing}/toggle-status', [ListingController::class, 'toggleStatus']);
     Route::post('/listings/{listing}/feature', [ListingController::class, 'makeFeatured']);
+
+    // Favoris
+    Route::get('/favorites', [FavoriteController::class, 'index']);
+    Route::post('/listings/{listing}/favorite', [FavoriteController::class, 'toggle']);
 
     // Messages
     Route::get('/messages', [MessageController::class, 'index']);

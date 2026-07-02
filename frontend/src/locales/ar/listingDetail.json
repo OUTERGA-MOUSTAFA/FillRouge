@@ -52,6 +52,7 @@
     "contactsLabel": "اتصالات",
     "safetyNotice": "قابل دائماً في مكان عام ولا تدفع أبداً خارج المنصة.",
     "photoGallery": {
+      "fullscreen": "ملء الشاشة",
       "noPhotos": "لا توجد صور متاحة"
     },
     "stats": {

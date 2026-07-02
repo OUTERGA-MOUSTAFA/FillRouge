@@ -43,6 +43,7 @@
       "request_for": "طلب كراء لـ",
       "accept": "قبول",
       "refuse": "رفض",
+      "reason_placeholder": "السبب (اختياري) — لماذا تقبل / ترفض؟",
       "badge": {
         "pending": "طلب قيد الانتظار",
         "accepted": "طلب مقبول",

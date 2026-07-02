@@ -99,6 +99,7 @@ export default function UserProfile() {
   const [activeTab, setActiveTab] = useState('about');
   const [reviewModal, setReviewModal] = useState(false);
   const [responding, setResponding] = useState(false);
+  const [demandReason, setDemandReason] = useState(''); // motif « pourquoi » (optionnel)
   const { user } = useAuthStore();
   const isOwnProfile = user?.id === parseInt(id);
 
@@ -107,11 +108,12 @@ export default function UserProfile() {
     if (!profile?.pending_demand || responding) return;
     setResponding(true);
     try {
-      await messagesService.respondDemand(profile.pending_demand.id, action);
+      await messagesService.respondDemand(profile.pending_demand.id, action, demandReason.trim() || null);
       toast.success(action === 'accept'
         ? t('profile.user.demand_accepted')
         : t('profile.user.demand_refused'));
-      fetchProfile(); // recharge → pending_demand devient null
+      setDemandReason('');
+      fetchProfile(); // recharge → statut mis à jour
     } catch (error) {
       toast.error(error.response?.data?.message || t('profile.user.demand_error'));
     } finally {
@@ -291,7 +293,7 @@ export default function UserProfile() {
                 </div>
               )}
 
-              {/* Demande de location en attente — le semsar peut accepter/refuser */}
+              {/* Demande de location — le semsar peut accepter/refuser (avec motif) */}
               {!isOwnProfile && profile.pending_demand && (
                 <div className="mt-4 p-3 rounded-xl border border-amber-200 bg-amber-50">
                   <p className="text-xs font-medium text-amber-800 mb-2">
@@ -299,22 +301,47 @@ export default function UserProfile() {
                       ? t('profile.user.pending_demand_for', { listing: profile.pending_demand.listing.title })
                       : t('profile.user.pending_demand')}
                   </p>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleRespondDemand('accept')}
-                      disabled={responding}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-[#009966] text-white rounded-lg text-sm font-semibold hover:bg-[#00734d] disabled:opacity-50 transition-colors"
-                    >
-                      <CheckCircleIcon className="h-4 w-4" /> {t('profile.user.accept')}
-                    </button>
-                    <button
-                      onClick={() => handleRespondDemand('refuse')}
-                      disabled={responding}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 border border-red-200 text-red-600 rounded-lg text-sm font-semibold hover:bg-red-50 disabled:opacity-50 transition-colors"
-                    >
-                      <XCircleIcon className="h-4 w-4" /> {t('profile.user.refuse')}
-                    </button>
-                  </div>
+
+                  {profile.pending_demand.status === 'pending' ? (
+                    <>
+                      {/* Champ « pourquoi » (motif optionnel, surtout utile en cas de refus) */}
+                      <textarea
+                        value={demandReason}
+                        onChange={(e) => setDemandReason(e.target.value)}
+                        rows={2}
+                        maxLength={500}
+                        placeholder={t('profile.user.demand_reason_placeholder')}
+                        className="w-full text-sm rounded-lg border border-amber-200 bg-white px-3 py-2 mb-2 resize-none focus:outline-none focus:ring-2 focus:ring-[#00BBA7]/40"
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleRespondDemand('accept')}
+                          disabled={responding}
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-[#009966] text-white rounded-lg text-sm font-semibold hover:bg-[#00734d] disabled:opacity-50 transition-colors"
+                        >
+                          <CheckCircleIcon className="h-4 w-4" /> {t('profile.user.accept')}
+                        </button>
+                        <button
+                          onClick={() => handleRespondDemand('refuse')}
+                          disabled={responding}
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 border border-red-200 text-red-600 rounded-lg text-sm font-semibold hover:bg-red-50 disabled:opacity-50 transition-colors"
+                        >
+                          <XCircleIcon className="h-4 w-4" /> {t('profile.user.refuse')}
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    /* Déjà traitée → badge de statut */
+                    <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${
+                      profile.pending_demand.status === 'accepted'
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-red-100 text-red-700'
+                    }`}>
+                      {profile.pending_demand.status === 'accepted'
+                        ? <><CheckCircleIcon className="h-3.5 w-3.5" /> {t('profile.user.demand_accepted')}</>
+                        : <><XCircleIcon className="h-3.5 w-3.5" /> {t('profile.user.demand_refused')}</>}
+                    </span>
+                  )}
                 </div>
               )}
 

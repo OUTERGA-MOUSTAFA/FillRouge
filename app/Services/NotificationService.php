@@ -103,6 +103,8 @@ class NotificationService//Envoi notifications
                 ? mb_substr($message->content, 0, 100) . '…'
                 : ($message->content ?: '📎 Image'),
             [
+                'event'      => 'new_message',
+                'actor_name' => $sender->full_name,
                 'sender_id'  => $sender->id,
                 'message_id' => $message->id,
             ]
@@ -121,6 +123,9 @@ class NotificationService//Envoi notifications
             'Nouveau match trouvé !',
             'Vous avez un match avec ' . $matchedUser->full_name . ' — Compatibilité : ' . round($score) . '%',
             [
+                'event'               => 'new_match',
+                'actor_name'          => $matchedUser->full_name,
+                'score'               => round($score),
                 'matched_user_id'     => $matchedUser->id,
                 'compatibility_score' => $score,
             ]
@@ -137,7 +142,12 @@ class NotificationService//Envoi notifications
             'listing_match',
             'Nouvelle annonce pour vous',
             'Une annonce correspond à vos critères : ' . $listing->title . ' — ' . $listing->city,
-            ['listing_id' => $listing->id]
+            [
+                'event'         => 'listing_match',
+                'listing_title' => $listing->title,
+                'city'          => $listing->city,
+                'listing_id'    => $listing->id,
+            ]
         );
     }
 
@@ -152,7 +162,10 @@ class NotificationService//Envoi notifications
             'subscription_expiring',
             'Abonnement expire dans ' . $daysLeft . ' jour' . ($daysLeft > 1 ? 's' : ''),
             "Votre abonnement premium expirera dans {$daysLeft} jour(s). Renouvelez pour continuer à profiter de tous les avantages.",
-            ['days_left' => $daysLeft]
+            [
+                'event'      => 'subscription_expiring',
+                'days_left'  => $daysLeft,
+            ]
         );
     }
 
@@ -167,7 +180,11 @@ class NotificationService//Envoi notifications
             'profile_reminder',
             'Complétez votre profil',
             "Votre profil est complété à {$completionScore}%. Un profil complet augmente vos chances de trouver un colocataire !",
-            ['completion_score' => $completionScore]
+            [
+                'event'            => 'profile_incomplete',
+                'score'            => $completionScore,
+                'completion_score' => $completionScore,
+            ]
         );
     }
 
@@ -183,8 +200,11 @@ class NotificationService//Envoi notifications
             $chercheur->full_name . ' est intéressé(e) par votre annonce',
             'Demande de location pour : ' . $listing->title,
             [
-                'sender_id'  => $chercheur->id,
-                'listing_id' => $listing->id,
+                'event'         => 'rent_request',
+                'actor_name'    => $chercheur->full_name,
+                'listing_title' => $listing->title,
+                'sender_id'     => $chercheur->id,
+                'listing_id'    => $listing->id,
             ]
         );
     }
@@ -205,8 +225,11 @@ class NotificationService//Envoi notifications
                 . ($accepted ? ' a accepté' : ' a refusé')
                 . ' votre demande pour : ' . $titre,
             [
-                'sender_id'  => $semsar->id,
-                'listing_id' => $listing->id ?? null,
+                'event'         => $accepted ? 'demand_accepted' : 'demand_refused',
+                'actor_name'    => $semsar->full_name,
+                'listing_title' => $listing->title ?? null,
+                'sender_id'     => $semsar->id,
+                'listing_id'    => $listing->id ?? null,
             ]
         );
     }

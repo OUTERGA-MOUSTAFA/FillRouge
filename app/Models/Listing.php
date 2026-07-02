@@ -12,8 +12,17 @@ class Listing extends Model
 
     protected $table = 'listings';
 
+    /**
+     * Champs mass-assignables = contenu éditable de l'annonce.
+     *
+     * EXCLUS volontairement (état / privilège), écrits via les méthodes du
+     * modèle avec forceFill() ou via increment() :
+     *   - user_id ....... propriété du créateur (posé par la relation à la création)
+     *   - status ........ activate() / deactivate() / markAsRented()
+     *   - is_featured / featured_until .. makeFeatured() / removeFeatured()
+     *   - views_count / contacts_count .. incrementViews() / incrementContacts()
+     */
     protected $fillable = [
-        'user_id',
         'type',
         'title',
         'description',
@@ -33,11 +42,6 @@ class Listing extends Model
         'house_rules',
         'photos',
         'main_photo',
-        'status',
-        'views_count',
-        'contacts_count',
-        'is_featured',
-        'featured_until',
         'is_urgent',
     ];
 
@@ -114,35 +118,38 @@ class Listing extends Model
         $this->increment('contacts_count');
     }
 
-    public function activate()
+    // Transitions d'état : le modèle est propriétaire de son propre `status`
+    // et de ses flags. On utilise forceFill() car ces champs sont hors $fillable.
+
+    public function activate(): void
     {
-        $this->update(['status' => 'active']);
+        $this->forceFill(['status' => 'active'])->save();
     }
 
-    public function deactivate()
+    public function deactivate(): void
     {
-        $this->update(['status' => 'inactive']);
+        $this->forceFill(['status' => 'inactive'])->save();
     }
 
-    public function markAsRented()
+    public function markAsRented(): void
     {
-        $this->update(['status' => 'rented']);
+        $this->forceFill(['status' => 'rented'])->save();
     }
 
-    public function makeFeatured($days = 7)
+    public function makeFeatured(int $days = 7): void
     {
-        $this->update([
-            'is_featured' => true,
-            'featured_until' => now()->addDays($days)
-        ]);
+        $this->forceFill([
+            'is_featured'    => true,
+            'featured_until' => now()->addDays($days),
+        ])->save();
     }
 
-    public function removeFeatured()
+    public function removeFeatured(): void
     {
-        $this->update([
-            'is_featured' => false,
-            'featured_until' => null
-        ]);
+        $this->forceFill([
+            'is_featured'    => false,
+            'featured_until' => null,
+        ])->save();
     }
 
     // ========== SCOPES ==========

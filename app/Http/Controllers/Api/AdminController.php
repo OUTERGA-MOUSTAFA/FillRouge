@@ -8,6 +8,7 @@ use App\Models\Listing;
 use App\Models\Report;
 use App\Models\Subscription;
 use App\Models\Message;
+use App\Services\ModerationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -326,23 +327,16 @@ class AdminController extends Controller // extand men controller o Middlewares 
     /**
      * Suspendre un utilisateur
      */
-    public function suspendUser(Request $request, User $user)
+    public function suspendUser(Request $request, User $user, ModerationService $moderation)
     {
         $request->validate([
             'days' => 'required|integer|min:1|max:365',
             'reason' => 'nullable|string|max:500',
         ]);
 
-        $user->update([
-            'suspended_until' => now()->addDays($request->days),
-            'suspension_reason' => $request->reason,
-        ]);
-
-        // Révoquer tous les tokens
-        $user->tokens()->delete();
-
-        // Désactiver toutes les annonces
-        $user->listings()->update(['status' => 'inactive']);
+        // Suspension + révocation des tokens + désactivation des annonces,
+        // le tout de façon atomique dans le service.
+        $moderation->suspend($user, (int) $request->days, $request->reason);
 
         return response()->json([
             'success' => true,
@@ -358,12 +352,9 @@ class AdminController extends Controller // extand men controller o Middlewares 
      * Lever la suspension
      * unsuspendUser
      */
-    public function unsuspendUser(User $user)
+    public function unsuspendUser(User $user, ModerationService $moderation)
     {
-        $user->update([
-            'suspended_until' => null,
-            'suspension_reason' => null,
-        ]);
+        $moderation->lift($user);
 
         return response()->json([
             'success' => true,
@@ -374,20 +365,9 @@ class AdminController extends Controller // extand men controller o Middlewares 
     /**
      * Vérifier un utilisateur manuellement
      */
-    public function verifyUser(User $user)
+    public function verifyUser(User $user, ModerationService $moderation)
     {
-        $user->update([
-            'email_verified_at' => now(),
-            'phone_verified_at' => now(),
-        ]);
-
-        if ($user->profile) {
-            $user->profile->update([
-                'is_identity_verified' => true,
-                'identity_verified_at' => now(),
-            ]);
-            $user->profile->addBadge('identity_verified');
-        }
+        $moderation->verify($user);
 
         return response()->json([
             'success' => true,
@@ -398,7 +378,7 @@ class AdminController extends Controller // extand men controller o Middlewares 
     /**
      * Supprimer un utilisateur
      */
-    public function deleteUser(User $user)
+    public function deleteUser(User $user, ModerationService $moderation)
     {
         // Sécurité : un admin ne peut pas supprimer son propre compte
         if (auth()->id() === $user->id) {
@@ -408,17 +388,8 @@ class AdminController extends Controller // extand men controller o Middlewares 
             ], 403);
         }
 
-        // Supprimer les fichiers associés
-        if ($user->avatar) {
-            Storage::delete($user->avatar);
-        }
-
-        if ($user->profile && $user->profile->id_document_path) {
-            Storage::delete($user->profile->id_document_path);
-        }
-
-        // Soft delete
-        $user->delete();
+        // Nettoyage des fichiers + soft delete, de façon atomique dans le service.
+        $moderation->deleteAccount($user);
 
         return response()->json([
             'success' => true,
@@ -535,7 +506,7 @@ class AdminController extends Controller // extand men controller o Middlewares 
     /**
      * Résoudre un signalement
      */
-    public function resolveReport(Request $request, Report $report)
+    public function resolveReport(Request $request, Report $report, ModerationService $moderation)
     {
         $request->validate([
             'action' => 'required|in:ignore,warning,suspend_user,delete_listing,delete_message',
@@ -565,11 +536,8 @@ class AdminController extends Controller // extand men controller o Middlewares 
                 break;
 
             case 'suspend_user':
-                if ($report->reported_user_id) {
-                    $report->reportedUser->update([
-                        'suspended_until' => now()->addDays(30),
-                        'suspension_reason' => $request->note ?? 'Signalement validé',
-                    ]);
+                if ($report->reported_user_id && $report->reportedUser) {
+                    $moderation->suspend($report->reportedUser, 30, $request->note ?? 'Signalement validé');
                 }
                 $report->update([
                     'status' => 'resolved',

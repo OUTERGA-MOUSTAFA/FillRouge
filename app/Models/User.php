@@ -14,6 +14,22 @@ class User extends Authenticatable
 
     protected $table = 'users';
 
+    /**
+     * Champs mass-assignables — UNIQUEMENT des données que l'utilisateur peut
+     * légitimement éditer sur lui-même.
+     *
+     * Les champs de PRIVILÈGE / SÉCURITÉ sont volontairement EXCLUS et ne
+     * doivent être écrits que par des services dédiés via forceFill() :
+     *   - role .......................... UserProvisioningService
+     *   - subscription_plan / _ends_at .. SubscriptionService
+     *   - remaining_ads ................. SubscriptionService (+ increment/decrement)
+     *   - email_verified_at / phone_verified_at .. markEmailVerified() / ModerationService
+     *   - suspended_until / suspension_reason .... ModerationService
+     *   - is_featured ................... (réservé listings)
+     *   - two_factor_secret / recovery .. TwoFactorService
+     *   - provider_token / refresh ...... flux OAuth
+     *   - daily_messages_count / last_message_reset_date / profile_views .. compteurs internes
+     */
     protected $fillable = [
         'full_name',
         'email',
@@ -22,27 +38,13 @@ class User extends Authenticatable
         'avatar',
         'gender',
         'birth_date',
-        'role',
         'profession',
         'budget_min',
         'budget_max',
         'two_factor_enabled',
-        'two_factor_secret',
-        'two_factor_recovery_codes',
-        'subscription_plan',
-        'subscription_ends_at',
-        'daily_messages_count',
-        'last_message_reset_date',
-        'remaining_ads',
-        'is_featured',
-        'profile_views',
         'last_seen_at',
         'provider',
         'provider_id',
-        'provider_token',
-        'provider_refresh_token',
-        'email_verified_at',
-        'phone_verified_at',
     ];
 
     protected $hidden = [
@@ -94,6 +96,14 @@ class User extends Authenticatable
     public function listings()
     {
         return $this->hasMany(Listing::class);
+    }
+
+    /**
+     * Annonces mises en favori par l'utilisateur (table pivot `favorites`).
+     */
+    public function favorites()
+    {
+        return $this->belongsToMany(Listing::class, 'favorites')->withTimestamps();
     }
 
     public function sentMessages()
@@ -240,14 +250,31 @@ class User extends Authenticatable
             : null;
 
         if ($lastReset !== $today) {
-            $this->update([
-                'daily_messages_count' => 0,
-                'last_message_reset_date' => $today
-            ]);
+            // Compteurs internes hors $fillable → écriture explicite via forceFill.
+            $this->forceFill([
+                'daily_messages_count'    => 0,
+                'last_message_reset_date' => $today,
+            ])->save();
             $this->refresh();
         }
 
         return ($this->daily_messages_count ?? 0) < $dailyLimit;
+    }
+
+    /**
+     * Marque l'email comme vérifié (champ de sécurité hors $fillable).
+     */
+    public function markEmailVerified(): void
+    {
+        $this->forceFill(['email_verified_at' => now()])->save();
+    }
+
+    /**
+     * Marque le téléphone comme vérifié (champ de sécurité hors $fillable).
+     */
+    public function markPhoneVerified(): void
+    {
+        $this->forceFill(['phone_verified_at' => now()])->save();
     }
 
 

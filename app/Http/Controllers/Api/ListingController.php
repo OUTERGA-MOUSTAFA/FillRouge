@@ -32,16 +32,24 @@ class ListingController extends Controller
             $query->byCity($request->city);
         }
 
-        if ($request->min_price && $request->max_price) {
-            $query->byPriceRange($request->min_price, $request->max_price);
+        // Prix : min et max appliqués indépendamment (robuste, gère min = 0)
+        if ($request->filled('min_price')) {
+            $query->where('price', '>=', $request->min_price);
+        }
+        if ($request->filled('max_price')) {
+            $query->where('price', '<=', $request->max_price);
         }
 
         if ($request->type) {
             $query->byType($request->type);
         }
 
+        // amenities peut arriver en tableau (amenities[]) OU en chaîne "a,b,c"
         if ($request->amenities) {
-            $query->byAmenities(explode(',', $request->amenities));
+            $amenities = is_array($request->amenities)
+                ? $request->amenities
+                : explode(',', $request->amenities);
+            $query->byAmenities($amenities);
         }
 
         // Tri
@@ -70,6 +78,39 @@ class ListingController extends Controller
     }
 
     /**
+     * Annonces vedettes pour la page d'accueil, regroupées par plan du propriétaire.
+     * Les annonces des propriétaires PREMIUM sont mises en avant, puis celles des
+     * propriétaires STANDARD. (Route publique.)
+     */
+    public function home()
+    {
+        // Un abonnement est actif s'il n'a pas de date de fin ou si elle est future.
+        $planScope = fn ($plan) => function ($q) use ($plan) {
+            $q->where('subscription_plan', $plan)
+              ->where(function ($sub) {
+                  $sub->whereNull('subscription_ends_at')
+                      ->orWhere('subscription_ends_at', '>', now());
+              });
+        };
+
+        $byPlan = fn ($plan, $limit) => Listing::active()
+            ->with('user')
+            ->whereHas('user', $planScope($plan))
+            ->orderByDesc('is_featured')
+            ->latest()
+            ->limit($limit)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'premium'  => $byPlan('premium', 8),
+                'standard' => $byPlan('standard', 8),
+            ],
+        ]);
+    }
+
+    /**
      * Afficher une annonce
      */
     public function show(Listing $listing)
@@ -91,6 +132,14 @@ class ListingController extends Controller
         $viewerId = auth('sanctum')->id();
         $listing->has_requested = $viewerId
             ? Message::where('sender_id', $viewerId)
+                ->where('listing_id', $listing->id)
+                ->exists()
+            : false;
+
+        // L'utilisateur connecté a-t-il mis cette annonce en favori ?
+        $listing->is_favorited = $viewerId
+            ? \Illuminate\Support\Facades\DB::table('favorites')
+                ->where('user_id', $viewerId)
                 ->where('listing_id', $listing->id)
                 ->exists()
             : false;
@@ -180,9 +229,10 @@ class ListingController extends Controller
                 }
             }
         }
-        // Lors de la création :
-        $listing = Listing::create([
-            'user_id' => $user->id,
+        // Création : le contenu (fillable) est mass-assigné, mais `user_id` (FK)
+        // et `status` (état) — hors $fillable — sont posés par affectation directe.
+        $listing = new Listing();
+        $listing->fill([
             'type' => $request->type,
             'title' => $request->title,
             'description' => $request->description,
@@ -202,8 +252,10 @@ class ListingController extends Controller
             'house_rules' => $request->house_rules,
             'main_photo' => $mainPhoto,
             'photos'    => $photos,        // tableau d’objets
-            'status' => 'active',
         ]);
+        $listing->user_id = $user->id;
+        $listing->status  = 'active';
+        $listing->save();
 
         // Décrémenter le compteur d'annonces restantes
         $user->decrement('remaining_ads');
@@ -414,12 +466,13 @@ class ListingController extends Controller
             ], 403);
         }
 
-        $newStatus = $listing->status === 'active' ? 'inactive' : 'active';
-        $listing->update(['status' => $newStatus]);
+        // Transition d'état encapsulée dans le modèle (forceFill).
+        $isActivating = $listing->status !== 'active';
+        $isActivating ? $listing->activate() : $listing->deactivate();
 
         return response()->json([
             'success' => true,
-            'message' => $newStatus === 'active' ? 'Annonce activée' : 'Annonce désactivée'
+            'message' => $isActivating ? 'Annonce activée' : 'Annonce désactivée'
         ]);
     }
 

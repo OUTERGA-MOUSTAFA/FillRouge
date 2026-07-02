@@ -1,6 +1,14 @@
 {
   "home": {
     "loading": "جارٍ التحميل...",
+    "listings": {
+      "premiumTitle": "إعلانات مميّزة",
+      "premiumSubtitle": "مختارة من أصحاب الإعلانات المميّزين",
+      "standardTitle": "إعلانات ستاندرد",
+      "standardSubtitle": "إعلانات موثّقة لا تفوّتها",
+      "premiumBadge": "مميّز",
+      "viewAll": "عرض كل الإعلانات"
+    },
     "stats": {
       "activeListings": "إعلانات نشطة",
       "users": "المستخدمون",

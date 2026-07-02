@@ -1,6 +1,7 @@
 {
   "matches": {
     "title": "Matches & Recommandations",
+    "subtitle": "Vos colocataires les plus compatibles, calculés selon votre profil",
     "tabMatches": "Mes matches ({{count}})",
     "tabRecommendations": "Recommandations ({{count}})",
     "noMatches": "Aucun match pour le moment",

@@ -16,6 +16,7 @@ import {
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import MapComponent from "../src/components/map/MapComponent";
 
 const citiesList = [
   "Casablanca",
@@ -66,7 +67,14 @@ export default function CreateListing() {
     available_from: "",
     furnished: false,
     amenities: [],
+    latitude: null,
+    longitude: null,
   });
+
+  // Clic sur la carte → enregistre les coordonnées de l'annonce
+  const handleLocationSelect = (lat, lng) => {
+    setForm((prev) => ({ ...prev, latitude: lat, longitude: lng }));
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -175,6 +183,12 @@ export default function CreateListing() {
     fd.append('city', form.city);
     fd.append('available_from', form.available_from);
     fd.append('furnished', form.furnished ? '1' : '0');
+
+    // Coordonnées choisies sur la carte (optionnelles)
+    if (form.latitude != null && form.longitude != null) {
+      fd.append('latitude', form.latitude);
+      fd.append('longitude', form.longitude);
+    }
 
     // Aménités
     form.amenities.forEach((amenity) => {
@@ -324,14 +338,35 @@ export default function CreateListing() {
                 ))}
               </select>
 
-              <div className="bg-slate-50 rounded-2xl p-8 text-center border border-slate-100">
-                <MapPinIcon className="w-12 h-12 mx-auto text-emerald-500" />
-                <p className="mt-3 text-slate-500 font-medium">
-                  {t("listingForm.create.mapComingSoon")}
+              <div>
+                <p className="text-sm text-slate-500 mb-2 flex items-center gap-1.5">
+                  <MapPinIcon className="w-4 h-4 text-emerald-500" />
+                  {t("listingForm.create.mapPickHint")}
                 </p>
-                <p className="text-sm text-slate-400 mt-1">
-                  {t("listingForm.create.mapComingSoonHint")}
-                </p>
+                <div className="overflow-hidden rounded-2xl border border-slate-200">
+                  <MapComponent
+                    onLocationSelect={handleLocationSelect}
+                    selectedPosition={form.latitude != null ? [form.latitude, form.longitude] : null}
+                    center={form.latitude != null ? [form.latitude, form.longitude] : undefined}
+                    zoom={form.latitude != null ? 14 : 6}
+                    height="340px"
+                    showSearch={true}
+                    showUserLocation={true}
+                  />
+                </div>
+                {form.latitude != null ? (
+                  <p className="mt-2 text-sm text-emerald-600 font-medium flex items-center gap-1.5">
+                    <MapPinIcon className="w-4 h-4" />
+                    {t("listingForm.create.locationSelected", {
+                      lat: Number(form.latitude).toFixed(5),
+                      lng: Number(form.longitude).toFixed(5),
+                    })}
+                  </p>
+                ) : (
+                  <p className="mt-2 text-sm text-slate-400">
+                    {t("listingForm.create.noLocationYet")}
+                  </p>
+                )}
               </div>
             </>
           )}

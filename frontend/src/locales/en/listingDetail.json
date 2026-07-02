@@ -52,6 +52,7 @@
     "contactsLabel": "contacts",
     "safetyNotice": "Always meet in a public place and never pay outside the platform.",
     "photoGallery": {
+      "fullscreen": "Fullscreen",
       "noPhotos": "No photo available"
     },
     "stats": {

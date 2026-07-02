@@ -1,15 +1,19 @@
 import { Link } from 'react-router-dom';
-import { 
-  MagnifyingGlassIcon, 
-  BuildingOfficeIcon, 
-  ShieldCheckIcon, 
-  ChatBubbleLeftRightIcon 
+import {
+  MagnifyingGlassIcon,
+  BuildingOfficeIcon,
+  ShieldCheckIcon,
+  ChatBubbleLeftRightIcon,
+  ArrowRightIcon,
+  SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../src/services/api';
+import { listingsService } from '../src/services/listings';
+import ListingCard from '../src/components/listings/ListingCard';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
@@ -19,6 +23,8 @@ export default function Home() {
   const { t } = useTranslation();
   const [sliders, setSliders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [premiumListings, setPremiumListings] = useState([]);
+  const [standardListings, setStandardListings] = useState([]);
 
   // ==================== DONNÉES STATIQUES ====================
   const stats = [
@@ -53,7 +59,19 @@ export default function Home() {
 
   useEffect(() => {
     fetchSliders();
+    fetchHomeListings();
   }, []);
+
+  // Annonces vedettes : propriétaires premium puis standard.
+  const fetchHomeListings = async () => {
+    try {
+      const res = await listingsService.home();
+      setPremiumListings(res.data?.premium || []);
+      setStandardListings(res.data?.standard || []);
+    } catch (error) {
+      console.error('Erreur chargement annonces home:', error);
+    }
+  };
 
   const fetchSliders = async () => {
     try {
@@ -127,7 +145,7 @@ export default function Home() {
   }
 
   return (
-    <div className='bg-amber-300'>
+    <div className="bg-white">
       {/* ========== CAROUSEL SECTION ========== */}
       {sliders.length > 0 && (
         <section className="relative">
@@ -193,6 +211,57 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ========== PREMIUM LISTINGS (après 2 sections) ========== */}
+      {premiumListings.length > 0 && (
+        <section className="py-14 bg-gradient-to-b from-amber-50/60 to-white">
+          <div className="container-custom">
+            <div className="flex items-end justify-between mb-8">
+              <div>
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-600 bg-amber-100 px-2.5 py-1 rounded-full">
+                  <SparklesIcon className="h-3.5 w-3.5" /> {t('home.listings.premiumBadge')}
+                </span>
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mt-3">
+                  {t('home.listings.premiumTitle')}
+                </h2>
+                <p className="text-gray-500 mt-1">{t('home.listings.premiumSubtitle')}</p>
+              </div>
+              <Link to="/listings" className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-[#009966] hover:text-[#00734d] transition-colors">
+                {t('home.listings.viewAll')} <ArrowRightIcon className="h-4 w-4" />
+              </Link>
+            </div>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {premiumListings.map((listing) => (
+                <ListingCard key={listing.id} listing={listing} featured />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ========== STANDARD LISTINGS ========== */}
+      {standardListings.length > 0 && (
+        <section className="py-14 bg-white">
+          <div className="container-custom">
+            <div className="flex items-end justify-between mb-8">
+              <div>
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+                  {t('home.listings.standardTitle')}
+                </h2>
+                <p className="text-gray-500 mt-1">{t('home.listings.standardSubtitle')}</p>
+              </div>
+              <Link to="/listings" className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-[#009966] hover:text-[#00734d] transition-colors">
+                {t('home.listings.viewAll')} <ArrowRightIcon className="h-4 w-4" />
+              </Link>
+            </div>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {standardListings.map((listing) => (
+                <ListingCard key={listing.id} listing={listing} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ========== FEATURES SECTION ========== */}
       <section className="py-16 bg-gray-50">

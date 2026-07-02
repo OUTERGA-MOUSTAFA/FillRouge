@@ -11,12 +11,15 @@ const api = axios.create({
   },
 });
 
-// injection bearer token
+// injection bearer token + langue courante
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  // Langue choisie (persistée par i18next) → le backend localise ses messages.
+  const lng = (localStorage.getItem('i18nextLng') || 'fr').split('-')[0];
+  config.headers['Accept-Language'] = lng;
   return config;
 });
 

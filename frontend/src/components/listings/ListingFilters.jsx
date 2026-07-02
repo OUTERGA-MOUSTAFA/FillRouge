@@ -4,14 +4,15 @@ import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon, FunnelIcon } from '@heroicons/react/24/outline';
 
 const cities = ['Agadir', 'Tanger', 'Fès', 'Meknès', 'Marrakech', 'Casablanca', 'Rabat', 'Essaouira', 'Tétouan', 'Oujda'];
-const amenities = ['WiFi', 'AC', 'Parking', 'Furnished', 'Workspace', 'Kitchen', 'Garden'];
+// Mêmes identifiants que ceux stockés en base (voir CreateListing amenitiesList).
+const amenities = ['wifi', 'ac', 'parking', 'tv', 'kitchen', 'pets', 'washing_machine'];
 
 export default function ListingFilters({ isOpen, onClose, onApply }) {
   const { t } = useTranslation();
   const [filters, setFilters] = useState({
     city: '',
     min_price: 0,
-    max_price: 10000,
+    max_price: 25000,
     type: '',
     amenities: [],
   });
@@ -163,7 +164,7 @@ export default function ListingFilters({ isOpen, onClose, onApply }) {
                               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                           }`}
                         >
-                          {amenity}
+                          {t(`listingForm.amenities.${amenity}`)}
                         </button>
                       ))}
                     </div>

@@ -1,6 +1,10 @@
 {
   "myListings": {
     "title": "Mes annonces",
+    "subtitle": "Gérez vos annonces et suivez leurs performances",
+    "statTotal": "Annonces",
+    "statActive": "Actives",
+    "statViews": "Vues totales",
     "newListing": "Nouvelle annonce",
     "noListings": "Vous n'avez pas encore d'annonces",
     "createFirstListing": "Créer ma première annonce",
